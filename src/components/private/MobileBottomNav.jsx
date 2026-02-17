@@ -16,7 +16,7 @@ export default function MobileBottomNav() {
   return (
     <nav className="
       fixed bottom-0 inset-x-0 z-40
-      bg-blue-900 text-white
+      bg-[#09314F] text-white
       h-16
       flex justify-around items-center
       lg:hidden

@@ -21,7 +21,7 @@ export default function MobileHeader() {
       <header
         className="
           fixed top-0 inset-x-0 z-40
-          h-14 bg-blue-900 text-white
+          h-14 bg-[#09314F] text-white
           flex items-center justify-between px-4
           lg:hidden
         "

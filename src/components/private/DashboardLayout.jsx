@@ -42,6 +42,9 @@ export default function DashboardLayout({ children }) {
             ${rightCollapsed ? "mr-16" : "mr-80"}
           `}
         >
+          <h1 className="text-xl font-semibold mb-6 dark:text-white">
+        Dashboard
+      </h1>
           {children}
         </main>
       </div>
