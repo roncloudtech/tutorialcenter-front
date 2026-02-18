@@ -53,9 +53,10 @@ export default function GuardianPhoneVerification() {
     }
   }, [count]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     inputRefs.num1.current.focus(); // autofocus on first load
-  }, [inputRefs.num1]);
+  }, []);
 
   // Handle input changes and auto-focus to next field
   const handleChange = (e) => {

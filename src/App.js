@@ -16,6 +16,7 @@ import { GuardianRegistration } from "./pages/public/GuardianSignup/GuardianRegi
 import GuardianPhoneVerification from "./pages/public/GuardianSignup/GuardianPhoneVerification.jsx";
 import GuardianEmailVerification from "./pages/public/GuardianSignup/GuardianEmailVerification.jsx";
 import GuardianAddStudents from "./pages/public/GuardianSignup/GuardianAddStudents.jsx";
+import AddedStudentOTP from "./pages/public/GuardianSignup/AddedStudentOTP.jsx";
 import GuardianAddedStudentBiodata from "./pages/public/GuardianSignup/GuardianAddedStudentBiodata.jsx";
 import GuardianTrainingSelection from "./pages/public/GuardianSignup/GuardianTrainingSelection.jsx";
 import GuardianSubjectSelection from "./pages/public/GuardianSignup/GuardianSubjectSelection.jsx";
@@ -50,6 +51,7 @@ function App() {
         <Route path="/register/guardian/phone/verify" element={<GuardianPhoneVerification />} />
         <Route path="/register/guardian/email/verify" element={<GuardianEmailVerification />} />
         <Route path="/register/guardian/addstudent" element={<GuardianAddStudents />} />
+        <Route path="/register/guardian/student/otp-verification" element={<AddedStudentOTP />} />
         <Route path="/register/guardian/student/biodata" element={<GuardianAddedStudentBiodata />} />
         <Route path="/register/guardian/training/selection" element={<GuardianTrainingSelection />} />
         <Route path="/register/guardian/subject/selection" element={<GuardianSubjectSelection />} />

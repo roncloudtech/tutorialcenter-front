@@ -159,6 +159,8 @@ export default function GuardianAddedStudentBiodata() {
       localStorage.getItem("guardianStudents") || "{}"
     );
     const generalPassword = storedGuardianData.password || "Password@123";
+    console.log("Guardian data from localStorage:", storedGuardianData);
+console.log("Password being used:", generalPassword);
 
     try {
       const updatedStudents = [];
@@ -178,15 +180,25 @@ export default function GuardianAddedStudentBiodata() {
         };
 
         try {
-          await axios.post(
+          const regResponse = await axios.post(
             `${API_BASE_URL}/api/students/register`,
             registerPayload
           );
+          console.log("student registered", regResponse.data);
         } catch (regErr) {
+          console.error("Registration FAILED for:", student.name);
+  console.error("Status:", regErr.response?.status);
+  console.error("Errors:", regErr.response?.data?.errors);
+  console.error("Message:", regErr.response?.data?.message);
+  console.error("Payload sent:", registerPayload);
           console.warn(
             `Registration warning for ${student.name}:`,
             regErr.response?.data
           );
+           setToast({
+    type: "error",
+    message: `Failed to register ${student.name}: ${regErr.response?.data?.message || regErr.message}`
+  });
         }
 
         const biodataPayload = {
@@ -504,7 +516,7 @@ export default function GuardianAddedStudentBiodata() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
