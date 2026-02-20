@@ -57,6 +57,7 @@ export default function StudentRegistration() {
       email: isEmail ? formData.entry : null,
       tel: isEmail ? null : formData.entry,
       password: formData.password,
+      confirmPassword: formData.confirmPassword,
       password_confirmation: formData.confirmPassword,
     };
 

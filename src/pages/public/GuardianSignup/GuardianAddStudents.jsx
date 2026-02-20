@@ -2,9 +2,16 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
-import ReturnArrow from "../../../assets/svg/return arrow.svg";
 import signup_img from "../../../assets/images/student_sign_up.jpg";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { 
+  EyeIcon, 
+  EyeSlashIcon, 
+  ChevronLeftIcon,
+  ChevronDownIcon,
+  PlusIcon,
+  EnvelopeIcon
+} from "@heroicons/react/24/outline";
+import { dropdownTheme } from "../../../utils/dropdownTheme";
 
 export default function GuardianAddStudents() {
   const navigate = useNavigate();
@@ -216,238 +223,227 @@ export default function GuardianAddStudents() {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="w-full min-h-screen md:h-screen flex flex-col md:flex-row font-sans overflow-x-hidden">
+    <div className="w-full min-h-screen md:h-screen flex flex-col md:flex-row font-sans overflow-x-hidden bg-[#F4F4F4]">
+      {/* Toast notification */}
+      {toast && (
+        <div className={`fixed top-5 right-5 z-[200] px-6 py-4 rounded-[20px] shadow-2xl text-white animate-fadeIn ${
+          toast.type === "success" ? "bg-[#7FD093]" : "bg-[#E83831]"
+        }`}>
+          <div className="flex items-center gap-3">
+            <div className="bg-white/20 p-1.5 rounded-lg">
+              {toast.type === "success" ? (
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              )}
+            </div>
+            <span className="font-bold text-sm">{toast.message}</span>
+          </div>
+        </div>
+      )}
 
-      {/* Left side — form */}
-      <div className="w-full md:w-1/2 h-full bg-[#F4F4F4] flex flex-col justify-center relative px-6 py-10 lg:px-[100px] lg:py-[60px] order-2 md:order-1 overflow-y-auto">
-
-        {/* Nav: back button + logo */}
-        <div className="relative w-full flex items-center justify-center mb-8 md:mb-10">
+      {/* LEFT SIDE — Form Section */}
+      <div className="w-full md:w-1/2 min-h-screen md:h-screen flex flex-col items-center bg-[#F4F4F4] relative order-2 md:order-1 overflow-y-auto pt-12 pb-20 px-6 lg:px-[80px]">
+        {/* Navigation */}
+        <div className="w-full max-w-[480px] flex items-center justify-between mb-12">
           <button
             onClick={() => navigate("/register/guardian")}
-            className="absolute left-0 p-2 hover:bg-gray-200 rounded-full transition-all z-10"
+            className="p-3 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all border border-black/5"
           >
-            <img src={ReturnArrow} alt="Back" className="h-6 w-6 lg:h-5 lg:w-5" />
+            <ChevronLeftIcon className="h-5 w-5 text-[#09314F]" />
           </button>
-          <img src={TC_logo} alt="Logo" className="h-[60px] md:h-[80px] w-auto object-contain" />
+          <img src={TC_logo} alt="Tutorial Center" className="h-[70px] w-auto object-contain" />
+          <div className="w-11" /> {/* Spacer for centering */}
         </div>
 
-        <div className="flex flex-col items-center w-full">
-
-          {/* Heading */}
-          <div className="text-center mb-4">
-            <h1 className="text-3xl font-bold text-[#09314F]">Add Students</h1>
-            <p className="text-gray-500 italic text-sm mt-1">Add students and set a shared password</p>
+        <div className="w-full max-w-[480px]">
+          {/* Header */}
+          <div className="text-center mb-10">
+            <h1 className="text-[28px] font-black text-[#09314F] leading-tight mb-3">Add Student</h1>
+            <p className="text-[#888888] font-medium max-w-[320px] mx-auto text-sm leading-relaxed">
+              Add your child(ren) through email, they will receive a confirmation email to be able to access their information.
+            </p>
           </div>
 
-          {/* Form card */}
-          <div className="bg-white shadow-sm border border-gray-100 rounded-lg p-6 flex flex-col items-center w-full">
-
-            {/* Toast notification */}
-            {toast && (
-              <div
-                className={`fixed top-5 right-5 z-50 px-6 py-4 rounded-lg shadow-xl text-white transition-all duration-300 ${
-                  toast.type === "success" ? "bg-green-600" : "bg-red-600"
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  {toast.type === "success" ? (
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                  ) : (
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                  <span className="font-medium">{toast.message}</span>
-                </div>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="w-full space-y-4">
-
-              {/* Student accordion cards */}
-              <div className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Form Card */}
+            <div className="bg-white rounded-[40px] shadow-[0_20px_60px_rgba(0,0,0,0.03)] border border-gray-100 p-8 space-y-8">
+              {/* Student Accordion */}
+              <div className="space-y-4">
                 {students.map((student, index) => (
-                  <div key={index} className="w-full border border-gray-200 rounded-lg overflow-hidden">
-
-                    {/* Card header — click to expand/collapse */}
+                  <div key={index} className="space-y-4 animate-fadeIn">
+                    {/* Accordion Header */}
                     <button
                       type="button"
                       onClick={() => toggleStudent(index)}
-                      className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors"
+                      className="w-full flex items-center justify-between group"
                     >
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-[#09314F] uppercase tracking-wide">
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-black text-[#09314F] uppercase tracking-[0.15em]">
                           Student {index + 1}
                         </span>
-                        {student.name && (
-                          <span className="text-xs text-gray-400">— {student.name}</span>
-                        )}
+                        {student.name && <span className="text-[10px] font-bold text-gray-300 uppercase truncate max-w-[150px]">— {student.name}</span>}
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         {students.length > 1 && (
                           <button
                             type="button"
                             onClick={(e) => { e.stopPropagation(); removeStudent(index); }}
-                            className="text-red-500 hover:text-red-700 text-sm font-medium px-2"
+                            className="text-[10px] font-black text-red-400 uppercase tracking-widest hover:text-red-600 transition-colors"
                           >
                             Remove
                           </button>
                         )}
-                        <svg
-                          className={`w-5 h-5 text-[#09314F] transition-transform duration-200 ${student.expanded ? "rotate-180" : ""}`}
-                          fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
+                        <ChevronDownIcon className={`h-4 w-4 text-[#09314F] transition-transform duration-300 ${student.expanded ? "rotate-180" : ""}`} />
                       </div>
                     </button>
 
-                    {/* Card body — name + email/phone inputs */}
                     {student.expanded && (
-                      <div className="px-4 py-4 space-y-4 border-t border-gray-200">
-                        <div>
-                          <label className="block text-sm font-medium text-blue-900 mb-2">Student Name</label>
-                          <input
-                            type="text"
-                            value={student.name}
-                            onChange={(e) => handleStudentChange(index, "name", e.target.value)}
-                            placeholder="e.g. John Doe"
-                            className={`w-full px-4 py-2 border rounded-lg ${
-                              errors[`student_${index}_name`] ? "border-red-500" : "border-gray-300"
-                            } focus:ring-2 focus:ring-blue-900 focus:border-transparent`}
-                          />
+                      <div className="space-y-6 pt-2 animate-fadeIn">
+                        {/* Name Input */}
+                        <div className="space-y-2">
+                          <label className="text-[11px] font-black text-[#09314F] uppercase tracking-wider ml-1">Name</label>
+                          <div className={dropdownTheme.inputContainer(errors[`student_${index}_name`], false)}>
+                            <EnvelopeIcon className="h-5 w-5 text-gray-400 mr-3" />
+                            <input
+                              type="text"
+                              value={student.name}
+                              onChange={(e) => handleStudentChange(index, "name", e.target.value)}
+                              placeholder="first and last name"
+                              className="bg-transparent w-full outline-none text-[#09314F] font-bold text-sm placeholder:text-gray-400/60"
+                            />
+                          </div>
                           {errors[`student_${index}_name`] && (
-                            <p className="text-sm text-red-500 mt-1">{errors[`student_${index}_name`]}</p>
+                            <p className="text-[10px] font-bold text-[#E83831] ml-1">{errors[`student_${index}_name`]}</p>
                           )}
                         </div>
 
-                        <div>
-                          <label className="block text-sm font-medium text-blue-900 mb-2">Email or Phone Number</label>
-                          <input
-                            type="text"
-                            value={student.email}
-                            onChange={(e) => handleStudentChange(index, "email", e.target.value)}
-                            placeholder="student@email.com or 08012345678"
-                            className={`w-full px-4 py-2 border rounded-lg ${
-                              errors[`student_${index}_email`] ? "border-red-500" : "border-gray-300"
-                            } focus:ring-2 focus:ring-blue-900 focus:border-transparent`}
-                          />
+                        {/* Email/Phone Input */}
+                        <div className="space-y-2">
+                          <label className="text-[11px] font-black text-[#09314F] uppercase tracking-wider ml-1">Email</label>
+                          <div className={dropdownTheme.inputContainer(errors[`student_${index}_email`], false)}>
+                            <EnvelopeIcon className="h-5 w-5 text-gray-400 mr-3" />
+                            <input
+                              type="text"
+                              value={student.email}
+                              onChange={(e) => handleStudentChange(index, "email", e.target.value)}
+                              placeholder="you@example.com or +234xxxxxxxxx"
+                              className="bg-transparent w-full outline-none text-[#09314F] font-bold text-sm placeholder:text-gray-400/60"
+                            />
+                          </div>
                           {errors[`student_${index}_email`] && (
-                            <p className="text-sm text-red-500 mt-1">{errors[`student_${index}_email`]}</p>
+                            <p className="text-[10px] font-bold text-[#E83831] ml-1">{errors[`student_${index}_email`]}</p>
                           )}
-                          <p className="text-xs text-gray-500 mt-1">
-                            📧 Email → verify via link | 📱 Phone → verify via OTP
-                          </p>
                         </div>
                       </div>
                     )}
+                    {index < students.length - 1 && <div className="h-px bg-gray-50 w-full" />}
                   </div>
                 ))}
               </div>
 
-              {/* Add another student */}
+              {/* Add Another Button */}
               <button
                 type="button"
                 onClick={addStudent}
-                className="w-full py-2 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-500 transition-colors font-medium"
+                className="w-full py-4 px-6 rounded-2xl border-2 border-dashed border-gray-100 hover:border-[#09314F22] hover:bg-gray-50/50 transition-all flex items-center justify-between group"
               >
-                + Add Another Student
+                <span className="text-sm font-black text-[#09314F] transition-colors">Add another</span>
+                <PlusIcon className="h-5 w-5 text-[#09314F] group-hover:scale-110 transition-transform" />
               </button>
 
-              {/* Shared password section */}
-              <div className="pt-4 border-t border-gray-200 space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">Set Shared Password</h3>
-                <p className="text-sm text-gray-500">All students will use this password to log in</p>
+              {/* Shared Password Section */}
+              <div className="pt-4 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Password */}
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-black text-[#09314F] uppercase tracking-wider ml-1">General Password</label>
+                    <div className={dropdownTheme.inputContainer(errors.password, false)}>
+                      <button type="button" onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <EyeSlashIcon className="h-4 w-4 text-gray-400 mr-2" /> : <EyeIcon className="h-4 w-4 text-gray-400 mr-2" />}
+                      </button>
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="bg-transparent w-full outline-none text-[#09314F] font-bold text-sm"
+                      />
+                    </div>
+                  </div>
 
-                {/* Password field */}
-                <div className="relative">
-                  <label className="block text-sm font-medium text-blue-900 mb-2">Password</label>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter shared password"
-                    className={`w-full px-4 py-2 pr-10 border rounded-lg ${
-                      errors.password ? "border-red-500" : "border-gray-300"
-                    } focus:ring-2 focus:ring-blue-900 focus:border-transparent`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
-                  >
-                    {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
-                  </button>
-                  {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
-                  <p className="text-xs text-gray-500 mt-1">Min 8 chars, uppercase, lowercase, number, special char</p>
+                  {/* Confirm Password */}
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-black text-[#09314F] uppercase tracking-wider ml-1">Confirm Password</label>
+                    <div className={dropdownTheme.inputContainer(errors.confirmPassword, false)}>
+                      <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                        {showConfirmPassword ? <EyeSlashIcon className="h-4 w-4 text-gray-400 mr-2" /> : <EyeIcon className="h-4 w-4 text-gray-400 mr-2" />}
+                      </button>
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="bg-transparent w-full outline-none text-[#09314F] font-bold text-sm"
+                      />
+                    </div>
+                  </div>
                 </div>
-
-                {/* Confirm password field */}
-                <div className="relative">
-                  <label className="block text-sm font-medium text-blue-900 mb-2">Confirm Password</label>
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Re-enter password"
-                    className={`w-full px-4 py-2 pr-10 border rounded-lg ${
-                      errors.confirmPassword ? "border-red-500" : "border-gray-300"
-                    } focus:ring-2 focus:ring-blue-900 focus:border-transparent`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
-                  >
-                    {showConfirmPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
-                  </button>
-                  {errors.confirmPassword && <p className="text-sm text-red-500 mt-1">{errors.confirmPassword}</p>}
-                </div>
+                {errors.password && <p className="text-[10px] font-bold text-[#E83831] ml-1">{errors.password}</p>}
+                {errors.confirmPassword && !errors.password && <p className="text-[10px] font-bold text-[#E83831] ml-1">{errors.confirmPassword}</p>}
               </div>
 
-              {/* Submit button */}
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full mt-6 py-3 px-4 rounded-lg font-medium transition-all ${
-                  loading ? "bg-gray-400 cursor-not-allowed" : "bg-gradient-to-r from-[#09314F] to-[#E83831] hover:opacity-90"
-                } text-white`}
+                className={`w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest text-white shadow-xl transition-all duration-300 relative overflow-hidden group ${
+                  loading ? "bg-gray-300 cursor-not-allowed" : "bg-gradient-to-r from-[#09314F] to-[#E83831] hover:scale-[1.02] active:scale-[0.98] hover:shadow-[#09314F44]"
+                }`}
               >
                 {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    Processing...
-                  </span>
+                  <div className="flex items-center justify-center gap-3">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Signing Up...</span>
+                  </div>
                 ) : (
-                  "Continue"
+                  "Sign Up"
                 )}
               </button>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
       </div>
 
-      {/* Right side — background image + login button */}
-      <div
-        className="w-full h-[192px] md:w-1/2 md:h-full bg-cover bg-center relative bg-gray-300 order-1 md:order-2"
+      {/* RIGHT SIDE — Split Image Section */}
+      <div 
+        className="w-full md:w-1/2 h-full bg-cover bg-center relative bg-gray-300 order-1 md:order-2 hidden md:block"
         style={{ backgroundImage: `url(${signup_img})` }}
       >
-        <div className="hidden md:block absolute bottom-[60px] left-0">
+        <div className="absolute inset-0 bg-[#09314F11]" />
+        
+        {/* Floating Login Button */}
+        <div className="absolute bottom-12 left-0">
           <button
             onClick={() => navigate("/login")}
-            className="px-8 py-3 bg-white text-[#09314F] font-bold hover:bg-gray-100 transition-all shadow-md"
-            style={{ borderRadius: "0px 20px 20px 0px" }}
+            className="px-10 py-5 bg-white text-[#09314F] font-black text-xs uppercase tracking-widest hover:bg-gray-50 transition-all shadow-2xl rounded-r-3xl border-y border-r border-black/5"
           >
             Login
           </button>
         </div>
       </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.4s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 }

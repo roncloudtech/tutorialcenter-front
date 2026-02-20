@@ -1,21 +1,24 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
-import ReturnArrow from "../../../assets/svg/return arrow.svg";
 import signup_img from "../../../assets/images/student_sign_up.jpg";
+import { dropdownTheme } from "../../../utils/dropdownTheme";
+import { 
+  ChevronLeftIcon
+} from "@heroicons/react/24/outline";
 
 export const StudentSubjectSelection = () => {
   const navigate = useNavigate();
+  const dropdownRef = useRef(null);
 
-  const API_BASE_URL =
-    process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
+  const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
 
   const [selectedCourses, setSelectedCourses] = useState([]);
   const [subjectsByCourse, setSubjectsByCourse] = useState({});
   const [selectedSubjects, setSelectedSubjects] = useState({});
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [error, setError] = useState(false);
+  const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
@@ -28,7 +31,6 @@ export const StudentSubjectSelection = () => {
     const init = async () => {
       try {
         const studentData = JSON.parse(localStorage.getItem("studentdata"));
-
         const storedTraining = studentData?.selectedTraining;
         const department = studentData?.data?.department;
 
@@ -39,10 +41,7 @@ export const StudentSubjectSelection = () => {
 
         const courseRes = await axios.get(`${API_BASE_URL}/api/courses`);
         const allCourses = courseRes.data.courses || [];
-
-        const activeCourses = allCourses.filter((c) =>
-          storedTraining.includes(c.id)
-        );
+        const activeCourses = allCourses.filter((c) => storedTraining.includes(c.id));
 
         setSelectedCourses(activeCourses);
 
@@ -53,7 +52,6 @@ export const StudentSubjectSelection = () => {
           const res = await axios.get(
             `${API_BASE_URL}/api/courses/${course.id}/subjects/${department}`
           );
-
           subjectMap[course.id] = res.data.subjects || [];
           selectionMap[course.id] = [];
         }
@@ -64,9 +62,19 @@ export const StudentSubjectSelection = () => {
         console.error("Initialization failed:", err);
       }
     };
-
     init();
   }, [navigate, API_BASE_URL]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   /* ================= SUBJECT TOGGLE ================= */
   const toggleSubject = (courseId, subjectId) => {
@@ -76,222 +84,225 @@ export const StudentSubjectSelection = () => {
       const limit = getSubjectLimit(course.title);
 
       if (current.includes(subjectId)) {
-        return {
-          ...prev,
-          [courseId]: current.filter((id) => id !== subjectId),
-        };
+        return { ...prev, [courseId]: current.filter((id) => id !== subjectId) };
       }
-
       if (current.length >= limit) return prev;
-
-      return {
-        ...prev,
-        [courseId]: [...current, subjectId],
-      };
+      return { ...prev, [courseId]: [...current, subjectId] };
     });
   };
 
-  /* ================= CONTINUE ================= */
   const handleContinue = () => {
     const valid = selectedCourses.every(
       (course) => selectedSubjects[course.id]?.length > 0
     );
-
     if (!valid) {
-      setError(true);
+      setToast({ type: "error", message: "Please select subjects for all your examinations." });
       return;
     }
-
-    setError(false);
     setShowConfirmModal(true);
   };
 
-  /* ================= FINAL CONFIRM ================= */
   const handleProceed = () => {
     setLoading(true);
-
     try {
       const studentData = JSON.parse(localStorage.getItem("studentdata"));
-
-      const updatedStudentData = {
-        ...studentData,
-        selectedSubjects, // ✅ stored here
-      };
-
-      localStorage.setItem(
-        "studentdata",
-        JSON.stringify(updatedStudentData)
-      );
-
+      const updatedStudentData = { ...studentData, selectedSubjects };
+      localStorage.setItem("studentdata", JSON.stringify(updatedStudentData));
       navigate("/register/student/training/duration");
     } catch (err) {
-      console.error("Failed to store selected subjects", err);
+      console.error("Failed to store subjects", err);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <>
-      <div className="w-full min-h-screen md:h-screen flex flex-col md:flex-row font-sans overflow-x-hidden">
-        {/* LEFT */}
-        <div className="w-full md:w-1/2 bg-[#F4F4F4] px-6 py-10 lg:px-[100px]">
-          <div className="relative flex justify-center mb-6">
-            <button
+    <div className="w-full min-h-screen md:h-screen flex flex-col md:flex-row font-sans overflow-x-hidden">
+      {/* Toast */}
+      {toast && (
+        <div className={`fixed top-5 right-5 z-50 px-6 py-4 rounded-2xl shadow-2xl text-white transition-all duration-500 transform translate-y-0 ${
+          toast.type === "success" ? "bg-[#76D287]" : "bg-[#E83831]"
+        } animate-in fade-in slide-in-from-top-4`}>
+          <div className="flex items-center gap-3 text-sm font-bold">
+            {toast.message}
+          </div>
+        </div>
+      )}
+
+      {/* LEFT SIDE */}
+      <div className="w-full md:w-1/2 h-full bg-[#F8F9FA] flex flex-col items-center py-8 px-6 lg:px-[100px] overflow-y-auto order-2 md:order-1">
+        
+        {/* Header */}
+        <div className="w-full max-w-[500px] mb-10 text-center">
+          <div className="flex items-center relative h-12 mb-6">
+            <button 
               onClick={() => navigate("/register/student/training/selection")}
-              className="absolute left-0 p-2"
+              className="absolute left-0 p-3 bg-white hover:bg-gray-50 rounded-2xl shadow-sm transition-all active:scale-90"
             >
-              <img src={ReturnArrow} alt="Back" className="h-6 w-6" />
+              <ChevronLeftIcon className="h-5 w-5 text-[#09314F] stroke-[2.5]" />
             </button>
-            <img src={TC_logo} alt="Logo" className="h-[70px]" />
+            <div className="w-full flex justify-center">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-[#09314F]">
+                Subject Selection
+              </h1>
+            </div>
+          </div>
+          <p className="text-[#888888] font-medium">
+            Select your preferred subjects for your examination.
+          </p>
+        </div>
+
+        {/* Table Container */}
+        <div className="w-full max-w-[500px] bg-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-gray-100 mb-8 relative z-10">
+          {/* Table Header */}
+          <div className="grid grid-cols-[120px_minmax(0,1fr)_80px] bg-[#09314F] text-white px-6 py-4 rounded-t-[32px]">
+            <span className="text-sm font-black uppercase tracking-widest px-2">Examination</span>
+            <span className="text-sm font-black uppercase tracking-widest px-2">Subjects</span>
+            <span className="text-sm font-black uppercase tracking-widest text-right">Number</span>
           </div>
 
-          <h1 className="text-center text-2xl font-bold text-[#09314F] mb-6">
-            Subject Selection
-          </h1>
+          <div className="p-2 space-y-1">
+            {selectedCourses.map((course) => {
+              const selectedIds = selectedSubjects[course.id] || [];
+              const subjects = subjectsByCourse[course.id] || [];
+              const limit = getSubjectLimit(course.title);
+              const isOpen = openDropdown === course.id;
 
-          <div className="grid grid-cols-3 bg-[#09314F] text-white text-sm font-bold rounded-t-lg">
-            <div className="p-2">Courses</div>
-            <div className="p-2">Subjects</div>
-            <div className="p-2 text-right">Number</div>
-          </div>
+              return (
+                <div key={course.id} className="grid grid-cols-[120px_minmax(0,1fr)_80px] items-center px-4 py-6 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors relative">
+                  <div className="text-sm font-extrabold text-[#09314F] uppercase tracking-wide truncate">
+                    {course.title}
+                  </div>
 
-          {selectedCourses.map((course) => {
-            const selectedIds = selectedSubjects[course.id] || [];
-            const subjects = subjectsByCourse[course.id] || [];
-            const limit = getSubjectLimit(course.title);
-            const isOpen = openDropdown === course.id;
-
-            return (
-              <div key={course.id} className="border-b py-4">
-                <div className="grid grid-cols-3 gap-4 items-center">
-                  <div className="font-semibold">{course.title}</div>
-
-                  <div className="relative">
+                  <div className="px-2 relative">
                     <button
-                      onClick={() =>
-                        setOpenDropdown(isOpen ? null : course.id)
-                      }
-                      className="w-full bg-gray-300 px-3 py-2 rounded text-xs flex justify-between"
+                      id={`toggle-${course.id}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenDropdown(isOpen ? null : course.id);
+                      }}
+                      className="w-full min-h-[44px] flex items-center transition-all group pointer-events-auto"
                     >
-                      {selectedIds.length
-                        ? subjects
+                      <div className={dropdownTheme.subjectPreview}>
+                        {selectedIds.length > 0 ? (
+                          subjects
                             .filter((s) => selectedIds.includes(s.id))
                             .map((s) => s.name)
-                            .slice(0, 2)
-                            .join(", ") +
-                          (selectedIds.length > 2 ? "..." : "")
-                        : "Select subjects"}
-                      <span>{isOpen ? "▲" : "▼"}</span>
+                            .join(", ")
+                        ) : (
+                          "Select subjects"
+                        )}
+                      </div>
                     </button>
 
+                    {/* Dropdown Overlay */}
                     {isOpen && (
-                      <div className="absolute z-10 w-full bg-white border rounded shadow max-h-60 overflow-y-auto">
-                        {subjects.map((subject) => {
-                          const isSelected = selectedIds.includes(subject.id);
-                          const disabled =
-                            !isSelected && selectedIds.length >= limit;
+                      <div 
+                        ref={dropdownRef}
+                        className={`${dropdownTheme.overlay.container} w-[280px]`}
+                      >
+                        <p className={dropdownTheme.overlay.header}>
+                          Choose up to {limit} subjects
+                        </p>
+                        <div className="space-y-1.5">
+                          {subjects.map((subject) => {
+                            const isSelected = selectedIds.includes(subject.id);
+                            const isLimitReached = !isSelected && selectedIds.length >= limit;
 
-                          return (
-                            <button
-                              key={subject.id}
-                              disabled={disabled}
-                              onClick={() =>
-                                toggleSubject(course.id, subject.id)
-                              }
-                              className={`w-full px-4 py-2 text-left text-sm
-                                ${
-                                  isSelected
-                                    ? "bg-green-500 text-white"
-                                    : disabled
-                                    ? "bg-gray-200 text-gray-400"
-                                    : "hover:bg-gray-100"
-                                }`}
-                            >
-                              {subject.name} {isSelected && "✓"}
-                            </button>
-                          );
-                        })}
+                            return (
+                              <button
+                                key={subject.id}
+                                disabled={isLimitReached}
+                                onClick={() => toggleSubject(course.id, subject.id)}
+                                className={dropdownTheme.overlay.item(isSelected, isLimitReached)}
+                              >
+                                {subject.name}
+                                {isSelected && <CheckIcon className="h-4 w-4" />}
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
                     )}
                   </div>
 
-                  <div className="text-right font-semibold">
-                    {selectedIds.length} / {limit}
+                  <div className="text-right">
+                    <span className={`text-sm font-black transition-colors ${selectedIds.length === limit ? "text-[#76D287]" : "text-[#09314F]"}`}>
+                      {selectedIds.length}
+                    </span>
+                    <span className="text-sm font-bold text-gray-300"> / </span>
+                    <span className="text-sm font-bold text-gray-400">{limit}</span>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+        </div>
 
-          {error && (
-            <p className="text-red-500 text-xs text-center mt-4">
-              Please select at least one subject for each course
-            </p>
-          )}
-
+        <div className="w-full max-w-[500px]">
           <button
             onClick={handleContinue}
-            className="mt-6 w-full py-3 rounded bg-gradient-to-r from-[#09314F] to-[#E83831] text-white"
+            className="w-full py-5 rounded-[22px] font-bold text-lg text-white bg-gradient-to-r from-[#09314F] to-[#E83831] shadow-xl hover:shadow-[#E8383144] transition-all hover:-translate-y-0.5 active:scale-[0.98]"
           >
             Continue
           </button>
         </div>
 
-        {/* RIGHT */}
-        <div
-          className="w-full md:w-1/2 bg-cover bg-center"
-          style={{ backgroundImage: `url(${signup_img})` }}
-        />
+        {/* Brand */}
+        <div className="mt-auto py-10 opacity-30 grayscale pointer-events-none">
+          <img src={TC_logo} alt="Tutorial Center" className="h-10" />
+        </div>
       </div>
 
-      {/* ================= CONFIRMATION MODAL ================= */}
+      {/* RIGHT SIDE */}
+      <div 
+        className="w-full h-[250px] md:w-1/2 md:h-full bg-cover bg-center relative bg-gray-300 order-1 md:order-2"
+        style={{ backgroundImage: `url(${signup_img})` }}
+      />
+
+      {/* Confirmation Modal */}
       {showConfirmModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white w-[90%] max-w-2xl rounded-lg p-6">
-            <h2 className="text-xl font-bold text-[#09314F] mb-4">
-              Confirm Your Subject Selection
-            </h2>
+        <div className="fixed inset-0 bg-[#09314F99] backdrop-blur-sm flex items-center justify-center z-[100] p-6 animate-fadeIn">
+          <div className="bg-white w-full max-w-xl rounded-[40px] shadow-2xl p-8 md:p-10 border border-white/20">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-2xl font-black text-[#09314F] uppercase tracking-tight">Confirm Selection</h2>
+              <button 
+                onClick={() => setShowConfirmModal(false)}
+                className="p-2 hover:bg-gray-50 rounded-2xl transition-colors"
+              >
+                <XMarkIcon className="h-6 w-6 text-gray-400" />
+              </button>
+            </div>
 
-            <table className="w-full text-sm border">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="p-2 border text-left">Course</th>
-                  <th className="p-2 border text-left">Subjects</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedCourses.map((course) => {
-                  const subjects =
-                    subjectsByCourse[course.id]?.filter((s) =>
-                      selectedSubjects[course.id]?.includes(s.id)
-                    ) || [];
+            <div className="space-y-6 mb-10">
+              {selectedCourses.map((course) => {
+                const subjects = subjectsByCourse[course.id]?.filter((s) => selectedSubjects[course.id]?.includes(s.id)) || [];
+                return (
+                  <div key={course.id} className="p-6 bg-[#F8F9FA] rounded-3xl border border-gray-50">
+                    <h3 className="text-xs font-black text-[#888888] uppercase tracking-widest mb-3">{course.title}</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {subjects.map((s) => (
+                        <span key={s.id} className="px-3 py-1.5 bg-white rounded-xl text-xs font-extrabold text-[#09314F] shadow-sm border border-black/5">
+                          {s.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
 
-                  return (
-                    <tr key={course.id}>
-                      <td className="p-2 border font-semibold">
-                        {course.title}
-                      </td>
-                      <td className="p-2 border">
-                        {subjects.map((s) => s.name).join(", ")}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-
-            <div className="flex justify-end gap-4 mt-6">
+            <div className="flex flex-col md:flex-row gap-4">
               <button
                 onClick={() => setShowConfirmModal(false)}
-                className="px-4 py-2 border rounded"
+                className="flex-1 py-4 px-6 rounded-2xl font-bold text-[#09314F] bg-white border-2 border-[#09314F11] hover:bg-gray-50 transition-all active:scale-95"
               >
                 Make Changes
               </button>
               <button
                 onClick={handleProceed}
                 disabled={loading}
-                className="px-6 py-2 bg-[#09314F] text-white rounded"
+                className="flex-[1.5] py-4 px-6 rounded-2xl font-bold text-white bg-[#09314F] shadow-lg shadow-[#09314F33] hover:shadow-[#09314F55] transition-all active:scale-95 disabled:opacity-50"
               >
                 {loading ? "Processing..." : "Proceed"}
               </button>
@@ -299,6 +310,16 @@ export const StudentSubjectSelection = () => {
           </div>
         </div>
       )}
-    </>
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.4s ease-out forwards;
+        }
+      `}</style>
+    </div>
   );
 };

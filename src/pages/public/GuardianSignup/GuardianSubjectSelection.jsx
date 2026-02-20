@@ -1,21 +1,24 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
-import ReturnArrow from "../../../assets/svg/return arrow.svg";
 import signup_img from "../../../assets/images/student_sign_up.jpg";
+import { dropdownTheme } from "../../../utils/dropdownTheme";
+import { 
+  ChevronLeftIcon
+, CheckIcon, UserIcon, XMarkIcon
+} from "@heroicons/react/24/outline";
 
 export default function GuardianSubjectSelection() {
   const navigate = useNavigate();
+  const dropdownRef = useRef(null);
 
-  const API_BASE_URL =
-    process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
+  const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
 
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [toast, setToast] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   /* ================= HELPERS ================= */
   const getSubjectLimit = (courseTitle) =>
@@ -32,12 +35,9 @@ export default function GuardianSubjectSelection() {
         }
 
         const parsedStudents = JSON.parse(stored);
-
-        // Fetch all courses
         const courseRes = await axios.get(`${API_BASE_URL}/api/courses`);
         const allCourses = courseRes.data.courses || [];
 
-        // For each student, build their course + subject data
         const enrichedStudents = await Promise.all(
           parsedStudents.map(async (student, index) => {
             const activeCourses = allCourses.filter((c) =>
@@ -46,7 +46,6 @@ export default function GuardianSubjectSelection() {
 
             const subjectsByCourse = {};
             const selectedSubjects = {};
-            const openDropdown = null;
 
             for (const course of activeCourses) {
               const res = await axios.get(
@@ -61,7 +60,6 @@ export default function GuardianSubjectSelection() {
               activeCourses,
               subjectsByCourse,
               selectedSubjects,
-              openDropdown,
               expanded: index === 0,
             };
           })
@@ -72,31 +70,33 @@ export default function GuardianSubjectSelection() {
         console.error("Initialization failed:", err);
       }
     };
-
     init();
   }, [navigate, API_BASE_URL]);
 
-  /* ================= TOGGLE ACCORDION ================= */
+  const [openDropdown, setOpenDropdown] = useState(null); // format: "studentIndex-courseId"
+
+  // Handle outside click for dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const toggleStudent = (index) => {
     setStudents((prev) =>
       prev.map((s, i) => (i === index ? { ...s, expanded: !s.expanded } : s))
     );
   };
 
-  /* ================= TOGGLE DROPDOWN ================= */
   const toggleDropdown = (studentIndex, courseId) => {
-    setStudents((prev) =>
-      prev.map((s, i) => {
-        if (i !== studentIndex) return s;
-        return {
-          ...s,
-          openDropdown: s.openDropdown === courseId ? null : courseId,
-        };
-      })
-    );
+    const key = `${studentIndex}-${courseId}`;
+    setOpenDropdown(prev => prev === key ? null : key);
   };
 
-  /* ================= SUBJECT TOGGLE ================= */
   const toggleSubject = (studentIndex, courseId, subjectId) => {
     setStudents((prev) =>
       prev.map((s, i) => {
@@ -116,43 +116,31 @@ export default function GuardianSubjectSelection() {
 
         return {
           ...s,
-          selectedSubjects: {
-            ...s.selectedSubjects,
-            [courseId]: updated,
-          },
+          selectedSubjects: { ...s.selectedSubjects, [courseId]: updated },
         };
       })
     );
   };
 
-  /* ================= CONTINUE ================= */
   const handleContinue = () => {
-    const valid = students.every((student) =>
+    const allValid = students.every((student) =>
       student.activeCourses.every(
         (course) => student.selectedSubjects[course.id]?.length > 0
       )
     );
 
-    if (!valid) {
-      setError(true);
-      setToast({
-        type: "error",
-        message: "Please select at least one subject per course for each student",
-      });
+    if (!allValid) {
+      setToast({ type: "error", message: "Please select subjects for all students and their chosen courses." });
       return;
     }
-
-    setError(false);
     setShowConfirmModal(true);
   };
 
-  /* ================= FINAL CONFIRM ================= */
   const handleProceed = () => {
     setLoading(true);
-
     try {
       const payload = students.map((s) => ({
-        id: s.id, // ✅ Preserve ID from backend
+        id: s.id,
         name: s.name,
         email: s.email,
         firstname: s.firstname,
@@ -166,287 +154,246 @@ export default function GuardianSubjectSelection() {
         selectedSubjects: s.selectedSubjects,
       }));
 
-      localStorage.setItem(
-        "guardianStudentsSubjects",
-        JSON.stringify(payload)
-      );
-
+      localStorage.setItem("guardianStudentsSubjects", JSON.stringify(payload));
       setToast({ type: "success", message: "Subjects saved successfully!" });
-
-      setTimeout(() => {
-        setLoading(false);
-        navigate("/register/guardian/training/duration");
-      }, 1500);
+      setTimeout(() => navigate("/register/guardian/training/duration"), 1500);
     } catch (err) {
-      console.error("Failed to store selected subjects", err);
+      console.error("Failed to store subjects", err);
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <>
-      <div className="w-full min-h-screen md:h-screen flex flex-col md:flex-row font-sans overflow-x-hidden">
-        {/* LEFT */}
-        <div className="w-full md:w-1/2 bg-[#F4F4F4] px-6 py-10 lg:px-[100px] lg:py-[60px] order-2 md:order-1 overflow-y-auto">
-          {/* Toast */}
-          {toast && (
-            <div
-              className={`fixed top-5 right-5 z-50 px-4 py-3 rounded shadow-lg text-white transition-all duration-300 ${
-                toast.type === "success" ? "bg-green-600" : "bg-red-600"
-              }`}
-            >
-              {toast.message}
-            </div>
-          )}
-
-          {/* HEADER */}
-          <div className="relative flex justify-center mb-6">
-            <button
-              onClick={() => navigate("/register/guardian/training/selection")}
-              className="absolute left-0 p-2 hover:bg-gray-200 rounded-full"
-            >
-              <img src={ReturnArrow} alt="Back" className="h-6 w-6" />
-            </button>
-            <img src={TC_logo} alt="Logo" className="h-[70px]" />
+    <div className="w-full min-h-screen md:h-screen flex flex-col md:flex-row font-sans overflow-x-hidden">
+      {/* Toast */}
+      {toast && (
+        <div className={`fixed top-5 right-5 z-50 px-6 py-4 rounded-2xl shadow-2xl text-white transition-all duration-500 transform translate-y-0 ${
+          toast.type === "success" ? "bg-[#76D287]" : "bg-[#E83831]"
+        } animate-in fade-in slide-in-from-top-4`}>
+          <div className="flex items-center gap-3 text-sm font-bold">
+            {toast.message}
           </div>
+        </div>
+      )}
 
-          <h1 className="text-center text-2xl font-bold text-[#09314F] mb-2">
-            Subject Selection
-          </h1>
-          <p className="text-center text-gray-500 text-sm mb-6">
-            Select subjects for each student's chosen training
+      {/* LEFT SIDE */}
+      <div className="w-full md:w-1/2 h-full bg-[#F8F9FA] flex flex-col items-center py-8 px-6 lg:px-[100px] overflow-y-auto order-2 md:order-1">
+        
+        {/* Header */}
+        <div className="w-full max-w-[500px] mb-10 text-center">
+          <div className="flex items-center relative h-12 mb-6">
+            <button 
+              onClick={() => navigate("/register/guardian/training/selection")}
+              className="absolute left-0 p-3 bg-white hover:bg-gray-50 rounded-2xl shadow-sm transition-all active:scale-90"
+            >
+              <ChevronLeftIcon className="h-5 w-5 text-[#09314F] stroke-[2.5]" />
+            </button>
+            <div className="w-full flex justify-center">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-[#09314F]">
+                Subject Selection
+              </h1>
+            </div>
+          </div>
+          <p className="text-[#888888] font-medium">
+            Select subjects for each student's chosen training.
           </p>
+        </div>
 
-          {/* PER-STUDENT ACCORDION */}
-          <div className="space-y-4">
-            {students.map((student, sIndex) => (
-              <div
-                key={sIndex}
-                className="bg-white rounded-2xl shadow-sm border border-gray-100"
-                style={{ position: "relative", zIndex: students.length - sIndex }}
+        {/* Multi-Student Accordions */}
+        <div className="w-full max-w-[500px] space-y-6 mb-8 relative z-10">
+          {students.map((student, sIndex) => (
+            <div key={sIndex} className="bg-white rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-gray-50 mb-4">
+              <button 
+                onClick={() => toggleStudent(sIndex)}
+                className="w-full flex items-center justify-between p-6 hover:bg-gray-50/50 transition-colors rounded-[32px]"
               >
-                {/* Accordion Header */}
-                <button
-                  type="button"
-                  onClick={() => toggleStudent(sIndex)}
-                  className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-[#09314F] uppercase tracking-wide">
-                      Student {sIndex + 1}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      — {student.firstname} {student.surname}
-                    </span>
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-2xl bg-[#09314F] text-white flex items-center justify-center font-black text-xs">
+                    {sIndex + 1}
                   </div>
-                  <svg
-                    className={`w-5 h-5 text-[#09314F] transition-transform duration-200 ${
-                      student.expanded ? "rotate-180" : ""
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
+                  <div className="text-left">
+                    <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest leading-none mb-1">Student</p>
+                    <h3 className="text-sm font-black text-[#09314F] uppercase tracking-wide">{student.name}</h3>
+                  </div>
+                </div>
+                <ChevronLeftIcon className={`h-5 w-5 text-[#09314F] transition-transform duration-300 ${student.expanded ? "-rotate-90" : ""}`} />
+              </button>
 
-                {/* Accordion Body — Subject Selection Table */}
-                {student.expanded && (
-                  <div className="px-5 pb-5 border-t border-gray-100 pt-4">
-                    {/* Table Header */}
-                    <div className="grid grid-cols-3 bg-[#09314F] text-white text-sm font-bold rounded-t-lg">
-                      <div className="p-2">Courses</div>
-                      <div className="p-2">Subjects</div>
-                      <div className="p-2 text-right">Number</div>
-                    </div>
+              {student.expanded && (
+                <div className="p-2 pt-0 animate-fadeIn relative">
+                  <div className="bg-[#09314F] text-white rounded-2xl grid grid-cols-[100px_minmax(0,1fr)_60px] px-4 py-3 mb-1">
+                    <span className="text-[10px] font-black uppercase tracking-widest px-2">Exam</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest px-2">Subjects</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-right">Count</span>
+                  </div>
 
-                    {/* Course Rows */}
+                  <div className="space-y-1">
                     {student.activeCourses.map((course) => {
-                      const selectedIds =
-                        student.selectedSubjects[course.id] || [];
-                      const subjects =
-                        student.subjectsByCourse[course.id] || [];
+                      const selectedIds = student.selectedSubjects[course.id] || [];
+                      const subjects = student.subjectsByCourse[course.id] || [];
                       const limit = getSubjectLimit(course.title);
-                      const isOpen = student.openDropdown === course.id;
+                      const currentKey = `${sIndex}-${course.id}`;
+                      const isOpen = openDropdown === currentKey;
 
                       return (
-                        <div key={course.id} className="border-b py-4">
-                          <div className="grid grid-cols-3 gap-4 items-center">
-                            <div className="font-semibold text-sm">
-                              {course.title}
-                            </div>
+                        <div key={course.id} className="grid grid-cols-[100px_minmax(0,1fr)_60px] items-center px-4 py-4 border-b border-gray-50 last:border-0 relative">
+                          <span className="text-xs font-extrabold text-[#09314F] uppercase truncate">{course.title}</span>
+                          
+                          <div className="px-2 relative">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleDropdown(sIndex, course.id);
+                              }}
+                              className="w-full min-h-[40px] flex items-center transition-all pointer-events-auto"
+                            >
+                              <div className={dropdownTheme.subjectPreview}>
+                                {selectedIds.length > 0 ? (
+                                  subjects
+                                    .filter(s => selectedIds.includes(s.id))
+                                    .map(s => s.name)
+                                    .join(", ")
+                                ) : (
+                                  "Select..."
+                                )}
+                              </div>
+                            </button>
 
-                            <div className="relative">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  toggleDropdown(sIndex, course.id)
-                                }
-                                className="w-full bg-gray-300 px-3 py-2 rounded text-xs flex justify-between"
-                              >
-                                {selectedIds.length
-                                  ? subjects
-                                      .filter((s) =>
-                                        selectedIds.includes(s.id)
-                                      )
-                                      .map((s) => s.name)
-                                      .slice(0, 2)
-                                      .join(", ") +
-                                    (selectedIds.length > 2 ? "..." : "")
-                                  : "Select subjects"}
-                                <span>{isOpen ? "▲" : "▼"}</span>
-                              </button>
-
-                              {isOpen && (
-                                <div className="absolute z-50 w-full bg-white border rounded shadow overflow-y-auto" style={{ maxHeight: "170px" }}>
-                                  {subjects.map((subject) => {
-                                    const isSelected = selectedIds.includes(
-                                      subject.id
-                                    );
-                                    const disabled =
-                                      !isSelected &&
-                                      selectedIds.length >= limit;
-
+                            {isOpen && (
+                              <div ref={dropdownRef} className={`${dropdownTheme.overlay.container} w-[220px] max-h-[220px]`}>
+                                <p className={dropdownTheme.overlay.header}>Choose up to {limit}</p>
+                                <div className="space-y-1">
+                                  {subjects.map(subject => {
+                                    const isSelected = selectedIds.includes(subject.id);
+                                    const isLimitReached = !isSelected && selectedIds.length >= limit;
                                     return (
                                       <button
                                         key={subject.id}
-                                        type="button"
-                                        disabled={disabled}
-                                        onClick={() =>
-                                          toggleSubject(
-                                            sIndex,
-                                            course.id,
-                                            subject.id
-                                          )
-                                        }
-                                        className={`w-full px-4 py-2 text-left text-sm ${
-                                          isSelected
-                                            ? "bg-green-500 text-white"
-                                            : disabled
-                                            ? "bg-gray-200 text-gray-400"
-                                            : "hover:bg-gray-100"
-                                        }`}
+                                        disabled={isLimitReached}
+                                        onClick={() => toggleSubject(sIndex, course.id, subject.id)}
+                                        className={dropdownTheme.overlay.item(isSelected, isLimitReached)}
                                       >
-                                        {subject.name} {isSelected && "✓"}
+                                        {subject.name}
+                                        {isSelected && <CheckIcon className="h-3 w-3" />}
                                       </button>
                                     );
                                   })}
                                 </div>
-                              )}
-                            </div>
+                              </div>
+                            )}
+                          </div>
 
-                            <div className="text-right font-semibold text-sm">
-                              {selectedIds.length} / {limit}
-                            </div>
+                          <div className="text-right">
+                            <span className="text-xs font-black text-[#09314F]">{selectedIds.length}</span>
+                            <span className="text-xs font-bold text-gray-300"> / </span>
+                            <span className="text-xs font-bold text-gray-400">{limit}</span>
                           </div>
                         </div>
                       );
                     })}
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
 
-          {error && (
-            <p className="text-red-500 text-xs text-center mt-4">
-              Please select at least one subject for each course per student
-            </p>
-          )}
-
-          {/* CONTINUE */}
+        <div className="w-full max-w-[500px]">
           <button
             onClick={handleContinue}
-            className="mt-6 w-full py-3 rounded-lg bg-gradient-to-r from-[#09314F] to-[#E83831] text-white font-medium hover:opacity-90 transition-colors"
+            className="w-full py-5 rounded-[22px] font-bold text-lg text-white bg-gradient-to-r from-[#09314F] to-[#E83831] shadow-xl hover:shadow-[#E8383144] transition-all hover:-translate-y-0.5 mt-4"
           >
             Continue
           </button>
         </div>
 
-        {/* RIGHT */}
-        <div
-          className="w-full h-[192px] md:w-1/2 md:h-full bg-cover bg-center relative order-1 md:order-2"
-          style={{ backgroundImage: `url(${signup_img})` }}
-        >
-          <div className="hidden md:block absolute bottom-[60px] left-0">
-            <button
-              onClick={() => navigate("/login")}
-              className="px-8 py-3 bg-white text-[#09314F] font-bold hover:bg-gray-100 transition-all shadow-md"
-              style={{ borderRadius: "0px 20px 20px 0px" }}
-            >
-              Login
-            </button>
-          </div>
+        <div className="mt-auto py-10 opacity-30 grayscale pointer-events-none">
+          <img src={TC_logo} alt="Tutorial Center" className="h-10" />
         </div>
       </div>
 
-      {/* ================= CONFIRMATION MODAL ================= */}
-      {showConfirmModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white w-[90%] max-w-2xl rounded-lg p-6 max-h-[80vh] overflow-y-auto">
-            <h2 className="text-xl font-bold text-[#09314F] mb-4">
-              Confirm Subject Selection
-            </h2>
+      {/* RIGHT SIDE */}
+      <div 
+        className="w-full h-[250px] md:w-1/2 md:h-full bg-cover bg-center relative bg-gray-300 order-1 md:order-2"
+        style={{ backgroundImage: `url(${signup_img})` }}
+      />
 
-            {students.map((student, sIndex) => (
-              <div key={sIndex} className="mb-6">
-                <h3 className="text-sm font-bold text-[#09314F] uppercase mb-2">
-                  Student {sIndex + 1} — {student.firstname} {student.surname}
-                </h3>
-                <table className="w-full text-sm border">
-                  <thead className="bg-gray-100">
-                    <tr>
-                      <th className="p-2 border text-left">Course</th>
-                      <th className="p-2 border text-left">Subjects</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {student.activeCourses.map((course) => {
-                      const subjects =
-                        student.subjectsByCourse[course.id]?.filter((s) =>
-                          student.selectedSubjects[course.id]?.includes(s.id)
-                        ) || [];
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-[#09314F77] backdrop-blur-[2px] flex items-center justify-center z-[100] p-6 animate-fadeIn">
+          <div className="bg-white w-full max-w-[560px] rounded-[24px] shadow-2xl p-10 md:p-12">
+            <h2 className="text-xl font-bold text-[#09314F] mb-8">Review</h2>
+
+            <div className="space-y-8">
+              {students.map((student, sIndex) => (
+                <div key={sIndex} className="space-y-6">
+                  {/* Student Identifier (only if multiple students) */}
+                  {students.length > 1 && (
+                    <div className="flex items-center gap-2 pb-2 mb-2 border-b border-gray-100">
+                      <UserIcon className="h-4 w-4 text-[#E83831]" />
+                      <span className="text-sm font-bold text-[#09314F]">{student.name}</span>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-[100px_1fr] gap-x-10 gap-y-0">
+                    {/* Headers */}
+                    <div className="text-[14px] font-bold text-[#09314F] mb-4">Courses</div>
+                    <div className="text-[14px] font-bold text-[#09314F] mb-4">Subjects</div>
+
+                    {student.activeCourses.map((course, cIndex) => {
+                      const selectedSubjects = student.subjectsByCourse[course.id]
+                        ?.filter(sub => student.selectedSubjects[course.id]?.includes(sub.id))
+                        ?.map(sub => sub.name)
+                        ?.join(", ");
 
                       return (
-                        <tr key={course.id}>
-                          <td className="p-2 border font-semibold">
+                        <React.Fragment key={course.id}>
+                          {cIndex > 0 && (
+                            <div className="col-span-2 border-t border-gray-100 my-4" />
+                          )}
+                          <div className="text-[13px] font-bold text-[#09314F] py-1 uppercase tracking-wide">
                             {course.title}
-                          </td>
-                          <td className="p-2 border">
-                            {subjects.map((s) => s.name).join(", ")}
-                          </td>
-                        </tr>
+                          </div>
+                          <div className="text-[13px] font-medium text-gray-500 py-1 leading-relaxed">
+                            {selectedSubjects}
+                          </div>
+                        </React.Fragment>
                       );
                     })}
-                  </tbody>
-                </table>
-              </div>
-            ))}
+                  </div>
+                </div>
+              ))}
+            </div>
 
-            <div className="flex justify-end gap-4 mt-4">
-              <button
-                onClick={() => setShowConfirmModal(false)}
-                className="px-4 py-2 border rounded hover:bg-gray-50 transition-colors"
+            <div className="flex gap-4 mt-12">
+              <button 
+                onClick={() => setShowConfirmModal(false)} 
+                className="flex-1 h-[54px] rounded-[14px] font-bold text-sm text-[#09314F] bg-white border-2 border-[#09314F] hover:bg-gray-50 transition-all active:scale-[0.98]"
               >
-                Make Changes
+                Edit
               </button>
-              <button
-                onClick={handleProceed}
-                disabled={loading}
-                className="px-6 py-2 bg-[#09314F] text-white rounded hover:opacity-90 transition-colors"
+              <button 
+                onClick={handleProceed} 
+                disabled={loading} 
+                className="flex-1 h-[54px] rounded-[14px] font-bold text-sm text-white bg-[#09314F] hover:bg-[#09314F]/95 transition-all shadow-lg shadow-[#09314F33] disabled:opacity-50 active:scale-[0.98]"
               >
-                {loading ? "Processing..." : "Proceed"}
+                {loading ? "Processing..." : "Continue"}
               </button>
             </div>
           </div>
         </div>
       )}
-    </>
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.4s ease-out forwards;
+        }
+      `}</style>
+    </div>
   );
 }
