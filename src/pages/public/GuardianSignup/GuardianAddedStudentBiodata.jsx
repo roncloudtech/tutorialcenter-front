@@ -28,41 +28,63 @@ export default function GuardianAddedStudentBiodata() {
 
   const [studentsBiodata, setStudentsBiodata] = useState([]);
 
-  useEffect(() => {
-    // First, try to load previously saved biodata
-    const savedBiodata = localStorage.getItem("guardianStudentsBiodata");
-    if (savedBiodata) {
-      try {
-        const parsed = JSON.parse(savedBiodata);
-        setStudentsBiodata(parsed);
-        return;
-      } catch (err) {
-        console.error("Failed to load saved biodata:", err);
-      }
-    }
+ useEffect(() => {
+  // Get current guardian's students
+  const currentStudents = localStorage.getItem("guardianStudents");
+  
+  if (!currentStudents) {
+    navigate("/register/guardian/addstudent");
+    return;
+  }
 
-    // Otherwise, load from guardianStudents
-    const stored = localStorage.getItem("guardianStudents");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      const studentsWithBiodata = parsed.students.map((student, index) => ({
-        name: student.name,
-        email: student.email,
-        firstname: student.name.split(" ")[0] || "",
-        surname: student.name.split(" ").slice(1).join(" ") || "",
-        gender: "",
-        date_of_birth: "",
-        location: "",
-        address: "",
-        department: "",
-        display_picture: null,
-        expanded: index === 0,
-      }));
-      setStudentsBiodata(studentsWithBiodata);
-    } else {
-      navigate("/register/guardian/addstudent");
+  const currentParsed = JSON.parse(currentStudents);
+  
+  // Check if saved biodata exists
+  const savedBiodata = localStorage.getItem("guardianStudentsBiodata");
+  
+  if (savedBiodata) {
+    try {
+      const savedParsed = JSON.parse(savedBiodata);
+      
+      // ✅ VERIFY: Does saved biodata match current students?
+      const emailsMatch = 
+        savedParsed.length === currentParsed.students.length &&
+        savedParsed.every((saved, idx) => 
+          saved.email === currentParsed.students[idx].email
+        );
+
+      if (emailsMatch) {
+        // ✅ Biodata belongs to current session - load it
+        setStudentsBiodata(savedParsed);
+        return;
+      } else {
+        // ❌ Biodata is from a different guardian - clear it
+        console.log("Clearing old biodata from different guardian");
+        localStorage.removeItem("guardianStudentsBiodata");
+      }
+    } catch (err) {
+      console.error("Failed to load saved biodata:", err);
+      localStorage.removeItem("guardianStudentsBiodata");
     }
-  }, [navigate]);
+  }
+
+  // Load fresh data from guardianStudents
+  const studentsWithBiodata = currentParsed.students.map((student, index) => ({
+    name: student.name,
+    email: student.email,
+    firstname: student.name.split(" ")[0] || "",
+    surname: student.name.split(" ").slice(1).join(" ") || "",
+    gender: "",
+    date_of_birth: "",
+    location: "",
+    address: "",
+    department: "",
+    display_picture: null,
+    expanded: index === 0,
+  }));
+  
+  setStudentsBiodata(studentsWithBiodata);
+}, [navigate]);
 
   // Auto-save biodata to localStorage whenever studentsBiodata changes
   useEffect(() => {
@@ -423,7 +445,7 @@ export default function GuardianAddedStudentBiodata() {
                         <MapIcon className={getInputStyles(index, "address").icon} />
                         <textarea
                           rows="1"
-                          value={student.address}
+                         value={student.address || ""} 
                           onFocus={() => setFocusedField(`${index}_address`)}
                           onBlur={() => setFocusedField(null)}
                           onChange={(e) => handleChange(index, "address", e.target.value)}
