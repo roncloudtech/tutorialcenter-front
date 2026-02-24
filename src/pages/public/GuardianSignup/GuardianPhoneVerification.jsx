@@ -2,11 +2,11 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import signup_img from "../../../assets/images/student_sign_up.jpg";
+import signup_img from "../../../assets/images/otpparent.jpg";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
-export default function StudentPhoneVerification() {
-  const navigate = useNavigate(); // Initializing navigation
+export default function GuardianPhoneVerification() {
+  const navigate = useNavigate();
   const [msg, setMsg] = useState("");
   const [count, setCount] = useState(60);
   const [searchParams] = useSearchParams();
@@ -23,13 +23,6 @@ export default function StudentPhoneVerification() {
     num6: "",
   });
   
-  // Redirect back to registration if no phone number is provided
-  useEffect(() => {
-    if (!tel) {
-      navigate("/register/student");
-    }
-  }, [tel, navigate]);
-
   const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
 
   const num1 = useRef(null);
@@ -42,33 +35,34 @@ export default function StudentPhoneVerification() {
   const inputRefs = { num1, num2, num3, num4, num5, num6 };
 
   useEffect(() => {
-    // 1. Only start timer if count is greater than 0
+    if (!tel) {
+      navigate("/register/guardian");
+    }
+  }, [tel, navigate]);
+
+  useEffect(() => {
     if (count > 0) {
       const timer = setInterval(() => {
         setCount((prev) => prev - 1);
       }, 1000);
-
-      // 2. Cleanup the timer on unmount or when count changes
       return () => clearInterval(timer);
     }
   }, [count]);
 
   useEffect(() => {
-    num1.current?.focus(); 
+    num1.current?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Handle input changes and auto-focus to next field
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    if (value.length > 1) return; // prevent more than 1 character
+    if (value.length > 1) return;
 
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
 
-    // Move to next input
     if (value) {
       const nextInput = {
         num1: "num2",
@@ -100,80 +94,56 @@ export default function StudentPhoneVerification() {
     }
   };
 
-  // Basic validation to ensure all fields are filled
   const validateForm = () => {
     const newErrors = {};
     Object.keys(formData).forEach((key) => {
-      if (!formData[key].trim()) newErrors[key] = `${key} is required`;
+      if (!formData[key].trim()) newErrors[key] = true;
     });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission and OTP verification
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setLoading(true);
-    const otp =
-      formData.num1 +
-      formData.num2 +
-      formData.num3 +
-      formData.num4 +
-      formData.num5 +
-      formData.num6;
+    const otp = Object.values(formData).join("");
 
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/students/verify-phone`,
-        {
-          tel: tel,
-          otp: otp,
-        },
-      );
+      const response = await axios.post(`${API_BASE_URL}/api/guardians/verify-phone`, {
+        tel: tel,
+        otp: otp,
+      });
 
       if (response.status === 200) {
-        setToast({ type: "success", message: response.data.message });
-        setMsg(<span className="text-green-500">{response.data.message}</span>);
-        localStorage.setItem("studentTel", tel); // Store phone number for later steps
+        setToast({ type: "success", message: "Phone verified successfully!" });
+        localStorage.setItem("guardianTel", tel);
         setTimeout(() => {
-          navigate("/register/student/biodata");
-        }, 5000);
+          navigate("/register/guardian/addstudent");
+        }, 2000);
       }
     } catch (error) {
       setToast({
         type: "error",
         message: error?.response?.data?.message || "Verification failed",
       });
-      setMsg(
-        <span className="text-red-500">{error?.response?.data?.error}</span>,
-      );
-      console.log(error?.response);
+      setMsg(error?.response?.data?.error || "");
     } finally {
       setLoading(false);
     }
   };
 
-  // Resend OTP
   const handleResend = async () => {
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/students/resend-phone-otp`,
-        { tel: tel },
-      );
+      const response = await axios.post(`${API_BASE_URL}/api/guardians/resend-phone-otp`, { tel: tel });
       setToast({ type: "success", message: response.data.message });
-      setMsg(<span className="text-green-500">{response.data.message}</span>);
+      setCount(60);
     } catch (error) {
       setToast({
         type: "error",
         message: error?.response?.data?.message || "Failed to resend OTP",
       });
-      setMsg(
-        <span className="text-red-500">{error?.response?.data?.error}</span>,
-      );
-    } finally {
-      setCount(60); // Reset timer after clicking resend
     }
   };
 
@@ -201,7 +171,7 @@ export default function StudentPhoneVerification() {
         {/* Top Navbar */}
         <div className="relative w-full flex items-center justify-center mb-10">
           <button 
-            onClick={() => navigate("/register/student")}
+            onClick={() => navigate("/register/guardian")}
             className="absolute left-0 p-3 bg-[#F7EFEF] hover:bg-gray-100 rounded-2xl transition-all active:scale-90"
           >
             <ChevronLeftIcon className="h-5 w-5 text-[#09314F] stroke-[2.5]" />
@@ -222,7 +192,7 @@ export default function StudentPhoneVerification() {
             </h1>
             <p className="text-[#888888] font-medium leading-relaxed">
               We've sent an OTP to <br/>
-              <span className="text-[#09314F] font-bold">Student {tel}</span>
+              <span className="text-[#09314F] font-bold">Guardian {tel}</span>
             </p>
           </div>
 
