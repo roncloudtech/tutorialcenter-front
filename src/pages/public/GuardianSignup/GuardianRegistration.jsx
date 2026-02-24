@@ -78,10 +78,11 @@ export const GuardianRegistration = () => {
         }));
 
         setTimeout(() => {
-          if (payload.tel) {
+        if (payload.tel) {
             navigate(`/register/guardian/phone/verify?tel=${payload.tel}`);
           } else {
-            navigate(`/register/guardian/email/verify?email=${encodeURIComponent(payload.email)}`);
+            // navigate(`/register/guardian/email/verify?email=${encodeURIComponent(payload.email)}`);
+            setToast({ type: "success", message: "Check your email for verification instructions." });
           }
         }, 2000);
       }

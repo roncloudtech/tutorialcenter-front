@@ -5,7 +5,9 @@ import TC_logo from "../../../assets/images/tutorial_logo.png";
 import signup_img from "../../../assets/images/student_sign_up.jpg";
 import { dropdownTheme } from "../../../utils/dropdownTheme";
 import { 
-  ChevronLeftIcon
+  ChevronLeftIcon,
+  CheckIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 
 export const StudentSubjectSelection = () => {
