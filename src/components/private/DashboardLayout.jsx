@@ -39,7 +39,7 @@ export default function DashboardLayout({ children }) {
           className={`
             transition-all duration-300 p-6
             ${leftCollapsed ? "ml-20" : "ml-64"}
-            ${rightCollapsed ? "mr-16" : "mr-80"}
+            ${rightCollapsed ? "mr-1" : "mr-80"}
           `}
         >
           <h1 className="text-xl font-semibold mb-6 dark:text-white">
