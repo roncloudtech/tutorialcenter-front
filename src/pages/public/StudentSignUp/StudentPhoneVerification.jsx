@@ -196,10 +196,10 @@ export default function StudentPhoneVerification() {
       )}
 
       {/* LEFT SIDE: Content Area */}
-      <div className="w-full md:w-1/2 h-full bg-white flex flex-col px-6 py-10 lg:px-[100px] lg:y-[60px] order-2 md:order-1 overflow-y-auto">
+      <div className="w-full md:w-1/2 h-full bg-white flex flex-col px-6 py-11 lg:px-[100px] lg:y-[60px] order-2 md:order-1 overflow-y-auto">
         
         {/* Top Navbar */}
-        <div className="relative w-full flex items-center justify-center mb-10">
+        <div className="relative w-full flex items-center justify-center mb-3">
           <button 
             onClick={() => navigate("/register/student")}
             className="absolute left-0 p-3 bg-[#F7EFEF] hover:bg-gray-100 rounded-2xl transition-all active:scale-90"
@@ -217,12 +217,13 @@ export default function StudentPhoneVerification() {
         {/* Center Contents */}
         <div className="w-full max-w-[480px] mx-auto my-auto text-center">
           <div className="mb-10">
-            <h1 className="text-3xl md:text-4xl font-extrabold text-[#09314F] mb-3">
-              Phone Verification
+            <h1 className="text-3xl md:text-4xl font-[700] text-[#383b3d] mb-3">
+              OTP Verification
             </h1>
             <p className="text-[#888888] font-medium leading-relaxed">
               We've sent an OTP to <br/>
               <span className="text-[#09314F] font-bold">Student {tel}</span>
+              fill it below <br/>
             </p>
           </div>
 
@@ -248,25 +249,12 @@ export default function StudentPhoneVerification() {
             </div>
 
             {msg && <p className="text-sm text-red-500 font-bold animate-pulse">{msg}</p>}
-
             <div className="space-y-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className={`w-full py-5 rounded-[20px] font-bold text-lg text-white shadow-xl transition-all active:scale-[0.98] ${
-                  loading
-                    ? "bg-gray-400 opacity-70 cursor-not-allowed"
-                    : "bg-gradient-to-r from-[#09314F] to-[#E83831] hover:shadow-[#E8383155] hover:-translate-y-0.5"
-                }`}
-              >
-                {loading ? "Verifying..." : "Verify Phone Number"}
-              </button>
-
               <div className="py-2">
                 <p className="text-sm font-bold text-gray-400">
-                  Didn't receive the code?{" "}
+                  If you didn’t get verification code yet. Resend code in{" "}
                   {count > 0 ? (
-                    <span className="text-[#E83831]">Resend in {count}s</span>
+                    <span className="text-[#BB9E7F]">{count}s</span>
                   ) : (
                     <button
                       type="button"
@@ -278,15 +266,20 @@ export default function StudentPhoneVerification() {
                   )}
                 </p>
               </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className={`w-full py-5 rounded-[20px] font-bold text-lg text-white shadow-xl transition-all active:scale-[0.98] ${
+                  loading
+                    ? "bg-gray-400 opacity-70 cursor-not-allowed"
+                    : "bg-gradient-to-r from-[#09314F] to-[#E83831] hover:shadow-[#E8383155] hover:-translate-y-0.5"
+                }`}
+              >
+                {loading ? "Verifying..." : "Verify Phone Number"}
+              </button>
             </div>
           </form>
-
-          {/* Testing Hint */}
-          <div className="mt-12 p-4 bg-[#F7EFEF] rounded-2xl inline-block border border-dashed border-gray-300">
-             <p className="text-xs font-bold text-gray-500">
-               DEVELOPER HINT: Use <span className="text-[#E83831]">123456</span> for testing
-             </p>
-          </div>
         </div>
       </div>
 

@@ -23,6 +23,11 @@ export default function GuardianPhoneVerification() {
     num6: "",
   });
   
+  useEffect(() =>{
+    if(!tel){
+      navigate("/register/guardian");
+    }
+  }, [tel, navigate]);
   const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
 
   const num1 = useRef(null);
@@ -193,6 +198,7 @@ export default function GuardianPhoneVerification() {
             <p className="text-[#888888] font-medium leading-relaxed">
               We've sent an OTP to <br/>
               <span className="text-[#09314F] font-bold">Guardian {tel}</span>
+              fill it below <br/>
             </p>
           </div>
 

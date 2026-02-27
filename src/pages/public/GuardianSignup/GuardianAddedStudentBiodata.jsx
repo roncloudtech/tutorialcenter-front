@@ -445,7 +445,7 @@ export default function GuardianAddedStudentBiodata() {
                         <MapIcon className={getInputStyles(index, "address").icon} />
                         <textarea
                           rows="1"
-                         value={student.address || ""} 
+                         value={student.address || ""}  
                           onFocus={() => setFocusedField(`${index}_address`)}
                           onBlur={() => setFocusedField(null)}
                           onChange={(e) => handleChange(index, "address", e.target.value)}

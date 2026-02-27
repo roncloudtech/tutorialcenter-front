@@ -7,7 +7,8 @@ import {
   EyeIcon, 
   EyeSlashIcon, 
   ChevronLeftIcon,
-  CheckIcon
+  CheckIcon,
+  EnvelopeIcon
 } from "@heroicons/react/24/outline";
 
 export default function StudentRegistration() {
@@ -91,15 +92,15 @@ export default function StudentRegistration() {
   };
 
   return (
-    <div className="w-full min-h-screen md:h-screen flex flex-col md:flex-row font-sans overflow-x-hidden">
+  <div className="w-full min-h-screen md:h-screen flex flex-col md:flex-row font-sans overflow-x-hidden">
       {/* Toast Notification */}
       {toast && (
-        <div 
-          className={`fixed top-5 right-5 z-50 px-6 py-4 rounded-2xl shadow-2xl text-white transition-all duration-500 transform translate-y-0 ${
-            toast.type === "success" ? "bg-[#76D287]" : "bg-[#E83831]"
+        <div
+          className={`fixed top-5 right-5 z-50 px-6 py-3 rounded-xl shadow-2xl text-white transition-all duration-300 transform translate-y-0 scale-100 ${
+            toast.type === "success" ? "bg-green-600" : "bg-red-600"
           } animate-in fade-in slide-in-from-top-4`}
         >
-          <div className="flex items-center gap-3">
+           <div className="flex items-center gap-3">
              <div className="p-1 bg-white/20 rounded-full">
                {toast.type === "success" ? "✓" : "✕"}
              </div>
@@ -108,44 +109,42 @@ export default function StudentRegistration() {
         </div>
       )}
 
-      {/* LEFT SIDE: Form Area */}
-      <div className="w-full md:w-1/2 h-full bg-white flex flex-col px-6 py-10 lg:px-[100px] lg:py-[60px] order-2 md:order-1 overflow-y-auto">
-        
-        {/* Top Navbar */}
-        <div className="relative w-full flex items-center justify-center mb-10">
-          <button 
+      {/* LEFT SIDE: Content Area */}
+      <div className="w-full md:w-1/2 h-full bg-[#F8F9FA] flex flex-col items-center py-8 px-6 lg:px-20 overflow-y-auto order-2 md:order-1">
+        {/* Top Navigation */}
+        <div className="w-full relative flex items-center mb-10">
+          <button
             onClick={() => navigate("/register")}
-            className="absolute left-0 p-3 bg-[#F7EFEF] hover:bg-gray-100 rounded-2xl transition-all active:scale-90"
+            className="p-3 hover:bg-white rounded-full transition-all duration-200 shadow-sm"
           >
-            <ChevronLeftIcon className="h-5 w-5 text-[#09314F] stroke-[2.5]" />
+            <ChevronLeftIcon className="h-6 w-6 text-gray-700" />
           </button>
-          
-          <img 
-            src={TC_logo} 
-            alt="Tutorial Center Logo" 
-            className="h-[60px] md:h-[70px] drop-shadow-sm" 
-          />
         </div>
 
-        {/* Center Contents */}
-        <div className="w-full max-w-[480px] mx-auto">
-          <div className="text-center mb-10">
-            <h1 className="text-3xl md:text-4xl font-extrabold text-[#09314F] mb-3">
-              Student Registration
-            </h1>
-            <p className="text-[#888888] font-medium italic">
-              Register With E-Mail Address Or Phone Number
-            </p>
+        {/* Logo and Headings */}
+        <div className="flex flex-col items-center mb-8">
+          <img
+            src={TC_logo}
+            alt="Tutorial Center Logo"
+            className="h-20 w-auto mb-6 object-contain"
+          />
+          <h1 className="text-3xl font-extrabold text-[#333333] mb-2">Sign Up</h1>
+          <p className="text-[#666666] font-medium mb-1">Create an account to get started with us.</p>
+          <div className="w-full max-w-sm mt-8 border-b-2 border-[#09314F] pb-2 flex justify-center">
+             <span className="text-xl font-bold text-[#09314F]">Student</span>
           </div>
+        </div>
 
+        {/* Registration Card */}
+        <div className="w-full max-w-sm bg-white rounded-[24px] shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] p-8 border border-gray-50 mb-10">
           <form onSubmit={handleSubmit} className="space-y-6">
-            
-            {/* Email/Phone Input */}
+            {/* Entry: Email / Phone */}
             <div className="space-y-2">
-              <label className="text-sm font-montserrat text-[#444444] px-1 text-left block">
-                Email Address Or Phone Number
+              <label className="text-sm font-bold text-[#444444] px-1 text-left block">
+                Email / Phone Number
               </label>
-              <div className={`flex items-center bg-[#F7EFEF] rounded-2xl px-5 py-4 border-2 transition-all ${errors.entry ? "border-red-400" : "border-transparent focus-within:border-[#09314F]"}`}>
+              <div className={`flex items-center bg-[#F7EFEF] rounded-2xl px-4 py-4 border-2 transition-all ${errors.entry ? "border-red-400" : "border-transparent focus-within:border-[#09314F]"}`}>
+                <EnvelopeIcon className="h-5 w-5 text-gray-600 mr-3" />
                 <input
                   name="entry"
                   type="text"
@@ -155,15 +154,15 @@ export default function StudentRegistration() {
                   className="bg-transparent w-full outline-none text-[#333333] font-semibold placeholder:text-gray-400"
                 />
               </div>
-              {errors.entry && <p className="text-xs text-red-500 font-montserrat px-1">{errors.entry}</p>}
+              {errors.entry && <p className="text-xs text-red-500 font-bold px-1">{errors.entry}</p>}
             </div>
 
             {/* Password */}
             <div className="space-y-2">
-              <label className="text-sm font-montserrat text-[#444444] px-1 text-left block">
+              <label className="text-sm font-bold text-[#444444] px-1 text-left block">
                 Password
               </label>
-              <div className={`flex items-center bg-[#F7EFEF] rounded-2xl px-5 py-4 border-2 transition-all ${errors.password ? "border-red-400" : "border-transparent focus-within:border-[#09314F]"}`}>
+              <div className={`flex items-center bg-[#F7EFEF] rounded-2xl px-4 py-4 border-2 transition-all ${errors.password ? "border-red-400" : "border-transparent focus-within:border-[#09314F]"}`}>
                 <div className="relative w-full flex items-center">
                    <button 
                     type="button"
@@ -193,7 +192,7 @@ export default function StudentRegistration() {
               <label className="text-sm font-bold text-[#444444] px-1 text-left block">
                 Confirm Password
               </label>
-              <div className={`flex items-center bg-[#F7EFEF] rounded-2xl px-5 py-4 border-2 transition-all ${errors.confirmPassword ? "border-red-400" : "border-transparent focus-within:border-[#09314F]"}`}>
+              <div className={`flex items-center bg-[#F7EFEF] rounded-2xl px-4 py-4 border-2 transition-all ${errors.confirmPassword ? "border-red-400" : "border-transparent focus-within:border-[#09314F]"}`}>
                 <div className="relative w-full flex items-center">
                   <button 
                     type="button"
@@ -211,11 +210,11 @@ export default function StudentRegistration() {
                     type={showConfirmPassword ? "text" : "password"}
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="bg-transparent w-full outline-none text-[#333333] font-sans"
+                    className="bg-transparent w-full outline-none text-[#333333] font-semibold"
                   />
                 </div>
               </div>
-              {errors.confirmPassword && <p className="text-xs text-red-500 font-montserrat px-1">{errors.confirmPassword}</p>}
+              {errors.confirmPassword && <p className="text-xs text-red-500 font-bold px-1">{errors.confirmPassword}</p>}
             </div>
 
             {/* Remember Me */}
@@ -230,7 +229,7 @@ export default function StudentRegistration() {
                 } cursor-pointer`}
               >
                 {formData.rememberMe && (
-                  <CheckIcon className="h-4 w-6 text-[#09314F]" />
+                  <CheckIcon className="h-4 w-4 text-[#09314F]" />
                 )}
               </button>
               <label className="text-sm font-bold text-[#555555] cursor-pointer select-none">
@@ -254,21 +253,21 @@ export default function StudentRegistration() {
                   Processing...
                 </div>
               ) : (
-                "Register"
+                "Sign Up"
               )}
             </button>
           </form>
 
           {/* Social Sign Up Divider */}
           <div className="relative flex items-center justify-center my-8">
-            <div className="border-t border-gray-200 w-full"></div>
+            <div className="border-t border-gray-300 w-full"></div>
             <span className="bg-white px-4 text-xs font-bold text-[#999999] absolute">Or continue with</span>
           </div>
 
           {/* Google Button */}
-          <button className="w-full py-4 border-2 border-[#EEEEEE] rounded-[20px] flex items-center justify-center gap-3 hover:bg-gray-50 transition-colors shadow-sm active:scale-[0.98]">
+          <button className="w-full py-4 border-2 border-[#EEEEEE] rounded-[20px] flex items-center justify-center gap-3 hover:bg-gray-50 transition-colors shadow-sm">
              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="h-5 w-5" />
-             <span className="font-bold text-[#555555]">Sign up with Google</span>
+             <span className="font-bold text-[#555555]">Sign up with google</span>
           </button>
         </div>
       </div>
@@ -290,4 +289,4 @@ export default function StudentRegistration() {
       </div>
     </div>
   );
-}
+};

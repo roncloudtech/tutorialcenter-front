@@ -105,9 +105,14 @@ export const GuardianRegistration = () => {
         <div
           className={`fixed top-5 right-5 z-50 px-6 py-3 rounded-xl shadow-2xl text-white transition-all duration-300 transform translate-y-0 scale-100 ${
             toast.type === "success" ? "bg-green-600" : "bg-red-600"
-          }`}
+          } animate-in fade-in slide-in-from-top-4`}
         >
-          {toast.message}
+           <div className="flex items-center gap-3">
+             <div className="p-1 bg-white/20 rounded-full">
+               {toast.type === "success" ? "✓" : "✕"}
+             </div>
+             <p className="font-bold">{toast.message}</p>
+          </div>
         </div>
       )}
 
