@@ -151,9 +151,8 @@ export const StudentTrainingPayment = () => {
 
       // Cleanup
       localStorage.removeItem("studentEmail");
-      localStorage.removeItem("studentdata");
       localStorage.removeItem("studentTel");
-      navigate("/login");
+      navigate("/register/student/training/payment/success");
     } catch (err) {
       console.error("Unexpected error during enrollment/payment:", err);
       alert("An unexpected error occurred. Please contact support.");

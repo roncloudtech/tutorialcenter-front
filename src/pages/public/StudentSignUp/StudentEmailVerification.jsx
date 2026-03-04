@@ -149,10 +149,10 @@ export default function StudentEmailVerification() {
                     </p>
                     <p className="text-center text-sm text-red-500">{msg}</p>
                     <p className="text-sm text-gray-500 mt-2">
-                      Didn't receive the code?{" "}
+                      Didn't receive the email?{" "}
                       {count > 0 ? (
                         <span className="font-medium text-gray-300">
-                          Resend in {count}s
+                          Resend button active in {count}s
                         </span>
                       ) : (
                         <button
@@ -160,7 +160,7 @@ export default function StudentEmailVerification() {
                           onClick={handleResend}
                           className="text-blue-600 hover:underline font-medium"
                         >
-                          Resend OTP
+                          Resend Email
                         </button>
                       )}
                     </p>

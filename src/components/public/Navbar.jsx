@@ -6,9 +6,9 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 const navigation = [
   { path: "/", name: "Home" },
   { path: "/training", name: "Training / Tuition" },
-  { path: "/about", name: "About Us" },
+  { path: "/blog", name: "Blog" },
   { path: "/contact", name: "Contact Us" },
-  { path: "/blog", name: "News / Blog" },
+  { path: "/about", name: "About Us" },
 ];
 export default function Navbar() {
   
