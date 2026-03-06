@@ -328,9 +328,9 @@ const Career = () => {
 
       {/* Right Side: Image */}
       <div className="w-full md:w-1/2 flex justify-end">
-        <div className="w-full max-w-[500px] h-[400px] md:h-[500px] rounded-[50px] overflow-hidden shadow-2xl border-[10px] border-white">
+        <div className="w-full max-w-[500px] h-[400px] md:h-[500px] rounded-[50px] overflow-hidden shadow-2xl border-[2px] border-white">
           <img 
-            src="YOUR_TROPHY_IMAGE_PATH" 
+            src={handCup} 
             alt="Administration Success" 
             className="w-full h-full object-cover" 
           />
