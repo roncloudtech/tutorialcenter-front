@@ -10,11 +10,15 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
+// Defined outside the component so it's a stable reference and won't
+// cause the init useEffect to re-run on every render.
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
+
 export const StudentSubjectSelection = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
 
-  const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
+
 
   const [selectedCourses, setSelectedCourses] = useState([]);
   const [subjectsByCourse, setSubjectsByCourse] = useState({});
@@ -33,8 +37,12 @@ export const StudentSubjectSelection = () => {
     const init = async () => {
       try {
         const studentData = JSON.parse(localStorage.getItem("studentdata"));
+        console.log("StudentData from localStorage.getItem", studentData);
         const storedTraining = studentData?.selectedTraining;
         const department = studentData?.data?.department;
+
+        console.log("Selected Training IDs:", storedTraining)
+        console.log("Department:", department)
 
         if (!storedTraining?.length || !department) {
           navigate("/register/student/training/selection");
@@ -42,30 +50,44 @@ export const StudentSubjectSelection = () => {
         }
 
         const courseRes = await axios.get(`${API_BASE_URL}/api/courses`);
-        const allCourses = courseRes.data.courses || [];
-        const activeCourses = allCourses.filter((c) => storedTraining.includes(c.id));
+        console.log("Raw course response:", courseRes.data);
 
+        const allCourses = courseRes.data.data || [];
+        console.log(" All courses:", allCourses);
+        const activeCourses = allCourses.filter((c) => storedTraining.includes(c.id));
+        console.log(" Active courses (filtered):", activeCourses);
         setSelectedCourses(activeCourses);
 
         const subjectMap = {};
         const selectionMap = {};
 
         for (const course of activeCourses) {
+          console.log(`🔍 Fetching subjects for course ${course.id} (${course.title}) - department: ${department}`);
           const res = await axios.get(
-            `${API_BASE_URL}/api/courses/${course.id}/subjects/${department}`
+            `${API_BASE_URL}/courses/${course.id}/subjects/${department}`
           );
+          console.log(`📖 Subjects response for ${course.title}:`, res.data);
           subjectMap[course.id] = res.data.subjects || [];
           selectionMap[course.id] = [];
+          console.log(`📝 Subjects for ${course.title}:`, subjectMap[course.id]);
         }
+
+         console.log("🗺️ Final subjectMap:", subjectMap);
+        console.log("🗺️ Final selectionMap:", selectionMap);
 
         setSubjectsByCourse(subjectMap);
         setSelectedSubjects(selectionMap);
       } catch (err) {
         console.error("Initialization failed:", err);
+        // console.error("💥 Initialization failed:", err);
+        console.error("💥 Error response:", err.response?.data);
+        console.error("💥 Error status:", err.response?.status);
       }
     };
     init();
-  }, [navigate, API_BASE_URL]);
+  // API_BASE_URL is a module-level constant so it's excluded from deps safely.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -77,6 +99,13 @@ export const StudentSubjectSelection = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Auto-dismiss toast after 3 seconds
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => setToast(null), 3000);
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   /* ================= SUBJECT TOGGLE ================= */
   const toggleSubject = (courseId, subjectId) => {
@@ -154,8 +183,8 @@ export const StudentSubjectSelection = () => {
           </p>
         </div>
 
-        {/* Table Container */}
-        <div className="w-full max-w-[500px] bg-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-gray-100 mb-8 relative z-10">
+        {/* Table Container — ref placed here so click-outside works for ALL course dropdowns */}
+        <div ref={dropdownRef} className="w-full max-w-[500px] bg-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-gray-100 mb-8 relative z-10">
           {/* Table Header */}
           <div className="grid grid-cols-[120px_minmax(0,1fr)_80px] bg-[#09314F] text-white px-6 py-4 rounded-t-[32px]">
             <span className="text-sm font-black uppercase tracking-widest px-2">Examination</span>
@@ -200,7 +229,6 @@ export const StudentSubjectSelection = () => {
                     {/* Dropdown Overlay */}
                     {isOpen && (
                       <div 
-                        ref={dropdownRef}
                         className={`${dropdownTheme.overlay.container} w-[280px]`}
                       >
                         <p className={dropdownTheme.overlay.header}>

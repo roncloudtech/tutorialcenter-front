@@ -4,6 +4,10 @@ import ReturnArrow from "../../../assets/svg/return arrow.svg";
 import otp_img_student from "../../../assets/images/otpStudentpic.jpg";
 import axios from "axios";
 
+// Module-level constant — avoids causing useEffect to re-run on every render
+const API_BASE_URL =
+  process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
+
 export default function StudentTrainingSelection() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -11,23 +15,29 @@ export default function StudentTrainingSelection() {
   const [examError, setExamError] = useState(false);
   const [selectedTraining, setSelectedTraining] = useState([]);
 
-  const API_BASE_URL =
-    process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
+
 
   /* ================= FETCH COURSES ================= */
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/courses`);
-        setCourses(response?.data?.courses || []);
-        console.table(response?.data?.courses);
+        // Log the full raw response to verify the shape coming from the backend
+        console.log("[TrainingSelection] raw response.data:", response?.data);
+        const fetched = response?.data?.data || [];
+        if (fetched.length === 0) {
+          console.warn("[TrainingSelection] No courses resolved — check that response.data.courses exists and is non-empty.");
+        }
+        setCourses(fetched);
+        console.table(fetched);
       } catch (error) {
         console.error("Failed to fetch courses", error);
       }
     };
 
     fetchCourses();
-  }, [API_BASE_URL]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /* ================= TOGGLE SELECTION ================= */
   const toggleTraining = (courseId) => {
