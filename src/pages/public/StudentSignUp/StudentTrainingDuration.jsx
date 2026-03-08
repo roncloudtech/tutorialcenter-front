@@ -19,7 +19,7 @@ export const StudentTrainingDuration = () => {
   const DURATION_OPTIONS = [
     { key: "monthly", label: "Monthly", months: 1 },
     { key: "quarterly", label: "Quarterly", months: 3 },
-    { key: "semi-annual", label: "Semi-Annual", months: 6 },
+    { key: "semi_annual", label: "Semi-Annual", months: 6 },
     { key: "annual", label: "Annual", months: 12 },
   ];
 

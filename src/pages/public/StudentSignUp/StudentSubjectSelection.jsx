@@ -95,13 +95,13 @@ export const StudentSubjectSelection = () => {
         }
       }
 
-      console.log("\n🗺️ Final subjects map:", subjectMap);
+      console.log("\n Final subjects map:", subjectMap);
       
       setSubjectsByCourse(subjectMap);
       setSelectedSubjects(selectionMap);
 
     } catch (err) {
-      console.error("💥 Init failed:", err);
+      console.error("Init failed:", err);
     }
   };
   
