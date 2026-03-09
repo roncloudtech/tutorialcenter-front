@@ -134,7 +134,7 @@ export default function StudentPhoneVerification() {
       );
 
       if (response.status === 200) {
-        setToast({ type: "success", message: response.data.message });
+        setToast({ type: "success", message: response?.data?.message || "Phone number verified successfully!" });
         setMsg(<span className="text-green-500">{response.data.message}</span>);
         localStorage.setItem("studentTel", tel); // Store phone number for later steps
         setTimeout(() => {
@@ -142,13 +142,24 @@ export default function StudentPhoneVerification() {
         }, 5000);
       }
     } catch (error) {
-      setToast({
-        type: "error",
-        message: error?.response?.data?.message || "Verification failed",
-      });
-      setMsg(
-        <span className="text-red-500">{error?.response?.data?.error}</span>,
-      );
+      console.error("Verification error:", error.response?.data || error);
+
+      const backendMessage = error?.response?.data?.message || "";
+      const backendErrorField = error?.response?.data?.error || ""; // Some endpoints use .error directly
+      const backendErrors = error.response?.data?.errors || {};
+
+      if (Object.keys(backendErrors).length > 0) {
+        const firstErrorKey = Object.keys(backendErrors)[0];
+        const firstErrorMessage = backendErrors[firstErrorKey][0];
+        const finalMsg = backendMessage || firstErrorMessage || "Validation failed.";
+        setToast({ type: "error", message: finalMsg });
+        setMsg(<span className="text-red-500">{finalMsg}</span>);
+        setErrors(backendErrors);
+      } else {
+        const finalMsg = backendMessage || backendErrorField || "Verification failed. Please try again.";
+        setToast({ type: "error", message: finalMsg });
+        setMsg(<span className="text-red-500">{finalMsg}</span>);
+      }
       console.log(error?.response);
     } finally {
       setLoading(false);
@@ -162,16 +173,16 @@ export default function StudentPhoneVerification() {
         `${API_BASE_URL}/api/students/resend-phone-otp`,
         { tel: tel },
       );
-      setToast({ type: "success", message: response.data.message });
-      setMsg(<span className="text-green-500">{response.data.message}</span>);
+      setToast({ type: "success", message: response?.data?.message || "OTP resent successfully." });
+      setMsg(<span className="text-green-500">{response?.data?.message || "OTP resent successfully."}</span>);
     } catch (error) {
-      setToast({
-        type: "error",
-        message: error?.response?.data?.message || "Failed to resend OTP",
-      });
-      setMsg(
-        <span className="text-red-500">{error?.response?.data?.error}</span>,
-      );
+      console.error("Resend OTP error:", error.response?.data || error);
+      const backendMessage = error?.response?.data?.message || "";
+      const backendErrorField = error?.response?.data?.error || "";
+      const finalMsg = backendMessage || backendErrorField || "Failed to resend OTP. Please try again.";
+      
+      setToast({ type: "error", message: finalMsg });
+      setMsg(<span className="text-red-500">{finalMsg}</span>);
     } finally {
       setCount(60); // Reset timer after clicking resend
     }

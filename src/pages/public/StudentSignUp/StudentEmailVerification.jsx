@@ -52,14 +52,22 @@ export default function StudentEmailVerification() {
         }, 3000);
       }
     } catch (error) {
-      setToast({
-        type: "error",
-        message: error?.response?.data?.message || "Verification failed",
-      });
-      setMsg(
-        <span className="text-red-500">{error?.response?.data?.error}</span>,
-      );
-      console.log(error?.response);
+      console.error("Verification error:", error.response?.data || error);
+      const backendMessage = error?.response?.data?.message || "";
+      const backendErrorField = error?.response?.data?.error || "";
+      const backendErrors = error.response?.data?.errors || {};
+
+      if (Object.keys(backendErrors).length > 0) {
+        const firstErrorKey = Object.keys(backendErrors)[0];
+        const firstErrorMessage = backendErrors[firstErrorKey][0];
+        const finalMsg = backendMessage || firstErrorMessage || "Validation failed.";
+        setToast({ type: "error", message: finalMsg });
+        setMsg(<span className="text-red-500">{finalMsg}</span>);
+      } else {
+        const finalMsg = backendMessage || backendErrorField || "Verification failed. Please try again.";
+        setToast({ type: "error", message: finalMsg });
+        setMsg(<span className="text-red-500">{finalMsg}</span>);
+      }
     } finally {
       setLoading(false);
     }
@@ -72,16 +80,16 @@ export default function StudentEmailVerification() {
         `${API_BASE_URL}/api/students/resend-email-verification`,
         { email: email },
       );
-      setToast({ type: "success", message: response.data.message });
-      setMsg(<span className="text-green-500">{response.data.message}</span>);
+      setToast({ type: "success", message: response?.data?.message || "Email verification resent successfully." });
+      setMsg(<span className="text-green-500">{response?.data?.message || "Email verification resent successfully."}</span>);
     } catch (error) {
-      setToast({
-        type: "error",
-        message: error?.response?.data?.message || "Failed to resend OTP",
-      });
-      setMsg(
-        <span className="text-red-500">{error?.response?.data?.error}</span>,
-      );
+      console.error("Resend email error:", error.response?.data || error);
+      const backendMessage = error?.response?.data?.message || "";
+      const backendErrorField = error?.response?.data?.error || "";
+      const finalMsg = backendMessage || backendErrorField || "Failed to resend verification email. Please try again.";
+      
+      setToast({ type: "error", message: finalMsg });
+      setMsg(<span className="text-red-500">{finalMsg}</span>);
     } finally {
       setCount(60); // Reset timer after clicking resend
     }

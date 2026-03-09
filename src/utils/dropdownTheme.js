@@ -28,6 +28,9 @@ export const dropdownTheme = {
   // Custom arrow for selects
   chevron: "h-4 w-4 text-gray-400 -rotate-90 pointer-events-none ml-2",
 
+  // Option items inside native selects
+  option: "bg-[#F7EFEF] text-[#09314F] font-medium",
+
   /* --- Specialized Table Overlay Dropdown Styles --- */
   overlay: {
     // The floating card

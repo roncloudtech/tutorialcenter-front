@@ -7,7 +7,7 @@ import {
   EyeIcon, 
   EyeSlashIcon, 
   ChevronLeftIcon,
-  CheckIcon,
+  // CheckIcon,
   EnvelopeIcon
 } from "@heroicons/react/24/outline";
 
@@ -18,6 +18,7 @@ export default function StudentRegistration() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     entry: "",
     password: "",
@@ -48,10 +49,17 @@ export default function StudentRegistration() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+    
+    // Open the confirmation modal instead of submitting immediately
+    setShowModal(true);
+  };
 
+  const confirmRegistration = async () => {
+    setShowModal(false); // Close modal when proceeding
+    
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isEmail = emailRegex.test(formData.entry);
 
@@ -81,11 +89,19 @@ export default function StudentRegistration() {
         }, 2000);
       }
     } catch (error) {
-      setToast({
-        type: "error",
-        message: error?.response?.data?.message || "Registration failed.",
-      });
-      setErrors(error?.response?.data?.errors || {});
+      console.error("Submit error:", error.response?.data || error);
+
+      const backendMessage = error?.response?.data?.message || "";
+      const backendErrors = error.response?.data?.errors || {};
+
+      if (Object.keys(backendErrors).length > 0) {
+        const firstErrorKey = Object.keys(backendErrors)[0];
+        const firstErrorMessage = backendErrors[firstErrorKey][0];
+        setToast({ type: "error", message: backendMessage || firstErrorMessage || "Validation failed." });
+        setErrors(backendErrors);
+      } else {
+        setToast({ type: "error", message: backendMessage || "Registration failed. Please try again." });
+      }
     } finally {
       setLoading(false);
     }
@@ -136,7 +152,7 @@ export default function StudentRegistration() {
         </div>
 
         {/* Registration Card */}
-        <div className="w-full max-w-sm bg-white rounded-[24px] shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] p-8 border border-gray-50 mb-10">
+        <div className="w-full max-w-lg bg-white rounded-[24px] shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] p-8 border border-gray-50 mb-10">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Entry: Email / Phone */}
             <div className="space-y-2">
@@ -217,25 +233,6 @@ export default function StudentRegistration() {
               {errors.confirmPassword && <p className="text-xs text-red-500 font-bold px-1">{errors.confirmPassword}</p>}
             </div>
 
-            {/* Remember Me */}
-            <div className="flex items-center space-x-2 px-1 py-1">
-              <button
-                type="button"
-                onClick={() => setFormData({ ...formData, rememberMe: !formData.rememberMe })}
-                className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                  formData.rememberMe
-                    ? "bg-white border-[#09314F]"
-                    : "border-gray-300 hover:border-[#09314F]"
-                } cursor-pointer`}
-              >
-                {formData.rememberMe && (
-                  <CheckIcon className="h-4 w-4 text-[#09314F]" />
-                )}
-              </button>
-              <label className="text-sm font-bold text-[#555555] cursor-pointer select-none">
-                Remember me
-              </label>
-            </div>
 
             {/* Submit Button */}
             <button
@@ -287,6 +284,38 @@ export default function StudentRegistration() {
           </button>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-8 max-w-sm w-[90%] shadow-2xl animate-in zoom-in-95 duration-200">
+            <h2 className="text-2xl font-black text-[#09314F] mb-4 text-center">Confirm Detail</h2>
+            <p className="text-center text-[#555555] font-medium mb-6">
+              Please verify that this is correct:
+              <br />
+              <span className="block mt-3 text-lg font-bold text-[#3731e8] bg-[#F7EFEF] py-2 px-4 rounded-xl border border-red-50">
+                {formData.entry}
+              </span>
+            </p>
+            <div className="flex gap-4 w-full">
+              <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                className="flex-1 py-3 px-4 rounded-xl font-bold text-[#09314F] bg-[#F4F4F4] hover:bg-gray-200 active:scale-95 transition-all"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                onClick={confirmRegistration}
+                className="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-gradient-to-r from-[#09314F] to-[#E83831] hover:shadow-lg active:scale-95 transition-all"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

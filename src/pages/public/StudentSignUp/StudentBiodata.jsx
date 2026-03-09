@@ -25,6 +25,33 @@ export default function StudentBiodata() {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
 
+  // Custom dropdown states
+  const [isGenderOpen, setIsGenderOpen] = useState(false);
+  const [isDepartmentOpen, setIsDepartmentOpen] = useState(false);
+  const [isLocationOpen, setIsLocationOpen] = useState(false);
+
+  // Refs for click outside
+  const genderRef = useRef(null);
+  const departmentRef = useRef(null);
+  const locationRef = useRef(null);
+
+  // Click outside handler for dropdowns
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (genderRef.current && !genderRef.current.contains(event.target)) {
+        setIsGenderOpen(false);
+      }
+      if (departmentRef.current && !departmentRef.current.contains(event.target)) {
+        setIsDepartmentOpen(false);
+      }
+      if (locationRef.current && !locationRef.current.contains(event.target)) {
+        setIsLocationOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const [formData, setFormData] = useState({
     firstname: "",
     surname: "",
@@ -33,7 +60,8 @@ export default function StudentBiodata() {
     location: "",
     address: "",
     department: "",
-    display_picture: null,
+    profile_picture: null,
+    profile_picture_preview: null,
   });
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
@@ -55,7 +83,8 @@ export default function StudentBiodata() {
 
   // Auto-save biodata to localStorage whenever formData changes
   useEffect(() => {
-    localStorage.setItem("studentBiodata", JSON.stringify(formData));
+    const {profile_picture, profile_picture_preview, ...serializableData } = formData;
+    localStorage.setItem("studentBiodata", JSON.stringify(serializableData));
   }, [formData]);
 
   const handleChange = (e) => {
@@ -63,18 +92,15 @@ export default function StudentBiodata() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = ( e) => {
     const file = e.target.files[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
         setToast({ type: "error", message: "Please upload an image file." });
         return;
       }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, display_picture: reader.result }));
-      };
-      reader.readAsDataURL(file);
+      const previewUrl = URL.createObjectURL(file);
+      setFormData((prev) => ({ ...prev, profile_picture: file, profile_picture_preview: previewUrl}));
     }
   };
 
@@ -118,29 +144,54 @@ export default function StudentBiodata() {
     e.preventDefault();
     if (!validateForm()) return;
 
-    const payload = { ...formData };
-    if (email) payload.email = email;
-    else if (tel) payload.tel = tel;
+    const formDataToSend = new FormData();
+
+     formDataToSend.append('firstname', formData.firstname);
+  formDataToSend.append('surname', formData.surname);
+  formDataToSend.append('gender', formData.gender);
+  formDataToSend.append('date_of_birth', formData.date_of_birth);
+  formDataToSend.append('location', formData.location);
+  formDataToSend.append('address', formData.address || '');
+  formDataToSend.append('department', formData.department);
+
+    if (email) formDataToSend.append('email', email);
+    else if (tel) formDataToSend.append('tel', tel);
     else {
       setToast({ type: "error", message: "Session expired. Please restart registration." });
       setTimeout(() => navigate("/register"), 3000);
       return;
     }
 
+    if (formData.profile_picture) {
+    formDataToSend.append('profile_picture', formData.profile_picture);
+  }
+
     setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/students/biodata`, payload);
+      const response = await axios.post(`${API_BASE_URL}/api/students/biodata`, formDataToSend, { headers: { 'Content-Type': 'multipart/form-data' } });
       if (response.status === 200 || response.status === 201) {
-        setToast({ type: "success", message: "Biodata saved successfully!" });
+        setToast({ type: "success", message: response.data.message || "Biodata saved successfully!" });
         localStorage.setItem('studentdata', JSON.stringify({ data: response.data.student }));
         setTimeout(() => navigate('/register/student/training/selection'), 2000);
       }
     } catch (error) {
-      setToast({
-        type: "error",
-        message: error?.response?.data?.message || "Something went wrong.",
-      });
-      setErrors(error?.response?.data?.errors || {});
+      console.error("Submit error:", error.response?.data || error);
+
+      const backendMessage = error?.response?.data?.message || "";
+      const backendErrors = error.response?.data?.errors || {};
+
+      if (backendErrors){
+        const firstErrorKey = Object.keys(backendErrors)[0];
+        const firstErrorMessage = backendErrors[firstErrorKey][0];
+        setToast({type: "error", message: backendMessage || firstErrorMessage || "validation failed."});
+        setErrors(backendErrors);
+      }
+      else{
+        setToast({ type: "error", message: backendMessage || "Something went wrong. Please try again." });
+      }
+
+
+      // setErrors(error?.response?.data?.errors || {});
     } finally {
       setLoading(false);
     }
@@ -194,12 +245,12 @@ export default function StudentBiodata() {
             </div>
           </div>
           <p className="text-center text-[#888888] font-medium">
-            Filling in your student biometric data.
+            Filling in your student Biodata.
           </p>
         </div>
 
         {/* Card Container */}
-        <div className="w-full max-w-[480px] bg-white rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.04)] p-8 md:p-10 border border-gray-100 flex flex-col items-center">
+        <div className="w-full max-w-lg bg-white rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.04)] p-8 md:p-10 border border-gray-100 flex flex-col items-center">
           
           {/* Profile Upload */}
           <div className="flex flex-col items-center mb-10 w-full">
@@ -217,8 +268,8 @@ export default function StudentBiodata() {
               }`} style={{
                 boxShadow: isDragging ? "0 0 30px rgba(9, 49, 79, 0.6), 0 0 60px rgba(59, 130, 246, 0.4)" : "none"
               }} title="Click to upload photo or drag and drop">
-                {formData.display_picture ? (
-                  <img src={formData.display_picture} alt="Preview" className="w-full h-full object-cover" />
+                {formData.profile_picture_preview ? (
+                  <img src={formData.profile_picture_preview} alt="Preview" className="w-full h-full object-cover" />
                 ) : (
                   <div className="flex flex-col items-center text-[#888888]">
                     <CameraIcon className="w-8 h-8 mb-1" />
@@ -238,7 +289,7 @@ export default function StudentBiodata() {
               />
             </div>
             <p className="mt-4 text-xs font-bold text-[#888888]">
-              Display picture <span className="text-gray-300 font-normal">(optional)</span>
+              Profile picture <span className="text-gray-300 font-normal">(optional)</span>
             </p>
           </div>
 
@@ -256,7 +307,7 @@ export default function StudentBiodata() {
                     onChange={handleChange}
                     onFocus={() => setFocusedField("firstname")}
                     onBlur={() => setFocusedField(null)}
-                    placeholder="input first na..."
+                    placeholder="input first name"
                     className={getInputStyles("firstname").input}
                   />
                 </div>
@@ -275,7 +326,7 @@ export default function StudentBiodata() {
                     onChange={handleChange}
                     onFocus={() => setFocusedField("surname")}
                     onBlur={() => setFocusedField(null)}
-                    placeholder="input last na..."
+                    placeholder="input last name"
                     className={getInputStyles("surname").input}
                   />
                 </div>
@@ -305,43 +356,73 @@ export default function StudentBiodata() {
                 <label className="text-xs font-black text-[#555555] uppercase tracking-widest px-1">Gender</label>
                 <div className={getInputStyles("gender").container}>
                   <UserCircleIcon className={getInputStyles("gender").icon} />
-                  <select
-                    name="gender"
-                    value={formData.gender}
-                    onChange={handleChange}
-                    onFocus={() => setFocusedField("gender")}
-                    onBlur={() => setFocusedField(null)}
-                    className={`${getInputStyles("gender").input} ${dropdownTheme.select}`}
-                  >
-                    <option value="">select ge...</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="others">Others</option>
-                  </select>
-                  <ChevronLeftIcon className={dropdownTheme.chevron} />
+                  <div className="relative w-full flex items-center" ref={genderRef}>
+                    <div 
+                      className={`${getInputStyles("gender").input} ${dropdownTheme.select} pr-6 cursor-pointer capitalize`}
+                      onClick={() => setIsGenderOpen(!isGenderOpen)}
+                    >
+                      {formData.gender || "select gender"}
+                    </div>
+                    <ChevronLeftIcon className={`h-4 w-4 text-gray-400 absolute right-0 pointer-events-none transition-transform duration-300 ${isGenderOpen ? "rotate-90" : "-rotate-90"}`} />
+                    
+                    {/* Custom Dropdown List */}
+                    {isGenderOpen && (
+                      <div className={dropdownTheme.overlay.container}>
+                        <div className={dropdownTheme.overlay.header}>Select Gender</div>
+                        {["male", "female", "others"].map(option => (
+                          <div 
+                            key={option}
+                            className={dropdownTheme.overlay.item(formData.gender === option, false)}
+                            onClick={() => {
+                              setFormData(prev => ({ ...prev, gender: option }));
+                              setIsGenderOpen(false);
+                            }}
+                          >
+                            <span className="capitalize">{option}</span>
+                            {formData.gender === option && <span>✓</span>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 {errors.gender && <p className="text-xs text-red-500 font-bold px-1">{errors.gender}</p>}
               </div>
 
               {/* Department */}
               <div className="space-y-2">
-                <label className="text-xs font-black text-[#555555] uppercase tracking-widest px-1">Deparment</label>
+                <label className="text-xs font-black text-[#555555] uppercase tracking-widest px-1">Department</label>
                 <div className={getInputStyles("department").container}>
                   <AcademicCapIcon className={getInputStyles("department").icon} />
-                  <select
-                    name="department"
-                    value={formData.department}
-                    onChange={handleChange}
-                    onFocus={() => setFocusedField("department")}
-                    onBlur={() => setFocusedField(null)}
-                    className={`${getInputStyles("department").input} ${dropdownTheme.select}`}
-                  >
-                    <option value="">select dep...</option>
-                    <option value="art">Art</option>
-                    <option value="science">Science</option>
-                    <option value="commercial">Commercial</option>
-                  </select>
-                  <ChevronLeftIcon className={dropdownTheme.chevron} />
+                  <div className="relative w-full flex items-center" ref={departmentRef}>
+                    <div 
+                      className={`${getInputStyles("department").input} ${dropdownTheme.select} pr-6 cursor-pointer capitalize`}
+                      onClick={() => setIsDepartmentOpen(!isDepartmentOpen)}
+                    >
+                      {formData.department || "select department"}
+                    </div>
+                    <ChevronLeftIcon className={`h-4 w-4 text-gray-400 absolute right-0 pointer-events-none transition-transform duration-300 ${isDepartmentOpen ? "rotate-90" : "-rotate-90"}`} />
+                    
+                    {/* Custom Dropdown List */}
+                    {isDepartmentOpen && (
+                      <div className={dropdownTheme.overlay.container}>
+                        <div className={dropdownTheme.overlay.header}>Select Department</div>
+                        {["art", "science", "commercial"].map(option => (
+                          <div 
+                            key={option}
+                            className={dropdownTheme.overlay.item(formData.department === option, false)}
+                            onClick={() => {
+                              setFormData(prev => ({ ...prev, department: option }));
+                              setIsDepartmentOpen(false);
+                            }}
+                          >
+                            <span className="capitalize">{option}</span>
+                            {formData.department === option && <span>✓</span>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 {errors.department && <p className="text-xs text-red-500 font-bold px-1">{errors.department}</p>}
               </div>
@@ -351,22 +432,38 @@ export default function StudentBiodata() {
                 <label className="text-xs font-black text-[#555555] uppercase tracking-widest px-1">Location</label>
                 <div className={getInputStyles("location").container}>
                   <MapPinIcon className={getInputStyles("location").icon} />
-                  <input
-                    name="location"
-                    list="nigeria-states"
-                    value={formData.location}
-                    onChange={handleChange}
-                    onFocus={() => setFocusedField("location")}
-                    onBlur={() => setFocusedField(null)}
-                    placeholder="input locat..."
-                    className={getInputStyles("location").input}
-                  />
-                  <ChevronLeftIcon className={dropdownTheme.chevron} />
-                  <datalist id="nigeria-states">
-                    {location.map((loc) => (
-                      <option key={loc.code} value={`${loc.state}, ${loc.country}`} />
-                    ))}
-                  </datalist>
+                  <div className="relative w-full flex items-center" ref={locationRef}>
+                    <div 
+                      className={`${getInputStyles("location").input} ${dropdownTheme.select} pr-6 cursor-pointer capitalize`}
+                      onClick={() => setIsLocationOpen(!isLocationOpen)}
+                    >
+                      {formData.location || "select location"}
+                    </div>
+                    <ChevronLeftIcon className={`h-4 w-4 text-gray-400 absolute right-0 pointer-events-none transition-transform duration-300 ${isLocationOpen ? "rotate-90" : "-rotate-90"}`} />
+                    
+                    {/* Custom Dropdown List */}
+                    {isLocationOpen && (
+                      <div className={`${dropdownTheme.overlay.container} w-full`}>
+                        <div className={dropdownTheme.overlay.header}>Select Location</div>
+                        {location.map(loc => {
+                          const optionValue = `${loc.state}, ${loc.country}`;
+                          return (
+                            <div 
+                              key={loc.code}
+                              className={dropdownTheme.overlay.item(formData.location === optionValue, false)}
+                              onClick={() => {
+                                setFormData(prev => ({ ...prev, location: optionValue }));
+                                setIsLocationOpen(false);
+                              }}
+                            >
+                              <span>{optionValue}</span>
+                              {formData.location === optionValue && <span>✓</span>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 {errors.location && <p className="text-xs text-red-500 font-bold px-1">{errors.location}</p>}
               </div>
