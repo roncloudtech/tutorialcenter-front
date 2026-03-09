@@ -38,6 +38,8 @@ const menuItems = [
 export default function Sidebar({ collapsed, setCollapsed, isOpen, onClose }) {
   const { theme, setTheme } = useTheme();
   const { student, logout } = useAuth();
+  const API_BASE_URL =
+    process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
 
   const fullName =
     student?.firstname && student?.surname
@@ -100,9 +102,9 @@ export default function Sidebar({ collapsed, setCollapsed, isOpen, onClose }) {
         {/* Avatar */}
         <div className="flex px-3 space-y-2 flex-wrap gap-3 items-center">
           <img
-            src={collapselogo}
+            src={student?.profile_picture !== null ? `${API_BASE_URL}/storage/${student?.profile_picture}` : collapselogo}
             alt="Avatar"
-            className="rounded-full shadow-lg h-10 w-10 object-cover border-4 border-yellow-400"
+            className="rounded-full shadow-lg h-10 w-10 object-cover border-2 border-yellow-400"
           />
           {!collapsed && (
             <div>
