@@ -49,16 +49,9 @@ export default function StudentRegistration() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-    
-    // Open the confirmation modal instead of submitting immediately
-    setShowModal(true);
-  };
-
-  const confirmRegistration = async () => {
-    setShowModal(false); // Close modal when proceeding
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isEmail = emailRegex.test(formData.entry);
@@ -78,15 +71,8 @@ export default function StudentRegistration() {
 
       if (response.status === 201) {
         setToast({ type: "success", message: response?.data?.message || "Registration Successful" });
-        
-        setTimeout(() => {
-          if (payload.tel) {
-            navigate(`/register/student/phone/verify?tel=${payload.tel}`);
-          } else {
-            // For now, assuming standard flow — update if email verification is needed
-             setToast({ type: "success", message: response?.data?.message || "Check email for verification" });
-          }
-        }, 2000);
+        // Instead of redirecting immediately, show the success modal.
+        setShowModal(true);
       }
     } catch (error) {
       console.error("Submit error:", error.response?.data || error);
@@ -105,6 +91,11 @@ export default function StudentRegistration() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const confirmRegistration = () => {
+    setShowModal(false);
+    window.location.reload();
   };
 
   return (
@@ -285,30 +276,23 @@ export default function StudentRegistration() {
         </div>
       </div>
 
-      {/* Confirmation Modal */}
+      {/* Success Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl p-8 max-w-sm w-[90%] shadow-2xl animate-in zoom-in-95 duration-200">
-            <h2 className="text-2xl font-black text-[#09314F] mb-4 text-center">Confirm Detail</h2>
+            <h2 className="text-2xl font-black text-[#09314F] mb-4 text-center">Registration Successful!</h2>
             <p className="text-center text-[#555555] font-medium mb-6">
-              Please verify that this is correct:
+              Your account has been created successfully.
               <br />
-              <span className="block mt-3 text-lg font-bold text-[#3731e8] bg-[#F7EFEF] py-2 px-4 rounded-xl border border-red-50">
-                {formData.entry}
+              <span className="block mt-3 text-sm font-medium text-gray-700">
+                Please check your email for further instructions.
               </span>
             </p>
-            <div className="flex gap-4 w-full">
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                className="flex-1 py-3 px-4 rounded-xl font-bold text-[#09314F] bg-[#F4F4F4] hover:bg-gray-200 active:scale-95 transition-all"
-              >
-                Edit
-              </button>
+            <div className="flex justify-center w-full">
               <button
                 type="button"
                 onClick={confirmRegistration}
-                className="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-gradient-to-r from-[#09314F] to-[#E83831] hover:shadow-lg active:scale-95 transition-all"
+                className="w-full py-3 px-4 rounded-xl font-bold text-white bg-gradient-to-r from-[#09314F] to-[#E83831] hover:shadow-lg active:scale-95 transition-all"
               >
                 Continue
               </button>

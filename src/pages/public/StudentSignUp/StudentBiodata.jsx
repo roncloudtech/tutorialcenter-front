@@ -28,7 +28,6 @@ export default function StudentBiodata() {
   // Custom dropdown states
   const [isGenderOpen, setIsGenderOpen] = useState(false);
   const [isDepartmentOpen, setIsDepartmentOpen] = useState(false);
-  const [isLocationOpen, setIsLocationOpen] = useState(false);
 
   // Refs for click outside
   const genderRef = useRef(null);
@@ -43,9 +42,6 @@ export default function StudentBiodata() {
       }
       if (departmentRef.current && !departmentRef.current.contains(event.target)) {
         setIsDepartmentOpen(false);
-      }
-      if (locationRef.current && !locationRef.current.contains(event.target)) {
-        setIsLocationOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -399,14 +395,14 @@ export default function StudentBiodata() {
                       className={`${getInputStyles("department").input} ${dropdownTheme.select} pr-6 cursor-pointer capitalize`}
                       onClick={() => setIsDepartmentOpen(!isDepartmentOpen)}
                     >
-                      {formData.department || "select department"}
+                      {formData.department || "select depart..."}
                     </div>
                     <ChevronLeftIcon className={`h-4 w-4 text-gray-400 absolute right-0 pointer-events-none transition-transform duration-300 ${isDepartmentOpen ? "rotate-90" : "-rotate-90"}`} />
                     
                     {/* Custom Dropdown List */}
                     {isDepartmentOpen && (
                       <div className={dropdownTheme.overlay.container}>
-                        <div className={dropdownTheme.overlay.header}>Select Department</div>
+                        <div className={dropdownTheme.overlay.header}>Select</div>
                         {["art", "science", "commercial"].map(option => (
                           <div 
                             key={option}
@@ -432,37 +428,25 @@ export default function StudentBiodata() {
                 <label className="text-xs font-black text-[#555555] uppercase tracking-widest px-1">Location</label>
                 <div className={getInputStyles("location").container}>
                   <MapPinIcon className={getInputStyles("location").icon} />
-                  <div className="relative w-full flex items-center" ref={locationRef}>
-                    <div 
-                      className={`${getInputStyles("location").input} ${dropdownTheme.select} pr-6 cursor-pointer capitalize`}
-                      onClick={() => setIsLocationOpen(!isLocationOpen)}
-                    >
-                      {formData.location || "select location"}
-                    </div>
-                    <ChevronLeftIcon className={`h-4 w-4 text-gray-400 absolute right-0 pointer-events-none transition-transform duration-300 ${isLocationOpen ? "rotate-90" : "-rotate-90"}`} />
-                    
-                    {/* Custom Dropdown List */}
-                    {isLocationOpen && (
-                      <div className={`${dropdownTheme.overlay.container} w-full`}>
-                        <div className={dropdownTheme.overlay.header}>Select Location</div>
-                        {location.map(loc => {
-                          const optionValue = `${loc.state}, ${loc.country}`;
-                          return (
-                            <div 
-                              key={loc.code}
-                              className={dropdownTheme.overlay.item(formData.location === optionValue, false)}
-                              onClick={() => {
-                                setFormData(prev => ({ ...prev, location: optionValue }));
-                                setIsLocationOpen(false);
-                              }}
-                            >
-                              <span>{optionValue}</span>
-                              {formData.location === optionValue && <span>✓</span>}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                  <div className="relative w-full flex items-center">
+                    <input
+                      list="locations-list"
+                      name="location"
+                      value={formData.location}
+                      onChange={handleChange}
+                      onFocus={() => setFocusedField("location")}
+                      onBlur={() => setFocusedField(null)}
+                      placeholder="select location"
+                      className={`${getInputStyles("location").input} bg-transparent outline-none w-full capitalize placeholder-lowercase`}
+                    />
+                    <datalist id="locations-list">
+                      {location.map(loc => (
+                        <option 
+                          key={loc.code} 
+                          value={`${loc.state}, ${loc.country}`} 
+                        />
+                      ))}
+                    </datalist>
                   </div>
                 </div>
                 {errors.location && <p className="text-xs text-red-500 font-bold px-1">{errors.location}</p>}
