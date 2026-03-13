@@ -47,15 +47,17 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
     { label: "Sa", value: "saturday" }
   ];
 
-  useEffect(() => {
+ useEffect(() => {
     const fetchSubjects = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/admin/subjects/all`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setSubjects(response.data.subjects || response.data.data || []);
+        const fetchedSubjects = response.data.subjects || response.data.data;
+        setSubjects(Array.isArray(fetchedSubjects) ? fetchedSubjects : []);
       } catch (error) {
-        setApiError("Failed to load subjects. Please check your connection or backend.");
+        console.warn("Subjects endpoint failed or missing. Defaulting to empty.");
+        setSubjects([]);
       }
     };
 
@@ -64,9 +66,11 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
         const response = await axios.get(`${API_BASE_URL}/api/admin/staffs`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setStaffList(response.data.staffs || response.data.data || []);
+        const fetchedStaff = response.data.staffs || response.data.data;
+        setStaffList(Array.isArray(fetchedStaff) ? fetchedStaff : []);
       } catch (error) {
-        setApiError(`Failed to load staff list: ${error.message}`); 
+        console.warn("Staff endpoint failed or missing (404). Defaulting to empty.");
+        setStaffList([]); 
       }
     };
 
@@ -150,8 +154,9 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
         duration_minutes: duration
       }));
 
+      // 🛡️ THE FIX: Safely parse subject_id so we don't send NaN to the backend
       const payload = {
-        subject_id: parseInt(formData.subject_id),
+        subject_id: formData.subject_id ? parseInt(formData.subject_id) : "",
         title: formData.title,
         description: formData.description,
         status: formData.status,
@@ -174,8 +179,17 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
       }
     } catch (error) {
       console.error("Failed to create class:", error.response?.data);
+      
+      // 🛡️ THE FIX: Convert Laravel's array of errors into clean strings for the UI state
       if (error.response?.data?.errors) {
-        setErrors(error.response.data.errors);
+        const laravelErrors = error.response.data.errors;
+        const formattedErrors = {};
+        
+        for (const key in laravelErrors) {
+          formattedErrors[key] = laravelErrors[key][0]; 
+        }
+        
+        setErrors(formattedErrors);
       } else {
         setApiError(error.response?.data?.message || "Failed to create class. Server error.");
       }

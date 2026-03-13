@@ -19,7 +19,6 @@ export default function MasterClassList() {
   
   // --- STATE ---
   const [classes, setClasses] = useState([]);
-  // Notice we removed the filteredClasses state here!
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("Today");
@@ -28,22 +27,36 @@ export default function MasterClassList() {
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
   const token = localStorage.getItem("staff_token");
+  console.log("EXACT TOKEN:", token);
 
   // --- FETCHING LOGIC ---
-  // useCallback prevents React from recreating this function on every render
   const fetchClasses = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/admin/classes/create`, {
-        headers: { Authorization: `Bearer ${token}` }
+      // 🛡️ THE FIX: Removed /create. GET requests usually go to the base /classes endpoint to list them.
+      const response = await axios.get(`${API_BASE_URL}/api/admin/classes`, {
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/json"
+        }
       });
-      console.log("API Response from Laravel:", response.data);
-      setClasses(response.data.data || response.data.classes || []);
+      
+      console.log("SUCCESS API Response:", response.data); 
+      
+      const fetchedClasses = response.data.data || response.data.classes;
+      
+      if (Array.isArray(fetchedClasses)) {
+        setClasses(fetchedClasses);
+      } else {
+        setClasses([]);
+      }
+
     } catch (error) {
-      console.error("Failed to fetch classes:", error);
+      console.error("Endpoint failed:", error.response?.status, error.response?.data);
+      setClasses([]); 
       setToast({
         type: "error",
-        message: error.response?.data?.message || "Failed to load classes"
+        message: "Failed to load classes."
       });
     } finally {
       setLoading(false);
@@ -56,12 +69,10 @@ export default function MasterClassList() {
   }, [fetchClasses]);
 
   // --- FILTERING LOGIC ---
-  // useMemo calculates the filtered list automatically whenever classes, searchQuery, or activeTab changes
   const filteredClasses = useMemo(() => {
-    // 🛡️ THE FIX: Check if classes is actually an array first!
     if (!Array.isArray(classes)) {
       console.warn("Expected 'classes' to be an array, but got:", classes);
-      return []; // Return an empty array so the page doesn't crash
+      return []; 
     }
 
     let filtered = classes;
@@ -69,7 +80,6 @@ export default function MasterClassList() {
     // Filter by search query
     if (searchQuery) {
       filtered = filtered.filter(cls => {
-        // Adding optional chaining (?) just in case title or description is null
         const titleMatch = cls.title?.toLowerCase().includes(searchQuery.toLowerCase());
         const descMatch = cls.description?.toLowerCase().includes(searchQuery.toLowerCase());
         return titleMatch || descMatch;
@@ -91,7 +101,6 @@ export default function MasterClassList() {
 
   // --- HANDLERS ---
   const handleExportStudents = () => {
-    // Export students logic
     console.log("Exporting students...");
   };
 
@@ -135,7 +144,6 @@ export default function MasterClassList() {
           <h1 className="text-3xl font-black text-[#09314F]">MASTER CLASS</h1>
           
           <div className="flex items-center gap-4">
-            {/* Schedule Master Class Button */}
             <button
               onClick={() => setShowCreateModal(true)}
               className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#09314F] to-[#E83831] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-95"
@@ -144,7 +152,6 @@ export default function MasterClassList() {
               Schedule Master Class
             </button>
 
-            {/* Export Students Button */}
             <button
               onClick={handleExportStudents}
               className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#09314F] text-[#09314F] font-bold rounded-xl hover:bg-gray-50 transition-all active:scale-95"
@@ -157,7 +164,6 @@ export default function MasterClassList() {
 
         {/* Search and Tabs */}
         <div className="flex items-center justify-between mb-6">
-          {/* Search */}
           <div className="relative w-96">
             <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
@@ -169,7 +175,6 @@ export default function MasterClassList() {
             />
           </div>
 
-          {/* Tabs */}
           <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
             {["Today", "Other"].map(tab => (
               <button
@@ -213,7 +218,6 @@ export default function MasterClassList() {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    {/* Class Title */}
                     <div className="flex items-center gap-3 mb-2">
                       <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-lg uppercase">
                         MC
@@ -223,21 +227,16 @@ export default function MasterClassList() {
                       </h3>
                     </div>
 
-                    {/* Class Description */}
                     <p className="text-gray-600 mb-4">{cls.description}</p>
 
-                    {/* Class Details */}
                     <div className="flex items-center gap-6 text-sm">
-                      {/* Instructor */}
                       <div className="flex items-center gap-2">
                         <UserGroupIcon className="w-4 h-4 text-gray-400" />
                         <span className="text-gray-600">
-                          {/* We will likely need to map instructors from cls.staffs eventually! */}
                           Instructors Assigned
                         </span>
                       </div>
 
-                      {/* Date Range */}
                       <div className="flex items-center gap-2">
                         <CalendarIcon className="w-4 h-4 text-gray-400" />
                         <span className="text-gray-600">
@@ -245,7 +244,6 @@ export default function MasterClassList() {
                         </span>
                       </div>
 
-                      {/* Time */}
                       {cls.schedules && cls.schedules[0] && (
                         <div className="flex items-center gap-2">
                           <ClockIcon className="w-4 h-4 text-gray-400" />
@@ -257,7 +255,6 @@ export default function MasterClassList() {
                     </div>
                   </div>
 
-                  {/* Status Badge */}
                   <div className={`px-4 py-2 rounded-lg font-bold text-sm ${
                     cls.status === 'active' 
                       ? 'bg-green-100 text-green-700'

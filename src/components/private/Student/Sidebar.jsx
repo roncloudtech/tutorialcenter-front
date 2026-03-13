@@ -1,3 +1,4 @@
+import React from "react";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -10,7 +11,7 @@ import { NavLink } from "react-router-dom";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useAuth } from "../../../context/AuthContext";
 import { useTheme } from "../../../context/ThemeContext";
-import logo from "../../../assets/images/TC 1.png";
+import logo from "../../../assets/images/tutorial_logo.png";
 import collapselogo from "../../../assets/images/TC 1.png";
 
 const menuItems = [
@@ -20,20 +21,19 @@ const menuItems = [
     destination: "/student/dashboard",
   },
   {
-    label: "Manage Staffs",
-    icon: "mdi:account-tie",
-  },
-  {
-    label: "Manage Students",
-    icon: "mdi:account-school",
-  },
-  {
-    label: "Manage Guardian",
-    icon: "mdi:account-group",
+    label: "Courses",
+    icon: "mdi:book-open-page-variant",
+    destination: "/student/courses",
   },
   {
     label: "Master Class",
     icon: "healthicons:i-training-class",
+    destination: "/student/master-class",
+  },
+  {
+    label: "Exam Practice",
+    icon: "mdi:clipboard-text-outline",
+    destination: "/student/exam-practice",
   },
   {
     label: "Calendar",
@@ -41,32 +41,36 @@ const menuItems = [
     destination: "/student/calendar",
   },
   {
-    label: "Courses",
-    icon: "mdi:book-open-page-variant",
+    label: "Assessment",
+    icon: "mdi:file-document-edit-outline",
+    destination: "/student/assessment",
   },
   {
-    label: "Exams",
-    icon: "mdi:clipboard-check-outline",
+    label: "Games & Fun",
+    icon: "mdi:controller-classic",
+    destination: "/student/games",
   },
   {
-    label: "Audit Log",
-    icon: "mdi:chart-bar-stacked",
+    label: "Payment",
+    icon: "mdi:credit-card-outline",
+    destination: "/student/payment-history", // This makes it clickable!
   },
   {
     label: "Settings",
     icon: "mdi:cog-outline",
+    destination: "/student/settings",
   },
   {
     label: "Help",
     icon: "mdi:help-circle-outline",
+    destination: "/student/help",
   },
 ];
 
 export default function Sidebar({ collapsed, setCollapsed, isOpen, onClose }) {
   const { theme, setTheme } = useTheme();
   const { student, logout } = useAuth();
-  const API_BASE_URL =
-    process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
+  const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
 
   const fullName =
     student?.firstname && student?.surname
@@ -95,12 +99,12 @@ export default function Sidebar({ collapsed, setCollapsed, isOpen, onClose }) {
         `}
       >
         {/* Logo */}
-        <div className="relative flex items-center justify-center p-4">
+        <div className="relative flex items-center justify-center p-6 mt-2 mb-2">
           <img
             src={collapsed ? collapselogo : logo}
             alt="TC Logo"
-            className={`transition-all duration-300 ${
-              collapsed ? "w-10" : "w-full"
+            className={`transition-all duration-300 object-contain ${
+              collapsed ? "w-10 h-10" : "w-40 h-auto"
             }`}
           />
 
@@ -115,7 +119,7 @@ export default function Sidebar({ collapsed, setCollapsed, isOpen, onClose }) {
             className="
               absolute -right-3 top-1/2 -translate-y-1/2
               bg-blue-900 text-white
-              p-1.5 rounded-full shadow-lg hover:bg-blue-800
+              p-1.5 rounded-full shadow-lg hover:bg-blue-800 z-10
             "
           >
             {collapsed ? (
