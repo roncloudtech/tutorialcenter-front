@@ -53,6 +53,9 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
   const [assistantSearch, setAssistantSearch] = useState("");
   const [statusSearch, setStatusSearch] = useState("active");
 
+  const [selectedTutors, setSelectedTutors] = useState([]);
+  const [selectedAssistants, setSelectedAssistants] = useState([]);
+
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState(null);
 
@@ -62,8 +65,8 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
     title: "",
     start_date: "",
     end_date: "",
-    tutor_id: "",
-    assistant_id: "",
+    tutor_ids: [],
+    assistant_ids: [],
     link: "",
     status: "active",
     description: "",
@@ -197,19 +200,45 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
   const handleStaffChange = (e, field) => {
     const value = e.target.value;
 
-    if (field === "tutor_id") setTutorSearch(value);
+    if (field === "tutor_ids") setTutorSearch(value);
     else setAssistantSearch(value);
 
-    const staffList = field === "tutor_id" ? tutors : assistants;
+    const staffList = field === "tutor_ids" ? tutors : assistants;
 
     const staff = staffList.find(
       (s) => `${s.firstname} ${s.surname}` === value || s.name === value,
     );
 
+    if (staff) {
+      const idsKey = field;
+      const selectedKey = field === "tutor_ids" ? selectedTutors : selectedAssistants;
+      const setSelected = field === "tutor_ids" ? setSelectedTutors : setSelectedAssistants;
+
+      // Avoid duplicates
+      if (!formData[idsKey].includes(staff.id)) {
+        setFormData((prev) => ({
+          ...prev,
+          [idsKey]: [...prev[idsKey], staff.id],
+        }));
+        setSelected([...selectedKey, staff]);
+      }
+
+      // Clear search after selection
+      if (field === "tutor_ids") setTutorSearch("");
+      else setAssistantSearch("");
+    }
+  };
+
+  const removeStaff = (id, field) => {
+    const idsKey = field;
+    const setSelected = field === "tutor_ids" ? setSelectedTutors : setSelectedAssistants;
+
     setFormData((prev) => ({
       ...prev,
-      [field]: staff ? staff.id : "",
+      [idsKey]: prev[idsKey].filter((staffId) => staffId !== id),
     }));
+
+    setSelected((prev) => prev.filter((staff) => staff.id !== id));
   };
 
   const handleStatusChange = (e) => {
@@ -295,7 +324,7 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
 
     if (!formData.end_date) newErrors.end_date = "End date required";
 
-    if (!formData.tutor_id) newErrors.tutor_id = "Tutor required";
+    if (formData.tutor_ids.length === 0) newErrors.tutor_ids = "At least one tutor is required";
 
     if (daySchedules.length === 0) newErrors.days = "Select schedule days";
 
@@ -318,17 +347,19 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
     try {
       const staffs = [];
 
-      if (formData.tutor_id)
+      formData.tutor_ids.forEach((id) => {
         staffs.push({
-          staff_id: parseInt(formData.tutor_id),
+          staff_id: parseInt(id),
           role: "lead",
         });
+      });
 
-      if (formData.assistant_id)
+      formData.assistant_ids.forEach((id) => {
         staffs.push({
-          staff_id: parseInt(formData.assistant_id),
+          staff_id: parseInt(id),
           role: "assistant",
         });
+      });
 
       const schedules = daySchedules.map((s) => ({
         day_of_week: s.day,
@@ -636,15 +667,15 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
             {/* Tutor */}
             <div>
               <div
-                className={`flex items-center gap-4 bg-gray-50 rounded-xl p-4 ${errors.tutor_id ? "border-2 border-red-500" : "border border-gray-200"}`}
+                className={`flex items-center gap-4 bg-gray-50 rounded-xl p-4 ${errors.tutor_ids ? "border-2 border-red-500" : "border border-gray-200"}`}
               >
                 <UserGroupIcon className="w-6 h-6 text-gray-700" />
                 <input
                   list="tutor-list"
-                  name="tutor_id"
+                  name="tutor_ids"
                   value={tutorSearch}
-                  onChange={(e) => handleStaffChange(e, "tutor_id")}
-                  placeholder="Select tutor"
+                  onChange={(e) => handleStaffChange(e, "tutor_ids")}
+                  placeholder="Search and select tutors"
                   className="flex-1 bg-transparent text-gray-500 outline-none cursor-pointer"
                 />
                 <datalist id="tutor-list">
@@ -655,33 +686,76 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
                     />
                   ))}
                 </datalist>
-                {/* <ChevronDownIcon className="w-5 h-5 text-gray-400" /> */}
               </div>
-              {errors.tutor_id && (
-                <p className="text-red-500 text-xs mt-2">{errors.tutor_id}</p>
+              
+              {/* Selected Tutors Tags */}
+              {selectedTutors.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-3 px-1">
+                  {selectedTutors.map((s) => (
+                    <span 
+                      key={s.id} 
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0F2843] text-white text-xs font-bold rounded-lg shadow-sm"
+                    >
+                      {s.name || `${s.firstname} ${s.surname}`}
+                      <button 
+                        type="button"
+                        onClick={() => removeStaff(s.id, "tutor_ids")}
+                        className="p-0.5 hover:bg-white/20 rounded-full transition-colors"
+                      >
+                        <XMarkIcon className="w-3.5 h-3.5" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {errors.tutor_ids && (
+                <p className="text-red-500 text-xs mt-2 px-1">{errors.tutor_ids}</p>
               )}
             </div>
 
             {/* Assistant */}
-            <div className="flex items-center gap-4 bg-gray-50 rounded-xl p-4 border border-gray-200">
-              <UserGroupIcon className="w-6 h-6 text-gray-700" />
-              <input
-                list="assistant-list"
-                name="assistant_id"
-                value={assistantSearch}
-                onChange={(e) => handleStaffChange(e, "assistant_id")}
-                placeholder="Select assistant (optional)"
-                className="flex-1 bg-transparent text-gray-500 outline-none cursor-pointer"
-              />
-              <datalist id="assistant-list">
-                {assistants.map((s) => (
-                  <option
-                    key={s.id}
-                    value={s.name || `${s.firstname} ${s.surname}`}
-                  />
-                ))}
-              </datalist>
-              {/* <ChevronDownIcon className="w-5 h-5 text-gray-400" /> */}
+            <div>
+              <div className="flex items-center gap-4 bg-gray-50 rounded-xl p-4 border border-gray-200">
+                <UserGroupIcon className="w-6 h-6 text-gray-700" />
+                <input
+                  list="assistant-list"
+                  name="assistant_ids"
+                  value={assistantSearch}
+                  onChange={(e) => handleStaffChange(e, "assistant_ids")}
+                  placeholder="Search and select assistants (optional)"
+                  className="flex-1 bg-transparent text-gray-500 outline-none cursor-pointer"
+                />
+                <datalist id="assistant-list">
+                  {assistants.map((s) => (
+                    <option
+                      key={s.id}
+                      value={s.name || `${s.firstname} ${s.surname}`}
+                    />
+                  ))}
+                </datalist>
+              </div>
+
+              {/* Selected Assistants Tags */}
+              {selectedAssistants.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-3 px-1">
+                  {selectedAssistants.map((s) => (
+                    <span 
+                      key={s.id} 
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-200 text-[#0F2843] text-xs font-bold rounded-lg shadow-sm border border-gray-300"
+                    >
+                      {s.name || `${s.firstname} ${s.surname}`}
+                      <button 
+                        type="button"
+                        onClick={() => removeStaff(s.id, "assistant_ids")}
+                        className="p-0.5 hover:bg-black/10 rounded-full transition-colors"
+                      >
+                        <XMarkIcon className="w-3.5 h-3.5" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Link */}
