@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import StaffDashboardLayout from "../../components/private/Staff/DashboardLayout.jsx";
-import CreateMasterClassModal from "../../components/private/Staff/MasterclassModal.jsx";
+import StaffDashboardLayout from "../../components/private/staffs/DashboardLayout.jsx";
+import CreateMasterClassModal from "../../components/private/staffs/MasterclassModal.jsx";
 import { 
   PlusIcon, 
   MagnifyingGlassIcon,

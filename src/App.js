@@ -35,9 +35,9 @@ import NotFound from "./pages/public/NotFound.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import StaffLogin from "./pages/public/StaffLogin.jsx";
 import StudentCalendar from "./pages/students/StudentCalendar.jsx";
-import StaffDashboard from "./pages/staff/StaffDashboard.jsx";
-import StaffManagement from "./pages/staff/StaffManagement.jsx";
-import StaffMasterClassList from "./pages/staff/StaffMasterClassList.jsx";
+import StaffDashboard from "./pages/staffs/StaffDashboard.jsx";
+import StaffManagement from "./pages/staffs/StaffManagement.jsx";
+import StaffMasterClassList from "./pages/staffs/StaffMasterClassList.jsx";
 import StudentPaymentHistory from "./pages/students/StudentPaymentDisplay.jsx"
 
 
@@ -87,9 +87,9 @@ function App() {
           <Route path="/student/calendar" element={<StudentCalendar />} />
           <Route path="/student/payment-history" element={<StudentPaymentHistory />} />
 
-          <Route path="/staff/dashboard" element={<StaffDashboard />} />
-          <Route path="/staff/manage-staffs" element={<StaffManagement />} />
-          <Route path="/staff/master-class" element={<StaffMasterClassList />} />
+          <Route path="/staffs/dashboard" element={<StaffDashboard />} />
+          <Route path="/staffs/manage-staffs" element={<StaffManagement />} />
+          <Route path="/staffs/master-class" element={<StaffMasterClassList />} />
         </Route>
       </Routes>
     </>

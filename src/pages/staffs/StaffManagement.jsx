@@ -1,4 +1,4 @@
-import StaffDashboardLayout from "../../components/private/Staff/DashboardLayout.jsx";
+import StaffDashboardLayout from "../../components/private/staffs/DashboardLayout.jsx";
 
 export default function StaffManagement() {
   return (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import ProgressCard from "../../components/private/Student/ProgressCard";
-import DashboardLayout from "../../components/private/Student/DashboardLayout";
+import ProgressCard from "../../components/private/students/ProgressCard";
+import DashboardLayout from "../../components/private/students/DashboardLayout.jsx";
 import axios from "axios";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { BellIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";

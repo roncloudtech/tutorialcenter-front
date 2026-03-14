@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import PaymentLayout from "../../components/private/Student/PaymentLayout.jsx";
+import PaymentLayout from "../../components/private/students/PaymentLayout.jsx";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 export default function StudentPaymentDisplay() {

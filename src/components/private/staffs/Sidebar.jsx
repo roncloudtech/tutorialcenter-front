@@ -21,11 +21,11 @@ import logo from "../../../assets/images/tutorial_logo.png";
 import collapselogo from "../../../assets/images/TC 1.png";
 
 const menuItems = [
-  { label: "Dashboard", icon: HomeIcon, destination: "/staff/dashboard" },
-  { label: "Manage Staffs", icon: UsersIcon, destination: "/staff/manage-staffs" },
+  { label: "Dashboard", icon: HomeIcon, destination: "/staffs/dashboard" },
+  { label: "Manage Staffs", icon: UsersIcon, destination: "/staffs/manage-staffs" },
   { label: "Manage Students", icon: UserGroupIcon },
   { label: "Manage Guardian", icon: ShieldCheckIcon },
-  { label: "Master Class", icon: AcademicCapIcon, destination: "/staff/master-class" },
+  { label: "Master Class", icon: AcademicCapIcon, destination: "/staffs/master-class" },
   { label: "Calendar", icon: CalendarDaysIcon },
   { label: "Courses", icon: BookOpenIcon },
   { label: "Exams", icon: ClipboardDocumentCheckIcon },
