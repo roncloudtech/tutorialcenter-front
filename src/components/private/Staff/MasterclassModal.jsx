@@ -8,7 +8,7 @@ import {
   LinkIcon, 
   UserCircleIcon, 
   ChatBubbleBottomCenterTextIcon,
-  ChevronDownIcon,
+  // ChevronDownIcon,
   XMarkIcon
 } from "@heroicons/react/24/outline";
 
@@ -418,7 +418,7 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
                     <option key={course.id} value={course.title || course.name} />
                   ))}
                 </datalist>
-                <ChevronDownIcon className="w-5 h-5 text-gray-400" />
+                {/* <ChevronDownIcon className="w-5 h-5 text-gray-400" /> */}
               </div>
               {errors.course_id && <p className="text-red-500 text-xs mt-2">{errors.course_id}</p>}
             </div>
@@ -441,7 +441,7 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
                     <option key={subject.id} value={subject.name} />
                   ))}
                 </datalist>
-                <ChevronDownIcon className="w-5 h-5 text-gray-400" />
+                {/* <ChevronDownIcon className="w-5 h-5 text-gray-400" /> */}
               </div>
               {errors.subject_id && <p className="text-red-500 text-xs mt-2">{errors.subject_id}</p>}
             </div>
@@ -549,7 +549,7 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
                     <option key={s.id} value={s.name || `${s.firstname} ${s.surname}`} />
                   ))}
                 </datalist>
-                <ChevronDownIcon className="w-5 h-5 text-gray-400" />
+                {/* <ChevronDownIcon className="w-5 h-5 text-gray-400" /> */}
               </div>
               {errors.tutor_id && <p className="text-red-500 text-xs mt-2">{errors.tutor_id}</p>}
             </div>
@@ -570,7 +570,7 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
                   <option key={s.id} value={s.name || `${s.firstname} ${s.surname}`} />
                 ))}
               </datalist>
-              <ChevronDownIcon className="w-5 h-5 text-gray-400" />
+              {/* <ChevronDownIcon className="w-5 h-5 text-gray-400" /> */}
             </div>
 
             {/* Link */}
@@ -601,7 +601,7 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
                 <option value="active" />
                 <option value="inactive" />
               </datalist>
-              <ChevronDownIcon className="w-5 h-5 text-gray-400" />
+              {/* <ChevronDownIcon className="w-5 h-5 text-gray-400" /> */}
             </div>
 
             {/* Description */}
