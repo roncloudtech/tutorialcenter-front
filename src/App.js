@@ -36,6 +36,7 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import StaffLogin from "./pages/public/StaffLogin.jsx";
 import StudentCalendar from "./pages/students/StudentCalendar.jsx";
 import StaffDashboard from "./pages/staffs/StaffDashboard.jsx";
+import StaffRegistration from "./pages/staffs/StaffRegistration.jsx"
 import StaffManagement from "./pages/staffs/StaffManagement.jsx";
 import StaffMasterClassList from "./pages/staffs/StaffMasterClassList.jsx";
 import StudentPaymentHistory from "./pages/students/StudentPaymentDisplay.jsx"
@@ -88,6 +89,7 @@ function App() {
           <Route path="/student/payment-history" element={<StudentPaymentHistory />} />
 
           <Route path="/staffs/dashboard" element={<StaffDashboard />} />
+          <Route path="/staffs/staff-registration" element={<StaffRegistration />} />
           <Route path="/staffs/manage-staffs" element={<StaffManagement />} />
           <Route path="/staffs/master-class" element={<StaffMasterClassList />} />
         </Route>

@@ -29,6 +29,7 @@ export function AuthProvider({ children }) {
   const logout = () => {
     localStorage.removeItem("student_token");
     localStorage.removeItem("student_info");
+    localStorage.removeItem("studentBiodata");
 
     setToken(null);
     setStudent(null);

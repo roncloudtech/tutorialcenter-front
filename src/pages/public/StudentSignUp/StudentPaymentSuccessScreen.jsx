@@ -49,7 +49,7 @@ export const StudentPaymentSuccessScreen = () => {
   }, [navigate]);
 
   const handleGoToDashboard = () => {
-    ["studentEmail", "studentdata", "studentTel", "studentVerified"].forEach((k) =>
+    ["studentEmail", "studentdata", "studentTel", "studentVerified", "studentBiodata"].forEach((k) =>
       localStorage.removeItem(k)
     );
     navigate("/student/login");

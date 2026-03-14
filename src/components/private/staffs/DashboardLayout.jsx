@@ -35,9 +35,6 @@ export default function StaffDashboardLayout({ children }) {
             ${rightCollapsed ? "mr-1" : "mr-80"}
           `}
         >
-          <h1 className="text-xl font-semibold mb-6 dark:text-white">
-            Staff Dashboard
-          </h1>
           {children}
         </main>
       </div>

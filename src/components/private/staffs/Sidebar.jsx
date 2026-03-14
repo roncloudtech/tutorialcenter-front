@@ -15,13 +15,14 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
+// import {dashboard} from "iconify-icons/mdi"
 import { NavLink } from "react-router-dom";
 import { useTheme } from "../../../context/ThemeContext";
 import logo from "../../../assets/images/tutorial_logo.png";
 import collapselogo from "../../../assets/images/TC 1.png";
 
 const menuItems = [
-  { label: "Dashboard", icon: HomeIcon, destination: "/staffs/dashboard" },
+  { label: "Dashboard", icon: HomeIcon },
   { label: "Manage Staffs", icon: UsersIcon, destination: "/staffs/manage-staffs" },
   { label: "Manage Students", icon: UserGroupIcon },
   { label: "Manage Guardian", icon: ShieldCheckIcon },
