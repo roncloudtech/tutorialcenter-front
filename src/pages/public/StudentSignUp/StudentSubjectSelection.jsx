@@ -66,15 +66,10 @@ export const StudentSubjectSelection = () => {
 
       // Fetch subjects for each course
       for (const course of activeCourses) {
-        // console.log(`\n Fetching subjects for course ${course.id} (${course.title})`);
-        // console.log(` URL: ${API_BASE_URL}/api/courses/${course.id}/subjects/${department}`);
-        
         try {
           const res = await axios.get(
             `${API_BASE_URL}/api/courses/${course.id}/subjects/${department}`
           );
-          
-          // console.log(`✅ Success for ${course.title}:`, res.data);
           
           const subjects = res.data.subjects || [];
           console.log(`📝 ${subjects.length} subjects found`);
