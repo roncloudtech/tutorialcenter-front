@@ -37,6 +37,7 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
   ============================= */
 
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
 
   const [courses, setCourses] = useState([]);
   const [subjects, setSubjects] = useState([]);
@@ -45,7 +46,6 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
   const [assistants, setAssistants] = useState([]);
 
   const [selectedCourse, setSelectedCourse] = useState(null);
-  const [selectedSubject, setSelectedSubject] = useState(null);
 
   const [courseSearch, setCourseSearch] = useState("");
   const [subjectSearch, setSubjectSearch] = useState("");
@@ -80,64 +80,65 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
      API CALLS
   ============================= */
 
-  const fetchCourses = async () => {
-    try {
-      const res = await axios.get(`${API_BASE_URL}/api/courses`);
-      const fetched = res.data?.courses || res.data?.data || [];
-      setCourses(fetched);
-    } catch (error) {
-      console.error("Failed to fetch courses", error);
-    }
-  };
-
-  const fetchSubjects = async (courseId) => {
-    try {
-      const res = await axios.get(
-        `${API_BASE_URL}/api/courses/${courseId}/subjects`,
-      );
-      const fetched = res.data?.subjects || res.data?.data || [];
-      setSubjects(fetched);
-      console.log(
-        `Fetched ${fetched.length} subjects for course ID ${courseId}`,
-      );
-      console.log("Subjects:", fetched);
-    } catch (error) {
-      console.error("Failed to fetch subjects", error);
-      setSubjects([]);
-    }
-  };
-
-  const fetchStaff = async () => {
-    try {
-      const res = await axios.get(`${API_BASE_URL}/api/admin/staffs/all`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const fetched = res.data?.staffs || res.data?.data || [];
-
-      setTutors(fetched.filter((s) => s.role === "tutor"));
-      setAssistants(fetched.filter((s) => s.role === "advisor"));
-    } catch (error) {
-      console.error("Failed to fetch staff", error);
-    }
-  };
-
   /* =============================
      EFFECTS
   ============================= */
 
   useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/courses`);
+        const fetched = res.data?.courses || res.data?.data || [];
+        setCourses(fetched);
+      } catch (error) {
+        console.error("Failed to fetch courses", error);
+      }
+    };
+    
     fetchCourses();
-    fetchStaff();
-  }, []);
+    
+    const fetchStaffData = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/admin/staffs/all`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const fetched = res.data?.staffs || res.data?.data || [];
+
+        setTutors(fetched.filter((s) => s.role === "tutor"));
+        setAssistants(fetched.filter((s) => s.role === "advisor"));
+      } catch (error) {
+        console.error("Failed to fetch staff", error);
+      }
+    };
+    
+    fetchStaffData();
+  }, [token, API_BASE_URL]);
 
   useEffect(() => {
     if (formData.course_id) {
+      const fetchSubjects = async (courseId) => {
+        try {
+          const res = await axios.get(
+            `${API_BASE_URL}/api/courses/${courseId}/subjects`,
+          );
+          const fetched = res.data?.subjects || res.data?.data || [];
+          setSubjects(fetched);
+          console.log(
+            `Fetched ${fetched.length} subjects for course ID ${courseId}`,
+          );
+          console.log("Subjects:", fetched);
+        } catch (error) {
+          console.error("Failed to fetch subjects", error);
+          setSubjects([]);
+        }
+      };
+      
       fetchSubjects(formData.course_id);
     } else {
       setSubjects([]);
     }
-  }, [formData.course_id]);
+  }, [formData.course_id, API_BASE_URL]);
 
   /* =============================
      INPUT HANDLERS
@@ -169,7 +170,6 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
     }));
 
     setSubjectSearch("");
-    setSelectedSubject(null);
   };
 
   const handleSubjectChange = (e) => {
@@ -179,15 +179,12 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
     const subject = subjects.find((s) => s.name === value);
 
     if (!subject) {
-      setSelectedSubject(null);
       setFormData((prev) => ({
         ...prev,
         subject_id: "",
       }));
       return;
     }
-
-    setSelectedSubject(subject);
 
     const autoTitle = `${selectedCourse?.title || selectedCourse?.name} - ${subject.name}`;
 
@@ -344,7 +341,7 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
      SUBMIT
   ============================= */
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
 
     if (!validateForm()) return;
 
@@ -421,7 +418,12 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
       );
 
       if (res.status === 201 || res.status === 200) {
-        onSuccess(res.data);
+        const message = res.data?.message || "Schedule created successfully!";
+        setToast({ type: "success", message });
+        setTimeout(() => {
+          setToast(null);
+          onSuccess(res.data);
+        }, 2500);
       }
     } catch (error) {
       console.log("FULL ERROR RESPONSE:", error.response);
@@ -449,7 +451,23 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      {/* Toast Notification */}
+      {toast && (
+        <div
+          className={`fixed top-5 right-5 z-[60] px-6 py-4 rounded-2xl shadow-2xl text-white transition-all duration-500 ${
+            toast.type === "success" ? "bg-[#76D287]" : "bg-[#E83831]"
+          }`}
+        >
+          <div className="flex items-center gap-3 text-sm">
+            <div className="p-1 bg-white/20 rounded-full">
+              {toast.type === "success" ? "✓" : "✕"}
+            </div>
+            <p className="font-bold">{toast.message}</p>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="px-8 py-6 flex items-center justify-between border-b border-gray-100">
           <h2 className="text-2xl font-bold text-[#1F2937]">
@@ -853,8 +871,8 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
             Cancel
           </button>
           <button
-            type="submit"
-            form="masterClassForm"
+            type="button"
+            onClick={handleSubmit}
             disabled={loading}
             className="flex-1 py-3.5 bg-[#0F2843] hover:bg-[#0a1b2d] text-white font-bold rounded-xl transition-all disabled:opacity-50"
           >
