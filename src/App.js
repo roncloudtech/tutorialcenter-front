@@ -29,6 +29,7 @@ import { StudentTrainingDuration } from "./pages/public/StudentSignUp/StudentTra
 import { StudentTrainingPayment } from "./pages/public/StudentSignUp/StudentTrainingPayment.jsx";
 import StudentLogin from "./pages/public/StudentLogin.jsx";
 import StudentDashboard from "./pages/students/StudentDashboard.jsx";
+import StudentClassSchedule from "./pages/students/StudentClassSchedule.jsx";
 import ComingSoon from "./pages/public/ComingSoon.jsx";
 import Unauthorized from "./pages/public/Unauthorized.jsx";
 import NotFound from "./pages/public/NotFound.jsx";
@@ -71,7 +72,6 @@ function App() {
 
         {/* Student Public Registration Routes */}
         <Route path="/student/login" element={<StudentLogin />} />
-        {/* <Route path="/student/dashboard" element={<StudentDashboard/> }/> */}
         <Route path="/register/student" element={<StudentRegistration />} />
         <Route path="/register/student/biodata" element={<StudentBiodata />} />
         <Route path="/register/student/phone/verify" element={<StudentPhoneVerification />} />
@@ -84,10 +84,13 @@ function App() {
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
+          {/* Student Routes */}
           <Route path="/student/dashboard" element={<StudentDashboard />} />
           <Route path="/student/calendar" element={<StudentCalendar />} />
           <Route path="/student/payment-history" element={<StudentPaymentHistory />} />
+          <Route path="/student/class-schedule" element={<StudentClassSchedule />} />
 
+          {/* Staff Routes */}
           <Route path="/staffs/dashboard" element={<StaffDashboard />} />
           <Route path="/staffs/staff-registration" element={<StaffRegistration />} />
           <Route path="/staffs/manage-staffs" element={<StaffManagement />} />
