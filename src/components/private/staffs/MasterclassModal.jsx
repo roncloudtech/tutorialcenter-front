@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import {
   BookOpenIcon,
+  // CalendarIcon,
   ClockIcon,
-  GlobeAltIcon,
+  ChevronDownIcon,
+  // GlobeAltIcon,
   UserGroupIcon,
   LinkIcon,
   UserCircleIcon,
   ChatBubbleBottomCenterTextIcon,
-  // ChevronDownIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
@@ -51,7 +52,6 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
   const [subjectSearch, setSubjectSearch] = useState("");
   const [tutorSearch, setTutorSearch] = useState("");
   const [assistantSearch, setAssistantSearch] = useState("");
-  const [statusSearch, setStatusSearch] = useState("active");
 
   const [selectedTutors, setSelectedTutors] = useState([]);
   const [selectedAssistants, setSelectedAssistants] = useState([]);
@@ -80,7 +80,7 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
      API CALLS
   ============================= */
 
-  const fetchCourses = async () => {
+  const fetchCourses = useCallback(async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/api/courses`);
       const fetched = res.data?.courses || res.data?.data || [];
@@ -88,9 +88,9 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
     } catch (error) {
       console.error("Failed to fetch courses", error);
     }
-  };
+  }, [API_BASE_URL]);
 
-  const fetchSubjects = async (courseId) => {
+  const fetchSubjects = useCallback(async (courseId) => {
     try {
       const res = await axios.get(
         `${API_BASE_URL}/api/courses/${courseId}/subjects`,
@@ -105,9 +105,9 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
       console.error("Failed to fetch subjects", error);
       setSubjects([]);
     }
-  };
+  }, [API_BASE_URL]);
 
-  const fetchStaff = async () => {
+  const fetchStaff = useCallback(async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/api/admin/staffs/all`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -120,7 +120,7 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
     } catch (error) {
       console.error("Failed to fetch staff", error);
     }
-  };
+  }, [API_BASE_URL, token]);
 
   /* =============================
      EFFECTS
@@ -129,7 +129,7 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
   useEffect(() => {
     fetchCourses();
     fetchStaff();
-  }, []);
+  }, [fetchCourses, fetchStaff]);
 
   useEffect(() => {
     if (formData.course_id) {
@@ -137,7 +137,7 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
     } else {
       setSubjects([]);
     }
-  }, [formData.course_id]);
+  }, [formData.course_id, fetchSubjects]);
 
   /* =============================
      INPUT HANDLERS
@@ -245,14 +245,6 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
     setSelected((prev) => prev.filter((staff) => staff.id !== id));
   };
 
-  const handleStatusChange = (e) => {
-    const value = e.target.value;
-    setStatusSearch(value);
-
-    if (["active", "inactive"].includes(value)) {
-      setFormData({ ...formData, status: value });
-    }
-  };
 
   const handleChange = (e) => {
     setFormData({
@@ -448,420 +440,354 @@ export default function CreateMasterClassModal({ onClose, onSuccess }) {
   ============================= */
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="px-8 py-6 flex items-center justify-between border-b border-gray-100">
-          <h2 className="text-2xl font-bold text-[#1F2937]">
-            Schedule Master Class
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-all"
-          >
-            <XMarkIcon className="w-6 h-6 text-gray-600" />
-          </button>
+   <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 overflow-hidden">
+  {/* Backdrop */}
+  <div 
+    className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+    onClick={onClose}
+  />
+  
+  {/* Modal Container */}
+  <div className="relative w-full max-w-3xl bg-white dark:bg-gray-900 rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+    
+    {/* Header - Fixed */}
+    <div className="flex-shrink-0 px-8 py-6 flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+        Schedule Master Class
+      </h2>
+      <button
+        onClick={onClose}
+        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all"
+      >
+        <XMarkIcon className="w-5 h-5 text-gray-500" />
+      </button>
+    </div>
+
+    {/* Global API Error Banner */}
+    {apiError && (
+      <div className="flex-shrink-0 mx-8 mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-xl text-sm">
+        {apiError}
+      </div>
+    )}
+
+    {/* Scrollable Form Content */}
+    <div className="flex-1 overflow-y-auto px-8 py-6">
+      <form
+        id="masterClassForm"
+        onSubmit={handleSubmit}
+        className="space-y-6"
+      >
+        {/* PERIOD Section */}
+        <div>
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+            PERIOD
+          </label>
+          
+          {/* Session Duration */}
+          <div className={`bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 border ${
+            errors.start_date || errors.end_date 
+              ? "border-red-300" 
+              : "border-gray-200 dark:border-gray-700"
+          }`}>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Session Duration
+              </span>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <span className="block text-xs text-gray-500 mb-1">Start</span>
+                <input
+                  type="date"
+                  name="start_date"
+                  value={formData.start_date}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <span className="text-gray-400 mt-6">-</span>
+              <div className="flex-1">
+                <span className="block text-xs text-gray-500 mb-1">End</span>
+                <input
+                  type="date"
+                  name="end_date"
+                  value={formData.end_date}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          </div>
+          {(errors.start_date || errors.end_date) && (
+            <p className="text-red-500 text-xs mt-2">{errors.start_date || errors.end_date}</p>
+          )}
         </div>
 
-        {/* Global API Error Banner */}
-        {apiError && (
-          <div className="mx-8 mt-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm font-medium">
-            {apiError}
+        {/* Course Selection */}
+        <div>
+          <div className={`flex items-center gap-3 bg-gray-50 dark:bg-gray-800 rounded-2xl px-5 py-4 border ${
+            errors.course_id ? "border-red-300" : "border-gray-200 dark:border-gray-700"
+          }`}>
+            <BookOpenIcon className="w-5 h-5 text-gray-400" />
+            <input
+              list="course-list"
+              name="course_id"
+              value={courseSearch}
+              onChange={handleCourseChange}
+              placeholder="JAMB"
+              className="flex-1 bg-transparent text-gray-900 dark:text-white font-medium outline-none placeholder:text-gray-400"
+            />
+            <datalist id="course-list">
+              {courses.map((course) => (
+                <option key={course.id} value={course.title || course.name} />
+              ))}
+            </datalist>
           </div>
-        )}
+          {errors.course_id && <p className="text-red-500 text-xs mt-2">{errors.course_id}</p>}
+        </div>
 
-        {/* Form Content */}
-        <div className="px-8 py-6 overflow-y-auto flex-1">
-          <form
-            id="masterClassForm"
-            onSubmit={handleSubmit}
-            className="space-y-6"
-          >
-            {/* Session Duration Card */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                Period
-              </label>
-              <div
-                className={`bg-gray-50 rounded-xl p-4 ${errors.start_date || errors.end_date ? "border-2 border-red-500" : "border border-gray-200"}`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">
-                    Session Duration
-                  </span>
-                  <div className="flex items-center gap-3 text-sm">
-                    <div>
-                      <span className="block text-xs text-gray-500 mb-1">
-                        Start
-                      </span>
-                      <input
-                        type="date"
-                        name="start_date"
-                        value={formData.start_date}
-                        onChange={handleChange}
-                        className="bg-transparent border-none p-0 text-gray-900 font-medium focus:ring-0 cursor-pointer"
-                      />
-                    </div>
-                    <span className="text-gray-400 mt-4">-</span>
-                    <div>
-                      <span className="block text-xs text-gray-500 mb-1">
-                        End
-                      </span>
-                      <input
-                        type="date"
-                        name="end_date"
-                        value={formData.end_date}
-                        onChange={handleChange}
-                        className="bg-transparent border-none p-0 text-gray-900 font-medium focus:ring-0 cursor-pointer"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {(errors.start_date || errors.end_date) && (
-                <p className="text-red-500 text-xs mt-2">
-                  {errors.start_date || errors.end_date}
-                </p>
-              )}
+        {/* Subject Selection */}
+        <div>
+          <div className={`flex items-center gap-3 bg-gray-50 dark:bg-gray-800 rounded-2xl px-5 py-4 border ${
+            errors.subject_id ? "border-red-300" : "border-gray-200 dark:border-gray-700"
+          } ${!formData.course_id && 'opacity-50'}`}>
+            <BookOpenIcon className="w-5 h-5 text-gray-400" />
+            <input
+              list="subject-list"
+              name="subject_id"
+              value={subjectSearch}
+              onChange={handleSubjectChange}
+              disabled={!formData.course_id}
+              placeholder="Geography"
+              className="flex-1 bg-transparent text-gray-900 dark:text-white font-medium outline-none placeholder:text-gray-400 disabled:cursor-not-allowed"
+            />
+            <ChevronDownIcon className="w-5 h-5 text-gray-400" />
+            <datalist id="subject-list">
+              {subjects.map((subject) => (
+                <option key={subject.id} value={subject.name} />
+              ))}
+            </datalist>
+          </div>
+          {errors.subject_id && <p className="text-red-500 text-xs mt-2">{errors.subject_id}</p>}
+        </div>
+
+        {/* Generated Class Title */}
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700">
+          <span className="block text-xs text-gray-500 mb-2">Generated Class Title</span>
+          <p className="text-base font-semibold text-gray-900 dark:text-white">
+            {selectedSubject 
+              ? `${selectedCourse?.title || selectedCourse?.name} - ${selectedSubject.name}` 
+              : "JAMB - Geography"
+            }
+          </p>
+        </div>
+
+        {/* Weekly Schedule */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <ClockIcon className="w-5 h-5 text-gray-900 dark:text-white" />
+              <span className="text-sm font-medium text-gray-500">West Africa Standard Time</span>
             </div>
+          </div>
+          
+          {/* Days Grid */}
+          <div className="grid grid-cols-7 gap-2 mb-4">
+            {weekDays.map((day) => {
+              const isActive = daySchedules.some((s) => s.day === day.value);
+              return (
+                <button
+                  key={day.value}
+                  type="button"
+                  onClick={() => toggleDay(day.value)}
+                  className={`py-3 rounded-xl text-xs font-medium transition-all ${
+                    isActive
+                      ? "bg-blue-400 text-white"
+                      : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                  }`}
+                >
+                  {day.label}
+                </button>
+              );
+            })}
+          </div>
 
-            {/* Course Dropdown (JAMB, WAEC, etc) */}
-            <div>
-              <div
-                className={`flex items-center gap-4 bg-gray-50 rounded-xl p-4 ${errors.course_id ? "border-2 border-red-500" : "border border-gray-200"}`}
-              >
-                <BookOpenIcon className="w-6 h-6 text-gray-700" />
-                <input
-                  list="course-list"
-                  name="course_id"
-                  value={courseSearch}
-                  onChange={handleCourseChange}
-                  placeholder="Select Course (e.g., JAMB, WAEC)"
-                  className="flex-1 bg-transparent text-gray-900 font-medium outline-none cursor-pointer"
-                />
-                <datalist id="course-list">
-                  {courses.map((course) => (
-                    <option
-                      key={course.id}
-                      value={course.title || course.name}
-                    />
-                  ))}
-                </datalist>
-                {/* <ChevronDownIcon className="w-5 h-5 text-gray-400" /> */}
+          {/* Time Slots Table */}
+          {daySchedules.length > 0 && (
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700">
+              <div className="grid grid-cols-3 gap-4 mb-3 text-xs font-medium text-gray-500">
+                <span>Day</span>
+                <span className="text-center">Start</span>
+                <span className="text-center">End</span>
               </div>
-              {errors.course_id && (
-                <p className="text-red-500 text-xs mt-2">{errors.course_id}</p>
-              )}
-            </div>
-
-            {/* Subject Dropdown (English, Mathematics, etc) */}
-            <div>
-              <div
-                className={`flex items-center gap-4 bg-gray-50 rounded-xl p-4 ${errors.subject_id ? "border-2 border-red-500" : "border border-gray-200"}`}
-              >
-                <BookOpenIcon className="w-6 h-6 text-gray-700" />
-                <input
-                  list="subject-list"
-                  name="subject_id"
-                  value={subjectSearch}
-                  onChange={handleSubjectChange}
-                  disabled={!formData.course_id}
-                  placeholder="Select Subject (e.g., English, Mathematics)"
-                  className="flex-1 bg-transparent text-gray-900 font-medium outline-none cursor-pointer disabled:text-gray-400 disabled:cursor-not-allowed"
-                />
-                <datalist id="subject-list">
-                  {subjects.map((subject) => (
-                    <option key={subject.id} value={subject.name} />
-                  ))}
-                </datalist>
-                {/* <ChevronDownIcon className="w-5 h-5 text-gray-400" /> */}
-              </div>
-              {errors.subject_id && (
-                <p className="text-red-500 text-xs mt-2">{errors.subject_id}</p>
-              )}
-            </div>
-
-            {/* Auto-Generated Title (Read-only display) */}
-            <div>
-              <div
-                className={`flex items-center gap-4 bg-gray-100 rounded-xl p-4 border border-gray-200`}
-              >
-                <div className="w-6" />
-                <div className="flex-1">
-                  <span className="block text-xs text-gray-500 mb-1">
-                    Generated Class Title
-                  </span>
-                  <p className="text-gray-900 font-bold">
-                    {formData.title ||
-                      "Select course and subject to generate title"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Days of Week Selectors */}
-            <div>
-              <div className="flex items-center gap-4">
-                <ClockIcon className="w-6 h-6 text-gray-700" />
-                <div className="flex-1 flex gap-2">
-                  {weekDays.map((day) => (
-                    <button
-                      key={day.value}
-                      type="button"
-                      onClick={() => toggleDay(day.value)}
-                      className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-                        daySchedules.some((s) => s.day === day.value)
-                          ? "bg-blue-300 text-blue-900"
-                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                      }`}
-                    >
-                      {day.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {errors.days && (
-                <p className="text-red-500 text-xs mt-2 ml-10">{errors.days}</p>
-              )}
-            </div>
-
-            {/* Individual Day Schedule Cards */}
-            <div className="space-y-4">
               {daySchedules.map((schedule) => (
-                <div key={schedule.day}>
-                  <div className="flex items-center gap-4">
-                    <div className="w-6" />
-                    <div
-                      className={`flex-1 bg-gray-50 rounded-xl p-4 ${errors.start_time ? "border-2 border-red-500" : "border border-gray-200"}`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="block text-xs text-gray-500 mb-1">
-                            Day
-                          </span>
-                          <span className="text-sm font-medium text-gray-900 capitalize">
-                            {schedule.day}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-6">
-                          <div>
-                            <span className="block text-xs text-gray-500 mb-1 text-right">
-                              Start
-                            </span>
-                            <input
-                              type="time"
-                              value={schedule.start_time}
-                              onChange={(e) =>
-                                handleTimeChange(
-                                  schedule.day,
-                                  "start_time",
-                                  e.target.value,
-                                )
-                              }
-                              className="bg-transparent border-none p-0 text-sm text-gray-900 font-medium focus:ring-0 cursor-pointer"
-                            />
-                          </div>
-                          <span className="text-gray-400 mt-4">-</span>
-                          <div>
-                            <span className="block text-xs text-gray-500 mb-1 text-right">
-                              End
-                            </span>
-                            <input
-                              type="time"
-                              value={schedule.end_time}
-                              onChange={(e) =>
-                                handleTimeChange(
-                                  schedule.day,
-                                  "end_time",
-                                  e.target.value,
-                                )
-                              }
-                              className="bg-transparent border-none p-0 text-sm text-gray-900 font-medium focus:ring-0 cursor-pointer"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div 
+                  key={schedule.day}
+                  className="grid grid-cols-3 gap-4 items-center py-2"
+                >
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    {schedule.day}
+                  </span>
+                  <input
+                    type="time"
+                    value={schedule.start_time}
+                    onChange={(e) => handleTimeChange(schedule.day, "start_time", e.target.value)}
+                    className="px-3 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    type="time"
+                    value={schedule.end_time}
+                    onChange={(e) => handleTimeChange(schedule.day, "end_time", e.target.value)}
+                    className="px-3 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
               ))}
-              {errors.start_time && (
-                <p className="text-red-500 text-xs mt-2 ml-10">
-                  {errors.start_time}
-                </p>
-              )}
             </div>
-
-            {/* Timezone */}
-            <div className="flex items-center gap-4 text-sm text-gray-600">
-              <GlobeAltIcon className="w-6 h-6 text-gray-700" />
-              <span>West Africa Standard Time</span>
-            </div>
-
-            {/* Tutor */}
-            <div>
-              <div
-                className={`flex items-center gap-4 bg-gray-50 rounded-xl p-4 ${errors.tutor_ids ? "border-2 border-red-500" : "border border-gray-200"}`}
-              >
-                <UserGroupIcon className="w-6 h-6 text-gray-700" />
-                <input
-                  list="tutor-list"
-                  name="tutor_ids"
-                  value={tutorSearch}
-                  onChange={(e) => handleStaffChange(e, "tutor_ids")}
-                  placeholder="Search and select tutors"
-                  className="flex-1 bg-transparent text-gray-500 outline-none cursor-pointer"
-                />
-                <datalist id="tutor-list">
-                  {tutors.map((s) => (
-                    <option
-                      key={s.id}
-                      value={s.name || `${s.firstname} ${s.surname}`}
-                    />
-                  ))}
-                </datalist>
-              </div>
-
-              {/* Selected Tutors Tags */}
-              {selectedTutors.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-3 px-1">
-                  {selectedTutors.map((s) => (
-                    <span
-                      key={s.id}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0F2843] text-white text-xs font-bold rounded-lg shadow-sm"
-                    >
-                      {s.name || `${s.firstname} ${s.surname}`}
-                      <button
-                        type="button"
-                        onClick={() => removeStaff(s.id, "tutor_ids")}
-                        className="p-0.5 hover:bg-white/20 rounded-full transition-colors"
-                      >
-                        <XMarkIcon className="w-3.5 h-3.5" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {errors.tutor_ids && (
-                <p className="text-red-500 text-xs mt-2 px-1">
-                  {errors.tutor_ids}
-                </p>
-              )}
-            </div>
-
-            {/* Assistant */}
-            <div>
-              <div className="flex items-center gap-4 bg-gray-50 rounded-xl p-4 border border-gray-200">
-                <UserGroupIcon className="w-6 h-6 text-gray-700" />
-                <input
-                  list="assistant-list"
-                  name="assistant_ids"
-                  value={assistantSearch}
-                  onChange={(e) => handleStaffChange(e, "assistant_ids")}
-                  placeholder="Search and select assistants (optional)"
-                  className="flex-1 bg-transparent text-gray-500 outline-none cursor-pointer"
-                />
-                <datalist id="assistant-list">
-                  {assistants.map((s) => (
-                    <option
-                      key={s.id}
-                      value={s.name || `${s.firstname} ${s.surname}`}
-                    />
-                  ))}
-                </datalist>
-              </div>
-
-              {/* Selected Assistants Tags */}
-              {selectedAssistants.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-3 px-1">
-                  {selectedAssistants.map((s) => (
-                    <span
-                      key={s.id}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-200 text-[#0F2843] text-xs font-bold rounded-lg shadow-sm border border-gray-300"
-                    >
-                      {s.name || `${s.firstname} ${s.surname}`}
-                      <button
-                        type="button"
-                        onClick={() => removeStaff(s.id, "assistant_ids")}
-                        className="p-0.5 hover:bg-black/10 rounded-full transition-colors"
-                      >
-                        <XMarkIcon className="w-3.5 h-3.5" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Link */}
-            <div className="flex items-center gap-4 bg-gray-50 rounded-xl p-4 border border-gray-200">
-              <LinkIcon className="w-6 h-6 text-gray-700" />
-              <input
-                type="url"
-                name="link"
-                value={formData.link}
-                onChange={handleChange}
-                placeholder="Add Link"
-                className="flex-1 bg-transparent text-gray-900 outline-none placeholder-gray-400"
-              />
-            </div>
-
-            {/* Status */}
-            <div className="flex items-center gap-4 bg-gray-50 rounded-xl p-4 border border-gray-200">
-              <UserCircleIcon className="w-6 h-6 text-gray-700" />
-              <input
-                list="status-list"
-                name="status"
-                value={statusSearch}
-                onChange={handleStatusChange}
-                placeholder="Select status"
-                className="flex-1 bg-transparent text-gray-500 outline-none cursor-pointer"
-              />
-              <datalist id="status-list">
-                <option value="active" />
-                <option value="inactive" />
-              </datalist>
-              {/* <ChevronDownIcon className="w-5 h-5 text-gray-400" /> */}
-            </div>
-
-            {/* Description */}
-            <div>
-              <div className="flex items-start gap-4 bg-gray-50 rounded-xl p-4 border border-gray-200">
-                <ChatBubbleBottomCenterTextIcon className="w-6 h-6 text-gray-700 mt-1" />
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  placeholder="Description (optional)"
-                  rows="3"
-                  className="flex-1 bg-transparent text-gray-900 outline-none placeholder-gray-400 resize-none"
-                />
-              </div>
-            </div>
-          </form>
+          )}
+          {errors.days && <p className="text-red-500 text-xs mt-2">{errors.days}</p>}
         </div>
 
-        {/* Footer Buttons */}
-        <div className="px-8 py-6 bg-white flex items-center gap-4 border-t border-gray-100">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={loading}
-            className="flex-1 py-3.5 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-all disabled:opacity-50"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            form="masterClassForm"
-            disabled={loading}
-            className="flex-1 py-3.5 bg-[#0F2843] hover:bg-[#0a1b2d] text-white font-bold rounded-xl transition-all disabled:opacity-50"
-          >
-            {loading ? "Saving..." : "Save"}
-          </button>
+        {/* Tutors */}
+        <div>
+          <div className={`flex items-center gap-3 bg-gray-50 dark:bg-gray-800 rounded-2xl px-5 py-4 border ${
+            errors.tutor_ids ? "border-red-300" : "border-gray-200 dark:border-gray-700"
+          }`}>
+            <UserGroupIcon className="w-5 h-5 text-gray-400" />
+            <input
+              list="tutor-list"
+              value={tutorSearch}
+              onChange={(e) => handleStaffChange(e, "tutor_ids")}
+              placeholder="Search and select tutors"
+              className="flex-1 bg-transparent text-sm text-gray-500 italic outline-none placeholder:text-gray-400"
+            />
+            <datalist id="tutor-list">
+              {tutors.map((s) => (
+                <option key={s.id} value={s.name || `${s.firstname} ${s.surname}`} />
+              ))}
+            </datalist>
+          </div>
+          <div className="flex flex-wrap gap-2 mt-3">
+            {selectedTutors.map((s) => (
+              <div key={s.id} className="flex items-center gap-2 px-4 py-2 bg-[#0a1d3a] text-white text-sm rounded-full">
+                {s.name || `${s.firstname} ${s.surname}`}
+                <button type="button" onClick={() => removeStaff(s.id, "tutor_ids")}>
+                  <XMarkIcon className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+          {errors.tutor_ids && <p className="text-red-500 text-xs mt-2">{errors.tutor_ids}</p>}
         </div>
-      </div>
+
+        {/* Assistants */}
+        <div>
+          <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 rounded-2xl px-5 py-4 border border-gray-200 dark:border-gray-700">
+            <UserGroupIcon className="w-5 h-5 text-gray-400" />
+            <input
+              list="assistant-list"
+              value={assistantSearch}
+              onChange={(e) => handleStaffChange(e, "assistant_ids")}
+              placeholder="Search and select assistants (optional)"
+              className="flex-1 bg-transparent text-sm text-gray-500 italic outline-none placeholder:text-gray-400"
+            />
+            <datalist id="assistant-list">
+              {assistants.map((s) => (
+                <option key={s.id} value={s.name || `${s.firstname} ${s.surname}`} />
+              ))}
+            </datalist>
+          </div>
+          <div className="flex flex-wrap gap-2 mt-3">
+            {selectedAssistants.map((s) => (
+              <div key={s.id} className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white text-sm rounded-full">
+                {s.name || `${s.firstname} ${s.surname}`}
+                <button type="button" onClick={() => removeStaff(s.id, "assistant_ids")}>
+                  <XMarkIcon className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Meeting Link */}
+        <div>
+          <div className={`flex items-center gap-3 bg-gray-50 dark:bg-gray-800 rounded-2xl px-5 py-4 border ${
+            errors.link ? "border-red-300" : "border-gray-200 dark:border-gray-700"
+          }`}>
+            <LinkIcon className="w-5 h-5 text-gray-400" />
+            <input
+              type="url"
+              name="link"
+              value={formData.link}
+              onChange={handleChange}
+              placeholder="https://meet.google.com/ans-baxj-eyc"
+              className="flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400"
+            />
+          </div>
+          {errors.link && <p className="text-red-500 text-xs mt-2">{errors.link}</p>}
+        </div>
+
+        {/* Status */}
+        <div>
+          <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 rounded-2xl px-5 py-4 border border-gray-200 dark:border-gray-700">
+            <UserCircleIcon className="w-5 h-5 text-gray-400" />
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="flex-1 bg-transparent text-sm outline-none cursor-pointer border-none focus:ring-0"
+            >
+              <option value="active">active</option>
+              <option value="inactive">inactive</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div>
+          <div className="flex items-start gap-3 bg-gray-50 dark:bg-gray-800 rounded-2xl px-5 py-4 border border-gray-200 dark:border-gray-700">
+            <ChatBubbleBottomCenterTextIcon className="w-5 h-5 text-gray-400 mt-1" />
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Description (optional)"
+              rows="3"
+              className="flex-1 bg-transparent text-sm text-gray-500 italic outline-none placeholder:text-gray-400 resize-none"
+            />
+          </div>
+        </div>
+      </form>
     </div>
+
+    {/* Footer - Fixed */}
+    <div className="flex-shrink-0 px-8 py-6 bg-white dark:bg-gray-900 flex items-center gap-4 border-t border-gray-200 dark:border-gray-800">
+      <button
+        type="button"
+        onClick={onClose}
+        disabled={loading}
+        className="flex-1 py-3 bg-red-500 text-white font-semibold rounded-xl transition-all hover:bg-red-600 disabled:opacity-50"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        form="masterClassForm"
+        disabled={loading}
+        className={`flex-1 py-3 bg-[#0a1d3a] text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 ${
+          loading ? "opacity-70 cursor-not-allowed" : "hover:bg-[#081627]"
+        }`}
+      >
+        {loading ? (
+          <>
+            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            Saving...
+          </>
+        ) : (
+          "Save"
+        )}
+      </button>
+    </div>
+  </div>
+</div>
   );
 }

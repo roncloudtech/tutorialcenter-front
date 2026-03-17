@@ -10,33 +10,35 @@ export default function StaffDashboardLayout({ children }) {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      {/* ===== MOBILE LAYOUT ===== */}
+      {/* Mobile-only Header */}
       <div className="lg:hidden">
         <MobileHeader />
-
-        <main className="pt-16 pb-20 px-4">{children}</main>
-
-        <MobileBottomNav />
       </div>
 
-      {/* ===== DESKTOP LAYOUT ===== */}
+      {/* Desktop Sidebar */}
       <div className="hidden lg:block">
         <Sidebar collapsed={leftCollapsed} setCollapsed={setLeftCollapsed} />
-
         <RightPanel
           collapsed={rightCollapsed}
           setCollapsed={setRightCollapsed}
         />
+      </div>
 
-        <main
-          className={`
-            transition-all duration-300 p-6
-            ${leftCollapsed ? "ml-20" : "ml-64"}
-            ${rightCollapsed ? "mr-1" : "mr-80"}
-          `}
-        >
-          {children}
-        </main>
+      {/* Main Content Branch - Persists through all breakpoints */}
+      <main
+        className={`
+          transition-all duration-300 px-4 pt-16 pb-20 
+          lg:pt-6 lg:pb-6 lg:p-6
+          ${leftCollapsed ? "lg:ml-20" : "lg:ml-64"}
+          ${rightCollapsed ? "lg:mr-1" : "lg:mr-80"}
+        `}
+      >
+        {children}
+      </main>
+
+      {/* Mobile-only Nav */}
+      <div className="lg:hidden">
+        <MobileBottomNav />
       </div>
     </div>
   );
