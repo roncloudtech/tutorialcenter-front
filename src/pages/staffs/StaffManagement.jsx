@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import StaffDashboardLayout from "../../components/private/staffs/DashboardLayout.jsx";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { 
   UsersIcon, 
   UserPlusIcon, 
@@ -15,22 +16,23 @@ import {
   NoSymbolIcon
 } from "@heroicons/react/24/outline";
 
-/**
- * StaffManagement Component
- * 
- * This page handles the management of staff members.
- * It displays statistics, a searchable list of staff, and pagination.
- * All information is prepared to be populated from the backend.
- */
 export default function StaffManagement() {
   const navigate = useNavigate();
+  const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
+  const token = localStorage.getItem("staff_token");
+
   // --- STATE ---
-  // Statistics - Initialized to 0 as requested, ready for backend data
-  const [stats] = useState([
+  const [staffs, setStaffs] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Statistics State
+  const [stats, setStats] = useState([
     { 
       label: "Total Staffs", 
       value: 0, 
-      subLabel: "+2 new", 
+      subLabel: "+0 new", 
       icon: UsersIcon, 
       color: "text-[#0F2843]", 
       bg: "bg-blue-50/50",
@@ -57,7 +59,7 @@ export default function StaffManagement() {
     { 
       label: "Suspended", 
       value: 0, 
-      subLabel: "+2 staffs", 
+      subLabel: "+0 staffs", 
       icon: NoSymbolIcon, 
       color: "text-[#F59E0B]", 
       bg: "bg-orange-50/50",
@@ -65,11 +67,87 @@ export default function StaffManagement() {
     },
   ]);
 
-  // Pagination state - Default mock state matching mockup visual requirements
-  const [currentPage] = useState(5);
-  const [totalPages] = useState(12);
-  const [viewedPages] = useState([1, 2, 3, 4]);
-  const [staffData] = useState([]); // Awaiting info from backend
+  // --- DATA FETCHING ---
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [staffRes, classRes] = await Promise.all([
+        axios.get(`${API_BASE_URL}/api/admin/staffs/all`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get(`${API_BASE_URL}/api/admin/classes/all`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      ]);
+
+      const fetchedStaffs = staffRes.data?.staffs || staffRes.data?.data || [];
+      const fetchedClasses = classRes.data?.classes || classRes.data?.data || [];
+      
+      setStaffs(fetchedStaffs);
+      setClasses(fetchedClasses);
+      calculateStats(fetchedStaffs);
+    } catch (error) {
+      console.error("Failed to fetch staff management data", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [API_BASE_URL, token]);
+
+  const calculateStats = (allStaffs) => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    // Total and New Staff (current month)
+    const newStaffsThisMonth = allStaffs.filter(s => {
+      if (!s.created_at) return false;
+      const date = new Date(s.created_at);
+      return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+    });
+
+    // Suspended logic: "brought but no id"
+    const suspendedStaffs = allStaffs.filter(s => !s.id);
+    const suspendedThisMonth = suspendedStaffs.filter(s => {
+      if (!s.updated_at) return false;
+      const date = new Date(s.updated_at);
+      return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+    });
+
+    setStats(prev => [
+      { ...prev[0], value: allStaffs.length, subLabel: `+${newStaffsThisMonth.length} new` },
+      { ...prev[1], value: allStaffs.filter(s => s.status === 'active' || s.is_online).length }, // Fallback logic
+      { ...prev[2], value: allStaffs.filter(s => s.status === 'inactive' || !s.is_online).length },
+      { ...prev[3], value: suspendedStaffs.length, subLabel: `+${suspendedThisMonth.length} staffs` },
+    ]);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  // --- MERGE DATA FOR TABLE ---
+  const tableData = staffs.map(staff => {
+    // Find class where this staff is tutor or assistant
+    const staffClass = classes.find(c => 
+      c.tutor_id === staff.id || 
+      (Array.isArray(c.assistant_ids) && c.assistant_ids.includes(staff.id))
+    );
+
+    return {
+      ...staff,
+      name: `${staff.firstname} ${staff.surname}`,
+      profile_picture: staff.profile_picture || "https://ui-avatars.com/api/?name=" + staff.firstname,
+      classRole: staffClass ? (staffClass.tutor_id === staff.id ? "Lead Tutor" : "Assistant") : "N/A",
+      subject: staffClass?.title || "N/A",
+      className: staffClass?.name || "No Class",
+      location: staff.address || staff.location || "Online"
+    };
+  }).filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  // Pagination state (Mocked for now as per design)
+  const [currentPage] = useState(1);
+  const [totalPages] = useState(1);
+  const [viewedPages] = useState([1]);
 
   return (
     <StaffDashboardLayout>
@@ -124,6 +202,8 @@ export default function StaffManagement() {
                  <MagnifyingGlassIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                  <input 
                    type="text" 
+                   value={searchTerm}
+                   onChange={(e) => setSearchTerm(e.target.value)}
                    placeholder="Search by name" 
                    className="w-full pl-14 pr-6 py-4 bg-white rounded-2xl border-none shadow-[0_4px_15px_rgba(0,0,0,0.02)] focus:ring-2 focus:ring-[#BB9E7F] text-sm font-medium placeholder-gray-300" 
                  />
@@ -147,31 +227,40 @@ export default function StaffManagement() {
            <div className="grid grid-cols-6 items-center bg-[#BB9E7F] px-8 py-5 rounded-2xl text-white font-black text-[13px] uppercase tracking-widest shadow-lg">
               <div>Name</div>
               <div className="text-center">Role</div>
-              <div className="text-center">Course</div>
+              <div className="text-center">ClassRole</div>
               <div className="text-center">Subject</div>
-              <div className="text-center">Attendance</div>
               <div className="text-center">Class</div>
+              <div className="text-center">Location</div>
            </div>
 
            {/* Staff Rows List */}
            <div className="flex flex-col gap-4 min-h-[400px]">
-              {staffData.length > 0 ? (
-                staffData.map((staff, idx) => (
-                  <div key={idx} className="grid grid-cols-6 items-center bg-white px-8 py-5 rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] border border-gray-50 hover:shadow-xl transition-all cursor-pointer group">
+              {loading ? (
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="w-10 h-10 border-4 border-[#0F2843]/20 border-t-[#0F2843] rounded-full animate-spin"></div>
+                </div>
+              ) : tableData.length > 0 ? (
+                tableData.map((staff, idx) => (
+                  <div key={staff.id || idx} className="grid grid-cols-6 items-center bg-white px-8 py-5 rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] border border-gray-50 hover:shadow-xl transition-all cursor-pointer group animate-in fade-in slide-in-from-bottom-2">
                      {/* Name Column with Avatar */}
                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#BB9E7F]/30 group-hover:border-[#BB9E7F] transition-all">
-                           <img src={staff.profile_picture} className="w-full h-full object-cover" alt={staff.name} />
+                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#BB9E7F]/30 group-hover:border-[#BB9E7F] transition-all bg-gray-100 flex-shrink-0">
+                           <img 
+                             src={`${API_BASE_URL}/storage/${staff.profile_picture}`} 
+                             onError={(e) => { e.target.src = "https://ui-avatars.com/api/?name=" + (staff.firstname || "User"); }}
+                             className="w-full h-full object-cover" 
+                             alt={staff.name} 
+                           />
                         </div>
-                        <span className="font-black text-[#0F2843] text-sm">{staff.name}</span>
+                        <span className="font-black text-[#0F2843] text-sm truncate">{staff.name}</span>
                      </div>
                      
                      {/* Data Columns */}
-                     <div className="text-center text-gray-500 font-bold text-[13px]">{staff.role}</div>
-                     <div className="text-center text-gray-900 font-black text-[13px] tracking-tight">{staff.course}</div>
-                     <div className="text-center text-gray-500 font-bold text-[13px]">{staff.subject}</div>
-                     <div className="text-center text-[#BB9E7F] font-black text-sm">{staff.attendance}</div>
-                     <div className="text-center text-gray-900 font-black text-[13px]">{staff.class_id}</div>
+                     <div className="text-center text-gray-500 font-bold text-[13px] capitalize">{staff.role}</div>
+                     <div className="text-center text-gray-900 font-black text-[13px] tracking-tight">{staff.classRole}</div>
+                     <div className="text-center text-gray-500 font-bold text-[13px] truncate">{staff.subject}</div>
+                     <div className="text-center text-[#BB9E7F] font-black text-sm">{staff.className}</div>
+                     <div className="text-center text-gray-900 font-black text-[13px] truncate">{staff.location}</div>
                   </div>
                 ))
               ) : (
@@ -180,9 +269,9 @@ export default function StaffManagement() {
                    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
                       <UserPlusIcon className="w-10 h-10 text-gray-300" />
                    </div>
-                   <h3 className="text-2xl font-black text-gray-400 mb-2">Awaiting Info from Backend</h3>
+                   <h3 className="text-2xl font-black text-gray-400 mb-2">No Staff Found</h3>
                    <p className="text-gray-400 text-sm font-medium text-center max-w-sm leading-relaxed">
-                      All system modules are ready. Data for names, roles, subjects, and classes will populate automatically once connected.
+                      {searchTerm ? `No staff matches "${searchTerm}". Try a different search.` : "No staff members are currently registered in the system."}
                    </p>
                 </div>
               )}
