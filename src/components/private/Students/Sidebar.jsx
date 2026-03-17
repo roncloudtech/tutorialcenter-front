@@ -29,7 +29,8 @@ const menuItems = [
   {
     label: "Master Class",
     icon: "healthicons:i-training-class",
-    destination: "/student/master-class",
+    // destination: "/student/master-class",
+    destination: "/student/class-schedule",
   },
   {
     label: "Exam Practice",
