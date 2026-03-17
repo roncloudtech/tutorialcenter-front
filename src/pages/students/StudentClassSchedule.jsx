@@ -20,7 +20,7 @@ export default function StudentClassSchedule() {
      FETCH STUDENT SCHEDULE
   ============================= */
 
-  const fetchStudentSchedule = async () => {
+  const fetchStudentSchedule = React.useCallback(async () => {
     try {
       setLoading(true);
 
@@ -48,11 +48,11 @@ export default function StudentClassSchedule() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_BASE_URL, authToken]);
 
   useEffect(() => {
     fetchStudentSchedule();
-  }, []);
+  }, [fetchStudentSchedule]);
 
   /* =============================
      HELPERS

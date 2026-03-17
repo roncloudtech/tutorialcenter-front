@@ -3,8 +3,7 @@ import Sidebar from "./Sidebar.jsx";
 import RightPanel from "./RightPanel.jsx";
 import MobileHeader from "./MobileHeader.jsx";
 import MobileBottomNav from "./MobileBottomNav.jsx";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { BellIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { BellIcon } from "@heroicons/react/24/outline";
 
 export default function DashboardLayout({ children, pagetitle }) {
   const [leftCollapsed, setLeftCollapsed] = useState(false);
