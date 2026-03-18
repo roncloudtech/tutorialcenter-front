@@ -20,7 +20,7 @@ export default function StudentClassSchedule() {
      FETCH STUDENT SCHEDULE
   ============================= */
 
-  const fetchStudentSchedule = React.useCallback(async () => {
+  const fetchStudentSchedule = async () => {
     try {
       setLoading(true);
 
@@ -34,7 +34,9 @@ export default function StudentClassSchedule() {
         },
       );
 
-      const data = res.data;
+
+      const data = await res?.data;
+      console.log(data);
 
       setNextClass(data.next_class || null);
       setTodayClasses(data.today_classes || []);
@@ -48,11 +50,11 @@ export default function StudentClassSchedule() {
     } finally {
       setLoading(false);
     }
-  }, [API_BASE_URL, authToken]);
+  };
 
   useEffect(() => {
     fetchStudentSchedule();
-  }, [fetchStudentSchedule]);
+  }, []);
 
   /* =============================
      HELPERS
@@ -99,7 +101,7 @@ export default function StudentClassSchedule() {
 
   return (
     <DashboardLayout pagetitle="Class Schedule">
-      <div className="py-6 space-y-8">
+      <div className="p-6 space-y-8">
         {/* =============================
           NEXT CLASS
       ============================= */}

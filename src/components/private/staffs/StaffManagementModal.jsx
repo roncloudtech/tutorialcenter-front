@@ -2,18 +2,18 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { 
   XMarkIcon,
-  UserIcon,
+  // UserIcon,
   EnvelopeIcon,
   PhoneIcon,
   CameraIcon,
-  CalendarIcon,
-  MapPinIcon,
-  UserGroupIcon,
+  // CalendarIcon,
+  // MapPinIcon,
+  // UserGroupIcon,
   PencilSquareIcon,
   NoSymbolIcon,
   ArrowPathIcon,
   CheckCircleIcon,
-  TrashIcon
+  // TrashIcon
 } from "@heroicons/react/24/outline";
 
 export default function StaffManagementModal({ staffId, onClose, onSuccess }) {
