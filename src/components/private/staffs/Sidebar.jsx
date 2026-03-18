@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   HomeIcon,
   UsersIcon,
@@ -37,12 +38,59 @@ const menuItems = [
 export default function StaffSidebar({ collapsed, setCollapsed, isOpen, onClose }) {
   const { theme, setTheme } = useTheme();
 
-  const storedStaff = localStorage.getItem("staff_info");
-  const staff = storedStaff ? JSON.parse(storedStaff) : null;
+  const [staffInfo, setStaffInfo] = useState(null);
+  const [staffRole, setStaffRole] = useState("Staff");
+
+  useEffect(() => {
+    const updateProfileData = () => {
+      const storedStaff = localStorage.getItem("staff_info");
+      const storedRole = localStorage.getItem("staff_role");
+      let parsedStaff = null;
+
+      if (storedStaff) {
+        try {
+          parsedStaff = JSON.parse(storedStaff);
+          setStaffInfo(parsedStaff);
+        } catch (e) {
+          console.error("Error parsing staff_info", e);
+        }
+      }
+
+      if (storedRole) {
+        // Handle whether the role was stringified as a JSON string `"tutor"` or raw `tutor`
+        try {
+          const parsed = JSON.parse(storedRole);
+          setStaffRole(parsed.charAt(0).toUpperCase() + parsed.slice(1));
+        } catch {
+          setStaffRole(storedRole.charAt(0).toUpperCase() + storedRole.slice(1));
+        }
+      } else if (parsedStaff && parsedStaff.role) {
+        setStaffRole(parsedStaff.role.charAt(0).toUpperCase() + parsedStaff.role.slice(1));
+      }
+    };
+
+    // Initial load
+    updateProfileData();
+
+    // Listen for cross-tab storage changes
+    window.addEventListener("storage", updateProfileData);
+    // Listen for custom event from same tab updates (e.g. from the profile settings page)
+    window.addEventListener("staffProfileUpdated", updateProfileData);
+
+    return () => {
+      window.removeEventListener("storage", updateProfileData);
+      window.removeEventListener("staffProfileUpdated", updateProfileData);
+    };
+  }, []);
+
   const fullName =
-    staff?.firstname && staff?.surname
-      ? `${staff.firstname} ${staff.surname}`
+    staffInfo?.firstname && staffInfo?.surname
+      ? `${staffInfo.firstname} ${staffInfo.surname}`
       : "Staff Member";
+
+  const profilePic = staffInfo?.profile_picture 
+    ? (process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test") + "/storage/" + staffInfo.profile_picture 
+    : null;
 
   return (
     <>
@@ -99,13 +147,23 @@ export default function StaffSidebar({ collapsed, setCollapsed, isOpen, onClose 
 
         {/* Avatar */}
         <div className="flex px-3 space-y-2 flex-wrap gap-3 items-center">
-          <div className="rounded-full shadow-lg h-10 w-10 flex items-center justify-center bg-blue-900 text-white font-bold">
-            {fullName?.[0] || "S"}
-          </div>
+          {profilePic ? (
+            <img 
+              src={profilePic} 
+              alt={fullName} 
+              className="rounded-full shadow-lg h-10 w-10 object-cover border-2 border-white dark:border-gray-800" 
+            />
+          ) : (
+            <div className="rounded-full shadow-lg h-10 w-10 flex items-center justify-center bg-blue-900 text-white font-bold border-2 border-white dark:border-gray-800">
+              {fullName?.[0] || "S"}
+            </div>
+          )}
           {!collapsed && (
             <div>
-              <h6 className="text-yellow-400 text-sm">Welcome Staff</h6>
-              <h3 className="font-bold dark:text-gray-50 text-sm">
+              <h6 className="text-yellow-400 text-[11px] font-black uppercase tracking-widest leading-tight mb-0.5">
+                Welcome {staffRole}
+              </h6>
+              <h3 className="font-bold dark:text-gray-50 text-[13px] leading-tight truncate max-w-[140px]">
                 {fullName}
               </h3>
             </div>
