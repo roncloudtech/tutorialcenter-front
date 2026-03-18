@@ -114,11 +114,17 @@ export default function StaffRegistration() {
     setLoading(true);
     const data = new FormData();
 
+    // Dynamically append all form fields
     Object.keys(formData).forEach(key => {
-      if (formData[key] !== null) {
-        data.append(key, formData[key]);
+      const value = formData[key];
+      // Only append if value is not null and not an empty string (for optional fields)
+      if (value !== null && value !== "") {
+        data.append(key, value);
       }
     });
+
+    // Logging for debugging backend payload
+    console.log("Submitting Registration Payload:", Object.fromEntries(data.entries()));
 
     try {
       const response = await axios.post(

@@ -8,6 +8,8 @@ import CreateMasterClassModal from "../../components/private/staffs/MasterclassM
 import { 
   PlusIcon, 
   MagnifyingGlassIcon,
+  LinkIcon,
+  CheckIcon,
 } from "@heroicons/react/24/outline";
 import { Icon } from "@iconify/react";
 
@@ -20,6 +22,7 @@ export default function MasterClassList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [toast, setToast] = useState(null);
+  const [copiedLink, setCopiedLink] = useState(null);
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
   const token = localStorage.getItem("staff_token");
@@ -119,9 +122,17 @@ export default function MasterClassList() {
     return s.name || "—";
   };
 
+  const copyToClipboard = (link, classId) => {
+    navigator.clipboard.writeText(link);
+    setCopiedLink(classId);
+    setTimeout(() => setCopiedLink(null), 2000);
+  };
+
   // --- CLASS ROW ---
   const ClassRow = ({ cls }) => {
     const schedule = cls.schedules?.[0];
+    const isLinkCopied = copiedLink === cls.id;
+    
     return (
       <div className="flex items-center gap-4 py-4 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors px-2 rounded-lg">
         {/* Yellow dot */}
@@ -133,39 +144,62 @@ export default function MasterClassList() {
         </div>
 
         {/* Title */}
-        <span className="text-sm font-bold text-[#1F2937] w-[180px] truncate flex-shrink-0">
+        <span className="text-sm font-bold text-[#1F2937] w-[150px] truncate flex-shrink-0">
           {cls.title}
         </span>
 
         {/* Instructor */}
-        <span className="text-sm text-gray-600 w-[200px] truncate flex-shrink-0">
+        <span className="text-sm text-gray-600 w-[150px] truncate flex-shrink-0">
           {getStaffName(cls)}
         </span>
 
         {/* Date */}
-        <span className="text-sm text-gray-500 w-[110px] flex-shrink-0">
+        <span className="text-sm text-gray-500 w-[100px] flex-shrink-0">
           {formatDate(cls.start_date)}
         </span>
 
         {/* Time */}
-        <span className="text-sm text-gray-500 w-[80px] flex-shrink-0">
+        <span className="text-sm text-gray-500 w-[70px] flex-shrink-0">
           {schedule ? formatTime(schedule.start_time) : "—"}
         </span>
 
-        {/* Link */}
-        {cls.class_link ? (
-          <a
-            href={cls.class_link}
-            target="_blank"
-            rel="noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="text-sm text-blue-600 font-bold hover:underline truncate max-w-[80px]"
-          >
-            http...
-          </a>
-        ) : (
-          <span className="text-sm text-gray-300 max-w-[80px]">—</span>
-        )}
+        {/* Link - Prominent in Middle */}
+        <div className="flex-1 flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg border border-blue-200 min-w-0">
+          {cls.class_link ? (
+            <>
+              <LinkIcon className="w-4 h-4 text-blue-600 flex-shrink-0" />
+              <a
+                href={cls.class_link}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-sm text-blue-600 font-semibold hover:underline truncate flex-1"
+                title={cls.class_link}
+              >
+                {cls.class_link.replace(/^https?:\/\//, '')}
+              </a>
+              <button
+                onClick={() => copyToClipboard(cls.class_link, cls.id)}
+                className="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-bold flex items-center gap-1 flex-shrink-0 transition-all"
+                title="Copy link"
+              >
+                {isLinkCopied ? (
+                  <>
+                    <CheckIcon className="w-3.5 h-3.5" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Icon icon="mdi:content-copy" className="w-3.5 h-3.5" />
+                    Copy
+                  </>
+                )}
+              </button>
+            </>
+          ) : (
+            <span className="text-sm text-gray-400 italic">No link added</span>
+          )}
+        </div>
       </div>
     );
   };

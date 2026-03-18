@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import StaffDashboardLayout from "../../components/private/staffs/DashboardLayout.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import StaffManagementModal from "../../components/private/staffs/StaffManagementModal.jsx";
 import { 
   UsersIcon, 
   UserPlusIcon, 
@@ -26,6 +27,8 @@ export default function StaffManagement() {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStaffId, setSelectedStaffId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Statistics State
   const [stats, setStats] = useState([
@@ -71,23 +74,38 @@ export default function StaffManagement() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
+      const config = {
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/json"
+        }
+      };
+
       const [staffRes, classRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/api/admin/staffs/all`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.get(`${API_BASE_URL}/api/admin/classes/all`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        axios.get(`${API_BASE_URL}/api/admin/staffs/all`, config),
+        axios.get(`${API_BASE_URL}/api/admin/classes/all`, config)
       ]);
 
-      const fetchedStaffs = staffRes.data?.staffs || staffRes.data?.data || [];
-      const fetchedClasses = classRes.data?.classes || classRes.data?.data || [];
+      console.group("Staff Management Data Fetching");
+      console.log("Staff Response Payload:");
+      console.table(staffRes?.data?.staffs || staffRes?.data?.data);
+      console.log("Classes Response Payload:");
+      console.table(classRes?.data?.classes || classRes?.data?.data);
+      console.groupEnd();
+
+      const fetchedStaffs = staffRes.data?.staffs || staffRes.data?.data;
+      const fetchedClasses = classRes.data?.classes || classRes.data?.data;
       
-      setStaffs(fetchedStaffs);
-      setClasses(fetchedClasses);
-      calculateStats(fetchedStaffs);
+      const staffsArray = Array.isArray(fetchedStaffs) ? fetchedStaffs : [];
+      const classesArray = Array.isArray(fetchedClasses) ? fetchedClasses : [];
+
+      setStaffs(staffsArray);
+      setClasses(classesArray);
+      calculateStats(staffsArray);
     } catch (error) {
-      console.error("Failed to fetch staff management data", error);
+      console.error("Endpoint failed:", error.response?.status, error.response?.data);
+      setStaffs([]);
+      setClasses([]);
     } finally {
       setLoading(false);
     }
@@ -105,8 +123,8 @@ export default function StaffManagement() {
       return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
     });
 
-    // Suspended logic: "brought but no id"
-    const suspendedStaffs = allStaffs.filter(s => !s.id);
+    // Suspended logic based on user's clarification: "soft delete will have its own data value different from standard id"
+    const suspendedStaffs = allStaffs.filter(s => !s.id); 
     const suspendedThisMonth = suspendedStaffs.filter(s => {
       if (!s.updated_at) return false;
       const date = new Date(s.updated_at);
@@ -115,7 +133,7 @@ export default function StaffManagement() {
 
     setStats(prev => [
       { ...prev[0], value: allStaffs.length, subLabel: `+${newStaffsThisMonth.length} new` },
-      { ...prev[1], value: allStaffs.filter(s => s.status === 'active' || s.is_online).length }, // Fallback logic
+      { ...prev[1], value: allStaffs.filter(s => s.status === 'active' || (s.id && s.is_online)).length }, 
       { ...prev[2], value: allStaffs.filter(s => s.status === 'inactive' || !s.is_online).length },
       { ...prev[3], value: suspendedStaffs.length, subLabel: `+${suspendedThisMonth.length} staffs` },
     ]);
@@ -127,19 +145,24 @@ export default function StaffManagement() {
 
   // --- MERGE DATA FOR TABLE ---
   const tableData = staffs.map(staff => {
-    // Find class where this staff is tutor or assistant
+    // Traverse the classes to find where this staff member is assigned
+    // Each class has a 'staffs' array with a 'pivot' containing the class-specific role
     const staffClass = classes.find(c => 
-      c.tutor_id === staff.id || 
-      (Array.isArray(c.assistant_ids) && c.assistant_ids.includes(staff.id))
+      Array.isArray(c.staffs) && c.staffs.some(s => s.id === staff.id)
     );
+
+    // Find the specific staff entry within that class to access pivot data
+    const classStaffEntry = staffClass?.staffs?.find(s => s.id === staff.id);
 
     return {
       ...staff,
       name: `${staff.firstname} ${staff.surname}`,
-      profile_picture: staff.profile_picture || "https://ui-avatars.com/api/?name=" + staff.firstname,
-      classRole: staffClass ? (staffClass.tutor_id === staff.id ? "Lead Tutor" : "Assistant") : "N/A",
+      profile_picture: (staff.profile_picture && staff.profile_picture !== "default-avatar.png") 
+        ? staff.profile_picture 
+        : null,
+      classRole: classStaffEntry?.pivot?.role || "N/A",
       subject: staffClass?.title || "N/A",
-      className: staffClass?.name || "No Class",
+      className: staffClass?.title || "No Class",
       location: staff.address || staff.location || "Online"
     };
   }).filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -241,7 +264,14 @@ export default function StaffManagement() {
                 </div>
               ) : tableData.length > 0 ? (
                 tableData.map((staff, idx) => (
-                  <div key={staff.id || idx} className="grid grid-cols-6 items-center bg-white px-8 py-5 rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] border border-gray-50 hover:shadow-xl transition-all cursor-pointer group animate-in fade-in slide-in-from-bottom-2">
+                  <div 
+                    key={staff.id || idx} 
+                    onClick={() => {
+                        setSelectedStaffId(staff.id);
+                        setIsModalOpen(true);
+                    }}
+                    className="grid grid-cols-6 items-center bg-white px-8 py-5 rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] border border-gray-50 hover:shadow-xl transition-all cursor-pointer group animate-in fade-in slide-in-from-bottom-2"
+                  >
                      {/* Name Column with Avatar */}
                      <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#BB9E7F]/30 group-hover:border-[#BB9E7F] transition-all bg-gray-100 flex-shrink-0">
@@ -316,8 +346,23 @@ export default function StaffManagement() {
               <span className="text-sm font-black text-gray-400 uppercase tracking-widest">/ page</span>
            </div>
         </div>
-
       </div>
+
+      {/* Staff Management Modal */}
+      {isModalOpen && selectedStaffId && (
+        <StaffManagementModal 
+          staffId={selectedStaffId}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedStaffId(null);
+          }}
+          onSuccess={() => {
+            setIsModalOpen(false);
+            setSelectedStaffId(null);
+            fetchData(); // Refresh table data
+          }}
+        />
+      )}
     </StaffDashboardLayout>
   );
 }
