@@ -27,6 +27,7 @@ export default function StaffManagementModal({ staffId, onClose, onSuccess }) {
   const token = localStorage.getItem("staff_token");
 
   const [imagePreview, setImagePreview] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Fetch full staff details
   const fetchStaffDetails = useCallback(async () => {
@@ -59,6 +60,7 @@ export default function StaffManagementModal({ staffId, onClose, onSuccess }) {
   };
 
   const handleImageChange = (e) => {
+    if (!isEditing) return; // Only allow image change in edit mode
     const file = e.target.files[0];
     if (file) {
       setStaff(prev => ({ ...prev, profile_picture: file }));
@@ -68,16 +70,15 @@ export default function StaffManagementModal({ staffId, onClose, onSuccess }) {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    if (!isEditing) return;
+    
     setSubmitting(true);
 
     const data = new FormData();
-    // Laravel handles PUT with FormData via _method trick
     data.append("_method", "PUT");
 
     Object.keys(staff).forEach(key => {
       const value = staff[key];
-      // Only append if value is not null and not empty
-      // CRITICAL: We only send profile_picture if it's a new File object
       if (key === "profile_picture") {
         if (value instanceof File) {
           data.append(key, value);
@@ -88,7 +89,6 @@ export default function StaffManagementModal({ staffId, onClose, onSuccess }) {
     });
 
     try {
-      // Use POST with _method=PUT for multipart/form-data support in Laravel
       const res = await axios.post(`${API_BASE_URL}/api/admin/staffs/update/${staffId}`, data, {
         headers: { 
           Authorization: `Bearer ${token}`,
@@ -96,6 +96,7 @@ export default function StaffManagementModal({ staffId, onClose, onSuccess }) {
         }
       });
       setToast({ type: "success", message: res.data.message || "Staff updated successfully" });
+      setIsEditing(false); // Exit edit mode on success
       setTimeout(() => onSuccess(), 1500);
     } catch (error) {
       setErrors(error.response?.data?.errors || {});
@@ -225,75 +226,153 @@ export default function StaffManagementModal({ staffId, onClose, onSuccess }) {
           </div>
 
           {/* Form Content */}
-          <form id="staffUpdateForm" onSubmit={handleUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <form id="staffUpdateForm" onSubmit={handleUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-10">
             
             {/* Column 1: Personal */}
             <div className="space-y-6">
-              <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Personal Information</h3>
+              <h3 className="text-xs font-black text-[#BB9E7F] uppercase tracking-[0.2em] mb-4 border-b border-gray-100 pb-2">Personal Information</h3>
               
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1">First Name</label>
-                  <input name="firstname" value={staff.firstname || ""} onChange={handleChange} className="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl text-sm font-bold text-[#0F2843] focus:ring-2 focus:ring-[#BB9E7F] transition-all" />
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">First Name</label>
+                  <input
+                    type="text"
+                    name="firstname"
+                    value={staff.firstname || ""}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
+                    placeholder="First Name"
+                  />
                 </div>
-                <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1">Surname</label>
-                  <input name="surname" value={staff.surname || ""} onChange={handleChange} className="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl text-sm font-bold text-[#0F2843] focus:ring-2 focus:ring-[#BB9E7F] transition-all" />
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Surname</label>
+                  <input
+                    type="text"
+                    name="surname"
+                    value={staff.surname || ""}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
+                    placeholder="Surname"
+                  />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1">Middle Name</label>
-                <input name="middlename" value={staff.middlename || ""} onChange={handleChange} className="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl text-sm font-bold text-[#0F2843] focus:ring-2 focus:ring-[#BB9E7F] transition-all" />
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Middle name</label>
+                <input
+                  type="text"
+                  name="middlename"
+                  value={staff.middlename || ""}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
+                  placeholder="Middle Name (Optional)"
+                />
               </div>
 
-              <div>
-                <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1">Gender</label>
-                <select name="gender" value={staff.gender || ""} onChange={handleChange} className="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl text-sm font-bold text-[#0F2843] focus:ring-2 focus:ring-[#BB9E7F] transition-all appearance-none">
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="others">Others</option>
-                </select>
-              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Gender</label>
+                  <select
+                    name="gender"
+                    value={staff.gender || ""}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="others">Others</option>
+                  </select>
+                </div>
 
-              <div>
-                <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1">Date of Birth</label>
-                <input type="date" name="date_of_birth" value={staff.date_of_birth?.split('T')[0] || ""} onChange={handleChange} className="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl text-sm font-bold text-[#0F2843] focus:ring-2 focus:ring-[#BB9E7F] transition-all" />
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Date of Birth</label>
+                  <input
+                    type="date"
+                    name="date_of_birth"
+                    value={staff.date_of_birth?.split('T')[0] || ""}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Column 2: Job & Metadata */}
+            {/* Column 2: Job & Contact */}
             <div className="space-y-6">
-              <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Contact & Role</h3>
+              <h3 className="text-xs font-black text-[#BB9E7F] uppercase tracking-[0.2em] mb-4 border-b border-gray-100 pb-2">Contact & Role</h3>
               
               <div className="grid grid-cols-2 gap-4 text-center">
-                 <div className="p-5 bg-gray-50 rounded-3xl border border-gray-100">
-                    <p className="text-[10px] font-black text-gray-400 uppercase mb-1">Staff ID</p>
+                 <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100/50">
+                    <p className="text-[9px] font-black text-gray-400 uppercase mb-1">Staff ID</p>
                     <p className="text-sm font-black text-[#0F2843]">{staff.staff_id || "N/A"}</p>
                  </div>
-                 <div className="p-5 bg-gray-50 rounded-3xl border border-gray-100">
-                    <p className="text-[10px] font-black text-gray-400 uppercase mb-1">Attendance</p>
-                    <p className="text-sm font-black text-[#22C55E]">98%</p> {/* Hardcoded for now */}
+                 <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100/50">
+                    <p className="text-[9px] font-black text-gray-400 uppercase mb-1">Attendance</p>
+                    <p className="text-sm font-black text-[#22C55E]">98%</p>
                  </div>
               </div>
 
-              <div>
-                <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1">Role</label>
-                <select name="role" value={staff.role || ""} onChange={handleChange} className="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl text-sm font-bold text-[#0F2843] focus:ring-2 focus:ring-[#BB9E7F] transition-all appearance-none">
-                  <option value="tutor">Tutor</option>
-                  <option value="advisor">Advisor</option>
-                  <option value="admin">Admin</option>
-                </select>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Email address</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={staff.email || ""}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
+                  placeholder="Email"
+                />
               </div>
 
-              <div>
-                <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1">Location</label>
-                <input name="location" value={staff.location || ""} onChange={handleChange} className="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl text-sm font-bold text-[#0F2843] focus:ring-2 focus:ring-[#BB9E7F] transition-all" />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Telephone</label>
+                  <input
+                    type="tel"
+                    name="tel"
+                    value={staff.tel || ""}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
+                    placeholder="Telephone"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Role</label>
+                  <select
+                    name="role"
+                    value={staff.role || ""}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
+                  >
+                    <option value="">Select Role</option>
+                    <option value="admin">Admin</option>
+                    <option value="tutor">Tutor</option>
+                    <option value="moderator">Moderator</option>
+                  </select>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 ml-1">Address</label>
-                <input name="address" value={staff.address || ""} onChange={handleChange} className="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl text-sm font-bold text-[#0F2843] focus:ring-2 focus:ring-[#BB9E7F] transition-all" />
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Address</label>
+                <textarea
+                  name="address"
+                  value={staff.address || ""}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  rows="2"
+                  className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60 resize-none"
+                  placeholder="Full Address"
+                />
               </div>
             </div>
           </form>
@@ -320,34 +399,51 @@ export default function StaffManagementModal({ staffId, onClose, onSuccess }) {
               </button>
             )}
             
-            {!isSuspended && (
-               <button 
-                 onClick={onClose}
-                 className="px-8 py-4 bg-white border border-gray-200 text-gray-500 font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-gray-100 transition-all"
-               >
-                 Cancel
-               </button>
-            )}
+            <button 
+              onClick={onClose}
+              className="px-8 py-4 bg-white border border-gray-200 text-gray-500 font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-gray-100 transition-all active:scale-95"
+            >
+              {isSuspended ? "Go Back" : "Cancel"}
+            </button>
           </div>
 
           {!isSuspended && (
-            <button 
-              form="staffUpdateForm"
-              type="submit"
-              disabled={submitting}
-              className="w-full lg:w-auto flex items-center justify-center gap-3 px-12 py-5 bg-[#0F2843] text-white font-black text-sm uppercase tracking-widest rounded-3xl shadow-2xl hover:shadow-[#0F2843]/30 hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-50"
-            >
-              <PencilSquareIcon className="w-5 h-5" /> {submitting ? "Saving..." : "Save Changes"}
-            </button>
-          )}
-
-          {isSuspended && (
-             <button 
-               onClick={onClose}
-               className="px-8 py-4 bg-white border border-gray-200 text-[#0F2843] font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-gray-100 transition-all"
-             >
-               Go Back
-             </button>
+            <div className="flex items-center gap-3">
+               {!isEditing ? (
+                 <button
+                   type="button"
+                   onClick={() => setIsEditing(true)}
+                   className="flex items-center gap-3 px-8 py-4 bg-[#0F2843] text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl hover:-translate-y-1 transition-all active:scale-95"
+                 >
+                   <PencilSquareIcon className="w-5 h-5" />
+                   Edit Staff
+                 </button>
+               ) : (
+                 <button
+                   type="button"
+                   onClick={() => setIsEditing(false)}
+                   className="flex items-center gap-3 px-8 py-4 bg-gray-200 text-gray-600 font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-gray-300 transition-all active:scale-95"
+                 >
+                   Cancel Edit
+                 </button>
+               )}
+               
+               <button
+                 type="submit"
+                 form="staffUpdateForm"
+                 disabled={submitting || !isEditing}
+                 className="flex items-center gap-3 px-10 py-4 bg-[#BB9E7F] text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-[#BB9E7F]/20 hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none"
+               >
+                 {submitting ? (
+                   <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                 ) : (
+                   <>
+                      <ArrowPathIcon className="w-5 h-5" />
+                      Save Changes
+                   </>
+                 )}
+               </button>
+            </div>
           )}
         </div>
 

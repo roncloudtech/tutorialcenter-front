@@ -8,8 +8,8 @@ import CreateMasterClassModal from "../../components/private/staffs/MasterclassM
 import { 
   PlusIcon, 
   MagnifyingGlassIcon,
-  LinkIcon,
-  CheckIcon,
+  // LinkIcon,
+  // CheckIcon,
 } from "@heroicons/react/24/outline";
 import { Icon } from "@iconify/react";
 
