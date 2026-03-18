@@ -268,7 +268,7 @@ export default function StaffManagementModal({ staffId, onClose, onSuccess }) {
                   onChange={handleChange}
                   disabled={!isEditing}
                   className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
-                  placeholder="Middle Name (Optional)"
+                  placeholder="Middle Name "
                 />
               </div>
 
