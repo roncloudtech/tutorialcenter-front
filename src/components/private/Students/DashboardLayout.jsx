@@ -5,7 +5,7 @@ import MobileHeader from "./MobileHeader.jsx";
 import MobileBottomNav from "./MobileBottomNav.jsx";
 import { BellIcon } from "@heroicons/react/24/outline";
 
-export default function DashboardLayout({ children, pagetitle }) {
+export default function DashboardLayout({ children, pagetitle, hideHeader = false }) {
   const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [rightCollapsed, setRightCollapsed] = useState(false);
 
@@ -37,15 +37,17 @@ export default function DashboardLayout({ children, pagetitle }) {
           `}
         >
           {/* Header Row */}
-          <div className="flex justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-            <h1 className="text-2xl font-bold uppercase tracking-wide text-gray-800 dark:text-white">
-              {pagetitle || "Dashboard"}
-            </h1>
-            <button className="relative p-2 bg-white dark:bg-gray-700 rounded-full shadow-sm border border-gray-100 dark:border-gray-600 hover:bg-gray-50 transition">
-              <BellIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-blue-900 rounded-full border border-white"></span>
-            </button>
-          </div>
+          {!hideHeader && (
+            <div className="flex justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+              <h1 className="text-2xl font-bold uppercase tracking-wide text-gray-800 dark:text-white">
+                {pagetitle || "Dashboard"}
+              </h1>
+              <button className="relative p-2 bg-white dark:bg-gray-700 rounded-full shadow-sm border border-gray-100 dark:border-gray-600 hover:bg-gray-50 transition">
+                <BellIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
+                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-blue-900 rounded-full border border-white"></span>
+              </button>
+            </div>
+          )}
           {children}
         </main>
       </div>

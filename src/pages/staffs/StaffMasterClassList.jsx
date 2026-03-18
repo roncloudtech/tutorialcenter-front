@@ -8,8 +8,8 @@ import CreateMasterClassModal from "../../components/private/staffs/MasterclassM
 import { 
   PlusIcon, 
   MagnifyingGlassIcon,
-  LinkIcon,
-  CheckIcon,
+  // LinkIcon,
+  // CheckIcon,
 } from "@heroicons/react/24/outline";
 import { Icon } from "@iconify/react";
 
@@ -130,75 +130,77 @@ export default function MasterClassList() {
 
   // --- CLASS ROW ---
   const ClassRow = ({ cls }) => {
-    const schedule = cls.schedules?.[0];
     const isLinkCopied = copiedLink === cls.id;
+    const schedule = cls.schedules?.[0];
+    const startTime = schedule ? formatTime(schedule.start_time) : "—";
     
     return (
-      <div className="flex items-center gap-4 py-4 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors px-2 rounded-lg">
-        {/* Yellow dot */}
-        <span className="w-2.5 h-2.5 rounded-full bg-[#F5A623] flex-shrink-0" />
-
-        {/* ME avatar */}
-        <div className="w-10 h-10 rounded-full bg-[#0F2843] text-white text-xs font-black flex items-center justify-center flex-shrink-0 shadow-sm">
-          ME
+      <div className="flex items-center gap-6 py-5 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-all px-4 rounded-xl group">
+        
+        {/* Avatar with Status Dot */}
+        <div className="relative flex-shrink-0">
+          <div className="w-11 h-11 rounded-full bg-[#E5E7EB] text-[#4B5563] text-xs font-black flex items-center justify-center shadow-inner border border-white">
+            ME
+          </div>
+          <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-[#F5A623] border-2 border-white rounded-full shadow-sm" />
         </div>
 
-        {/* Title */}
-        <span className="text-sm font-bold text-[#1F2937] w-[150px] truncate flex-shrink-0">
-          {cls.title}
-        </span>
+        {/* Info Columns */}
+        <div className="flex-1 grid grid-cols-12 items-center gap-4">
+          {/* Title */}
+          <div className="col-span-3">
+             <span className="text-[15px] font-bold text-[#1F2937] truncate block">
+                {cls.title}
+             </span>
+          </div>
 
-        {/* Instructor */}
-        <span className="text-sm text-gray-600 w-[150px] truncate flex-shrink-0">
-          {getStaffName(cls)}
-        </span>
+          {/* Instructor */}
+          <div className="col-span-3">
+             <span className="text-sm font-medium text-gray-500 truncate block">
+                {getStaffName(cls)}
+             </span>
+          </div>
 
-        {/* Date */}
-        <span className="text-sm text-gray-500 w-[100px] flex-shrink-0">
-          {formatDate(cls.start_date)}
-        </span>
+          {/* Date */}
+          <div className="col-span-2">
+             <span className="text-sm font-bold text-gray-600 block">
+                {formatDate(cls.start_date)}
+             </span>
+          </div>
 
-        {/* Time */}
-        <span className="text-sm text-gray-500 w-[70px] flex-shrink-0">
-          {schedule ? formatTime(schedule.start_time) : "—"}
-        </span>
+          {/* Time */}
+          <div className="col-span-1 text-center">
+             <span className="text-sm font-bold text-gray-600 block">
+                {startTime}
+             </span>
+          </div>
 
-        {/* Link - Prominent in Middle */}
-        <div className="flex-1 flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg border border-blue-200 min-w-0">
-          {cls.class_link ? (
-            <>
-              <LinkIcon className="w-4 h-4 text-blue-600 flex-shrink-0" />
-              <a
-                href={cls.class_link}
-                target="_blank"
-                rel="noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="text-sm text-blue-600 font-semibold hover:underline truncate flex-1"
-                title={cls.class_link}
-              >
-                {cls.class_link.replace(/^https?:\/\//, '')}
-              </a>
-              <button
-                onClick={() => copyToClipboard(cls.class_link, cls.id)}
-                className="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-bold flex items-center gap-1 flex-shrink-0 transition-all"
-                title="Copy link"
-              >
-                {isLinkCopied ? (
-                  <>
-                    <CheckIcon className="w-3.5 h-3.5" />
-                    Copied
-                  </>
-                ) : (
-                  <>
-                    <Icon icon="mdi:content-copy" className="w-3.5 h-3.5" />
-                    Copy
-                  </>
-                )}
-              </button>
-            </>
-          ) : (
-            <span className="text-sm text-gray-400 italic">No link added</span>
-          )}
+          {/* Link */}
+          <div className="col-span-3 text-right">
+             {cls.class_link ? (
+               <div className="flex items-center justify-end gap-2">
+                 <a
+                   href={cls.class_link}
+                   target="_blank"
+                   rel="noreferrer"
+                   className="text-sm text-blue-500 font-bold hover:underline truncate max-w-[120px]"
+                 >
+                   {cls.class_link.replace(/^https?:\/\//, '')}
+                 </a>
+                 <button 
+                   onClick={(e) => {
+                     e.stopPropagation();
+                     copyToClipboard(cls.class_link, cls.id);
+                   }}
+                   className="p-1.5 hover:bg-blue-50 rounded-lg transition-colors"
+                 >
+                   <Icon icon={isLinkCopied ? "mdi:check" : "mdi:content-copy"} className={`w-3.5 h-3.5 ${isLinkCopied ? "text-green-500" : "text-blue-400"}`} />
+                 </button>
+               </div>
+             ) : (
+               <span className="text-xs text-gray-300 italic">No link</span>
+             )}
+          </div>
         </div>
       </div>
     );
@@ -236,46 +238,47 @@ export default function MasterClassList() {
       )}
 
       <div className="p-6 max-w-5xl mx-auto w-full">
-        {/* ========= Main Content ========= */}
-
-          {/* Header */}
-          <div className="flex items-center justify-between mb-5">
-            <h1 className="text-2xl font-black text-[#09314F] tracking-tight">MASTER CLASS</h1>
-            <div className="w-9 h-9 rounded-xl bg-[#0F2843] overflow-hidden shadow-md flex items-center justify-center">
-              <Icon icon="mdi:bell" className="text-white w-5 h-5" />
+        {/* ========= Header Section ========= */}
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-black text-[#0F2843] tracking-tighter">MASTER CLASS</h1>
+          <div className="relative group cursor-pointer">
+            <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center transition-all hover:shadow-md">
+              <Icon icon="mdi:bell" className="text-[#0F2843] w-6 h-6" />
+              <span className="absolute top-3.5 right-3.5 w-2.5 h-2.5 bg-[#E83831] border-2 border-white rounded-full" />
             </div>
           </div>
+        </div>
 
-          {/* Controls Bar */}
-          <div className="flex items-center gap-4 mb-8">
-            {/* Search */}
-            <div className="relative w-80">
-              <MagnifyingGlassIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search by date"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-5 pr-12 py-3 border border-gray-200 rounded-lg text-base font-medium focus:ring-2 focus:ring-[#09314F] focus:border-transparent bg-white"
-              />
-            </div>
-
-            {/* Schedule Master Class */}
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 text-[#09314F] font-bold rounded-lg text-base hover:bg-gray-50 transition-all active:scale-95 whitespace-nowrap"
-            >
-              <PlusIcon className="w-5 h-5" />
-              Schedule Master Class
-            </button>
-
-            {/* Requests */}
-            <button className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 text-[#09314F] font-bold rounded-lg text-base hover:bg-gray-50 transition-all whitespace-nowrap">
-              <Icon icon="mdi:bell-outline" className="w-5 h-5 text-[#E83831]" />
-              Requests
-              <span className="bg-[#E83831] text-white text-[10px] font-bold px-2 py-1 rounded-full leading-none">12</span>
-            </button>
+        {/* ========= Controls Bar ========= */}
+        <div className="flex flex-wrap items-center gap-4 mb-10">
+          {/* Search */}
+          <div className="relative flex-1 min-w-[280px]">
+            <MagnifyingGlassIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by date"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-14 pr-6 py-4 border border-gray-200 rounded-2xl text-[15px] font-bold text-[#1F2937] focus:ring-2 focus:ring-[#0F2843] focus:border-transparent bg-white shadow-sm transition-all placeholder:text-gray-400"
+            />
           </div>
+
+          {/* Schedule Master Class */}
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-3 px-8 py-4 bg-[#E2E8F0] border border-transparent text-[#0F2843] font-black rounded-2xl text-[15px] hover:bg-[#CBD5E1] transition-all active:scale-95 whitespace-nowrap shadow-sm group"
+          >
+            <PlusIcon className="w-5 h-5 text-[#0F2843] group-hover:scale-110 transition-transform" />
+            Schedule Master Class
+          </button>
+
+          {/* Requests */}
+          <button className="flex items-center gap-3 px-8 py-4 bg-[#E2E8F0] border border-transparent text-[#0F2843] font-black rounded-2xl text-[15px] hover:bg-[#CBD5E1] transition-all whitespace-nowrap shadow-sm group">
+            <Icon icon="mdi:swap-horizontal" className="w-5 h-5 text-[#0F2843] rotate-90" />
+            Requests
+            <span className="bg-[#E83831] text-white text-[11px] font-black px-2.5 py-1 rounded-full leading-none min-w-[24px] text-center shadow-sm">12</span>
+          </button>
+        </div>
 
           {/* Classes List */}
           {loading ? (

@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import StaffDashboardLayout from "../../components/private/staffs/DashboardLayout.jsx";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +15,8 @@ import {
   ChevronDownIcon,
   UserGroupIcon,
   HandThumbUpIcon,
-  NoSymbolIcon
+  NoSymbolIcon,
+  EyeIcon
 } from "@heroicons/react/24/outline";
 
 export default function StaffManagement() {
@@ -24,7 +26,6 @@ export default function StaffManagement() {
 
   // --- STATE ---
   const [staffs, setStaffs] = useState([]);
-  const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStaffId, setSelectedStaffId] = useState(null);
@@ -81,31 +82,21 @@ export default function StaffManagement() {
         }
       };
 
-      const [staffRes, classRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/api/admin/staffs/all`, config),
-        axios.get(`${API_BASE_URL}/api/admin/classes/all`, config)
-      ]);
+      const staffRes = await axios.get(`${API_BASE_URL}/api/admin/staffs/all`, config);
 
       console.group("Staff Management Data Fetching");
       console.log("Staff Response Payload:");
       console.table(staffRes?.data?.staffs || staffRes?.data?.data);
-      console.log("Classes Response Payload:");
-      console.table(classRes?.data?.classes || classRes?.data?.data);
       console.groupEnd();
 
       const fetchedStaffs = staffRes.data?.staffs || staffRes.data?.data;
-      const fetchedClasses = classRes.data?.classes || classRes.data?.data;
-      
       const staffsArray = Array.isArray(fetchedStaffs) ? fetchedStaffs : [];
-      const classesArray = Array.isArray(fetchedClasses) ? fetchedClasses : [];
 
       setStaffs(staffsArray);
-      setClasses(classesArray);
       calculateStats(staffsArray);
     } catch (error) {
       console.error("Endpoint failed:", error.response?.status, error.response?.data);
       setStaffs([]);
-      setClasses([]);
     } finally {
       setLoading(false);
     }
@@ -144,28 +135,13 @@ export default function StaffManagement() {
   }, [fetchData]);
 
   // --- MERGE DATA FOR TABLE ---
-  const tableData = staffs.map(staff => {
-    // Traverse the classes to find where this staff member is assigned
-    // Each class has a 'staffs' array with a 'pivot' containing the class-specific role
-    const staffClass = classes.find(c => 
-      Array.isArray(c.staffs) && c.staffs.some(s => s.id === staff.id)
-    );
-
-    // Find the specific staff entry within that class to access pivot data
-    const classStaffEntry = staffClass?.staffs?.find(s => s.id === staff.id);
-
-    return {
-      ...staff,
-      name: `${staff.firstname} ${staff.surname}`,
-      profile_picture: (staff.profile_picture && staff.profile_picture !== "default-avatar.png") 
-        ? staff.profile_picture 
-        : null,
-      classRole: classStaffEntry?.pivot?.role || "N/A",
-      subject: staffClass?.title || "N/A",
-      className: staffClass?.title || "No Class",
-      location: staff.address || staff.location || "Online"
-    };
-  }).filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  const tableData = staffs.map(staff => ({
+    ...staff,
+    name: `${staff.firstname} ${staff.surname}`,
+    profile_picture: (staff.profile_picture && staff.profile_picture !== "default-avatar.png") 
+      ? staff.profile_picture 
+      : null,
+  })).filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   // Pagination state (Mocked for now as per design)
   const [currentPage] = useState(1);
@@ -249,11 +225,11 @@ export default function StaffManagement() {
            {/* Custom Table Header */}
            <div className="grid grid-cols-6 items-center bg-[#BB9E7F] px-8 py-5 rounded-2xl text-white font-black text-[13px] uppercase tracking-widest shadow-lg">
               <div>Name</div>
+              <div className="text-center">Staff ID</div>
               <div className="text-center">Role</div>
-              <div className="text-center">ClassRole</div>
-              <div className="text-center">Subject</div>
-              <div className="text-center">Class</div>
-              <div className="text-center">Location</div>
+              <div className="text-center">Email</div>
+              <div className="text-center">Phone Number</div>
+              <div className="text-center"></div>
            </div>
 
            {/* Staff Rows List */}
@@ -266,10 +242,6 @@ export default function StaffManagement() {
                 tableData.map((staff, idx) => (
                   <div 
                     key={staff.id || idx} 
-                    onClick={() => {
-                        setSelectedStaffId(staff.id);
-                        setIsModalOpen(true);
-                    }}
                     className="grid grid-cols-6 items-center bg-white px-8 py-5 rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] border border-gray-50 hover:shadow-xl transition-all cursor-pointer group animate-in fade-in slide-in-from-bottom-2"
                   >
                      {/* Name Column with Avatar */}
@@ -286,11 +258,23 @@ export default function StaffManagement() {
                      </div>
                      
                      {/* Data Columns */}
-                     <div className="text-center text-gray-500 font-bold text-[13px] capitalize">{staff.role}</div>
-                     <div className="text-center text-gray-900 font-black text-[13px] tracking-tight">{staff.classRole}</div>
-                     <div className="text-center text-gray-500 font-bold text-[13px] truncate">{staff.subject}</div>
-                     <div className="text-center text-[#BB9E7F] font-black text-sm">{staff.className}</div>
-                     <div className="text-center text-gray-900 font-black text-[13px] truncate">{staff.location}</div>
+                     <div className="text-center text-gray-500 font-bold text-[13px]">{staff.staff_id || "N/A"}</div>
+                     <div className="text-center text-gray-900 font-black text-[13px] tracking-tight capitalize">{staff.role}</div>
+                     <div className="text-center text-gray-500 font-bold text-[13px] truncate">{staff.email}</div>
+                     <div className="text-center text-[#BB9E7F] font-black text-sm">{staff.tel}</div>
+                     
+                     {/* Actions Column */}
+                     <div className="text-center">
+                        <button 
+                          onClick={() => {
+                            setSelectedStaffId(staff.id);
+                            setIsModalOpen(true);
+                          }}
+                          className="p-2.5 bg-gray-50 text-gray-400 hover:text-[#0F2843] hover:bg-gray-100 rounded-xl transition-all active:scale-95"
+                        >
+                           <EyeIcon className="w-5 h-5" />
+                        </button>
+                     </div>
                   </div>
                 ))
               ) : (
