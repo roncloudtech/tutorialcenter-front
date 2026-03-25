@@ -191,12 +191,12 @@ export default function StudentPaymentDisplay() {
         >
           Add Training
         </button>
-        <button
+        {/* <button
           onClick={() => setActiveView("remove")}
           className="w-full text-left px-6 py-4 bg-white border border-gray-200 rounded-xl text-[15px] font-bold text-[#0F2843] hover:shadow-md hover:border-gray-300 transition-all active:scale-[0.99]"
         >
           Remove Training
-        </button>
+        </button> */}
         <button
           onClick={() => setActiveView("renew")}
           className="w-full text-left px-6 py-4 bg-white border border-gray-200 rounded-xl text-[15px] font-bold text-[#0F2843] hover:shadow-md hover:border-gray-300 transition-all active:scale-[0.99]"

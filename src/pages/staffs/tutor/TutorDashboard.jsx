@@ -74,12 +74,6 @@ export default function TutorDashboard() {
     return title.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
   };
 
-  const getTimeUntil = (startsAt) => {
-    if (!startsAt) return "";
-    // Basic formatting for dashboard
-    return `Starts at ${formatTimeStr(startsAt)}`;
-  };
-
   const stats = [
     { 
       label: "Total Students", 
