@@ -43,6 +43,7 @@ import TutorDashboard from "./pages/staffs/tutor/TutorDashboard.jsx";
 import TutorStudentManagement from "./pages/staffs/tutor/TutorStudentManagement.jsx";
 import TutorMasterClass from "./pages/staffs/tutor/TutorMasterClass.jsx";
 import StaffMasterClassList from "./pages/staffs/admin/StaffMasterClassList.jsx";
+import CoursesManagement from "./pages/staffs/admin/CoursesManagement.jsx";
 import StudentPaymentHistory from "./pages/students/StudentPaymentDisplay.jsx"
 
 
@@ -101,6 +102,7 @@ function App() {
           <Route path="/staffs/staff-registration" element={<StaffRegistration />} />
           <Route path="/staffs/manage-staffs" element={<StaffManagement />} />
           <Route path="/staffs/master-class" element={<StaffMasterClassList />} />
+          <Route path="/staffs/manage-courses" element={<CoursesManagement />} />
         </Route>
       </Routes>
     </>

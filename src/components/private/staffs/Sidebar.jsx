@@ -29,7 +29,7 @@ const adminMenuItems = [
   { label: "Manage Guardian", icon: ShieldCheckIcon },
   { label: "Master Class", icon: AcademicCapIcon, destination: "/staffs/master-class" },
   { label: "Calendar", icon: CalendarDaysIcon },
-  { label: "Courses", icon: BookOpenIcon },
+  { label: "Manage Courses", icon: BookOpenIcon, destination: "/staffs/manage-courses" },
   { label: "Exams", icon: ClipboardDocumentCheckIcon },
   { label: "Audit Log", icon: ChartBarIcon },
   { label: "Settings", icon: Cog6ToothIcon },
