@@ -41,7 +41,15 @@ export const StudentTrainingPayment = () => {
 
   /* ================= EMAIL ================= */
   const payerEmail = useMemo(() => {
-    return studentData?.data?.email || "codewithpidgin@gmail.com";
+    // If student has an email, use it. Otherwise, use phone number as a identifier for Paystack.
+    // Paystack requires a valid email format, so we append a dummy domain if it's a phone.
+    const email = studentData?.data?.email;
+    const tel = studentData?.data?.tel;
+    
+    if (email) return email;
+    if (tel) return `${tel}@tutorialcenter.gmail.com`;
+    
+    return "codewithpidgin@gmail.com";
   }, [studentData]);
 
   /* ================= MODAL ================= */
@@ -63,9 +71,11 @@ export const StudentTrainingPayment = () => {
     const storedData = JSON.parse(localStorage.getItem("studentdata"));
     const storedInfo = JSON.parse(localStorage.getItem("student_info"));
     const studentEmail = storedData?.data?.email || storedInfo?.email || storedInfo?.data?.email;
+    const studentTel = storedData?.data?.tel || storedInfo?.tel || storedInfo?.data?.tel; 
 
-    if (!studentEmail) {
-      alert("Student email not found. Please re-register or log in.");
+    
+    if (!studentEmail && !studentTel) {
+      alert("Student email or phone number not found. Please re-register or log in.");
       return;
     }
 
@@ -138,7 +148,7 @@ export const StudentTrainingPayment = () => {
             status: "successful",
             gateway_reference: paymentReference,
             paid_at: new Date().toISOString(),
-            email: studentEmail,
+            email: studentEmail || studentTel,
             meta: {
               channel: response.channel,
               paid_at: response.paid_at,
