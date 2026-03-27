@@ -1,11 +1,11 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import DashboardLayout from "../../components/private/students/DashboardLayout.jsx";
+import DashboardLayout from "../../components/private/Students/DashboardLayout.jsx";
 import axios from "axios";
 import { BellIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
 const DAYS_OF_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-const HOUR_START = 5; // 5 AM
-const HOUR_END = 17;  // 5 PM
+const HOUR_START = 0; // 12 AM
+const HOUR_END = 23;  // 11 PM
 const HOURS = Array.from({ length: HOUR_END - HOUR_START + 1 }, (_, i) => HOUR_START + i);
 
 export default function StudentCalendar() {
@@ -14,27 +14,38 @@ export default function StudentCalendar() {
 
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [weekOffset, setWeekOffset] = useState(0);
+  const [viewMode, setViewMode] = useState("week"); // "week" or "day"
+  const [dateOffset, setDateOffset] = useState(0); // number of days from today
   const [selectedSession, setSelectedSession] = useState(null);
 
-  // Get the start of the displayed week (Sunday)
-  const weekStart = useMemo(() => {
-    const now = new Date();
-    const day = now.getDay(); // 0=Sun
-    const start = new Date(now);
-    start.setDate(now.getDate() - day + weekOffset * 7);
-    start.setHours(0, 0, 0, 0);
-    return start;
-  }, [weekOffset]);
+  // Focused date based on offset
+  const focusedDate = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + dateOffset);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, [dateOffset]);
 
-  // Generate dates for each day column
-  const weekDates = useMemo(() => {
+  // Start of the week for the focused date (Sunday)
+  const weekStart = useMemo(() => {
+    const d = new Date(focusedDate);
+    const day = d.getDay(); // 0=Sun
+    d.setDate(d.getDate() - day);
+    return d;
+  }, [focusedDate]);
+
+  // Daily dates to display
+  const displayDates = useMemo(() => {
+    if (viewMode === "day") {
+      return [{ label: DAYS_OF_WEEK[focusedDate.getDay()], date: focusedDate }];
+    }
+    // Week view: 7 days starting from weekStart
     return DAYS_OF_WEEK.map((label, i) => {
       const d = new Date(weekStart);
       d.setDate(weekStart.getDate() + i);
       return { label, date: d };
     });
-  }, [weekStart]);
+  }, [viewMode, focusedDate, weekStart]);
 
   // Fetch calendar schedule
   const fetchSchedule = useCallback(async () => {
@@ -116,41 +127,66 @@ export default function StudentCalendar() {
       <div className="p-4 md:p-6 max-w-7xl mx-auto w-full min-h-screen">
 
         {/* ====== Header ====== */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <h1 className="text-[32px] md:text-[42px] font-black text-[#0F2843] tracking-tighter leading-none uppercase">
             CALENDAR
           </h1>
-          <div className="relative p-3 bg-white rounded-2xl shadow-sm border border-gray-100 cursor-pointer hover:bg-gray-50 transition-all">
-            <BellIcon className="w-7 h-7 text-[#0F2843]" />
-            <span className="absolute top-3.5 right-3.5 w-3 h-3 bg-[#E83831] rounded-full border-2 border-white shadow-sm"></span>
+          
+          <div className="flex items-center gap-2">
+            {/* View Toggle */}
+            <div className="flex bg-gray-100 p-1 rounded-xl border border-gray-200 mr-2">
+              <button
+                onClick={() => setViewMode("week")}
+                className={`px-4 py-2 rounded-lg text-xs font-black uppercase transition-all ${viewMode === "week" ? "bg-white text-[#0F2843] shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+              >
+                Week
+              </button>
+              <button
+                onClick={() => setViewMode("day")}
+                className={`px-4 py-2 rounded-lg text-xs font-black uppercase transition-all ${viewMode === "day" ? "bg-white text-[#0F2843] shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+              >
+                Day
+              </button>
+            </div>
+
+            <div className="relative p-3 bg-white rounded-2xl shadow-sm border border-gray-100 cursor-pointer hover:bg-gray-50 transition-all">
+              <BellIcon className="w-7 h-7 text-[#0F2843]" />
+              <span className="absolute top-3.5 right-3.5 w-3 h-3 bg-[#E83831] rounded-full border-2 border-white shadow-sm"></span>
+            </div>
           </div>
         </div>
 
         {/* ====== Calendar Grid ====== */}
         <div className="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
-          {/* Week Navigation + Day Headers */}
-          <div className="grid grid-cols-8 bg-[#C5A97A] text-white">
+          {/* View Navigation + Day Headers */}
+          <div className={`grid ${viewMode === "day" ? "grid-cols-[100px_1fr]" : "grid-cols-8"} bg-[#C5A97A] text-white`}>
             {/* Time column header with nav */}
             <div className="p-3 flex flex-col items-center justify-center gap-1 border-r border-[#BB9E7F]/30">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setWeekOffset(w => w - 1)}
-                  className="p-1 hover:bg-white/20 rounded-lg transition-all active:scale-90"
+                  onClick={() => setDateOffset(prev => prev - (viewMode === "week" ? 7 : 1))}
+                  className="p-1.5 hover:bg-white/20 rounded-lg transition-all active:scale-90"
                 >
                   <ChevronLeftIcon className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => setWeekOffset(w => w + 1)}
-                  className="p-1 hover:bg-white/20 rounded-lg transition-all active:scale-90"
+                  onClick={() => setDateOffset(0)}
+                  className="px-2 py-1 text-[9px] font-black uppercase bg-white/10 hover:bg-white/20 rounded-md transition-all"
+                >
+                  Today
+                </button>
+                <button
+                  onClick={() => setDateOffset(prev => prev + (viewMode === "week" ? 7 : 1))}
+                  className="p-1.5 hover:bg-white/20 rounded-lg transition-all active:scale-90"
                 >
                   <ChevronRightIcon className="w-4 h-4" />
                 </button>
               </div>
-              <span className="text-[9px] font-bold uppercase tracking-wider opacity-70">{gmtOffset}</span>
+              <span className="text-[9px] font-bold uppercase tracking-wider opacity-70 mt-1">{gmtOffset}</span>
             </div>
 
             {/* Day columns */}
-            {weekDates.map(({ label, date }, i) => {
+            {displayDates.map(({ label, date }, i) => {
               const today = isToday(date);
               return (
                 <div
@@ -161,7 +197,7 @@ export default function StudentCalendar() {
                     {label}
                   </div>
                   <div className={`text-xl font-black mt-0.5 ${today ? "text-white" : "text-white/90"}`}>
-                    {date.getDate()}
+                    {date.getDate()} {viewMode === 'day' ? date.toLocaleString('default', { month: 'long', year: 'numeric' }) : ''}
                   </div>
                 </div>
               );
@@ -177,29 +213,34 @@ export default function StudentCalendar() {
           ) : (
             <div className="max-h-[85vh] overflow-y-auto">
               {HOURS.map((hour) => (
-                <div key={hour} className="grid grid-cols-8 border-b border-gray-100 last:border-0">
+                <div key={hour} className={`grid ${viewMode === "day" ? "grid-cols-[100px_1fr]" : "grid-cols-8"} border-b border-gray-100 last:border-0`}>
                   {/* Time Label */}
                   <div className="p-2 md:p-3 text-[11px] md:text-xs font-bold text-gray-400 uppercase flex items-start justify-center pt-3 border-r border-gray-100">
                     {formatHour(hour)}
                   </div>
 
                   {/* Day Cells */}
-                  {weekDates.map(({ date }, dayIdx) => {
+                  {displayDates.map(({ date }, dayIdx) => {
                     const cellSessions = getSessionsForCell(date, hour);
                     const today = isToday(date);
 
                     return (
                       <div
                         key={dayIdx}
-                        className={`relative min-h-[90px] md:min-h-[110px] border-r border-gray-100 last:border-0 p-0.5 md:p-1 ${today ? "bg-blue-50/30" : ""}`}
+                        className={`relative min-h-[90px] md:min-h-[110px] border-r border-gray-100 last:border-0 p-0.5 md:p-1 ${today ? "bg-blue-50/30" : ""} ${viewMode === 'day' ? 'px-4 py-2' : ''}`}
                       >
                         {cellSessions.map((s, sIdx) => (
                           <button
                             key={s.id || sIdx}
                             onClick={() => setSelectedSession(s)}
-                            className="w-full text-left bg-gray-200/80 hover:bg-gray-300/90 text-gray-700 text-[9px] md:text-[10px] font-bold rounded-md p-1 md:p-1.5 mb-0.5 truncate transition-all hover:shadow-sm active:scale-[0.97] cursor-pointer leading-tight"
+                            className={`w-full text-left bg-gray-200/80 hover:bg-gray-300/90 text-gray-700 font-bold rounded-md mb-0.5 truncate transition-all hover:shadow-sm active:scale-[0.97] cursor-pointer leading-tight ${viewMode === 'day' ? 'p-3 text-xs shadow-sm bg-white border border-gray-100 hover:border-gray-200' : 'p-1 md:p-1.5 text-[9px] md:text-[10px]'}`}
                           >
-                            {s.class?.title || s.title || "Class"}
+                            <div className="flex flex-col gap-0.5">
+                              <span className={viewMode === 'day' ? 'text-[#0F2843] text-sm' : ''}>{s.class?.title || s.title || "Class"}</span>
+                              {viewMode === 'day' && s.starts_at && (
+                                <span className="text-[10px] text-gray-400 font-medium">{formatModalTime(s.starts_at)} {s.ends_at ? ` - ${formatModalTime(s.ends_at)}` : ''}</span>
+                              )}
+                            </div>
                           </button>
                         ))}
                       </div>

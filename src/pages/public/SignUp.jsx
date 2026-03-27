@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import signup_img from "../../assets/images/student_sign_up.jpg";
+import signup_img from "../../assets/images/Student_sign_up.jpg";
 import TC_logo from "../../assets/images/tutorial_logo.png";
 import ReturnArrow from "../../assets/svg/return arrow.svg";
 

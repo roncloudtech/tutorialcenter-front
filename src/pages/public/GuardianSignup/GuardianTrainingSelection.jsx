@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReturnArrow from "../../../assets/svg/return arrow.svg";
-import signup_img from "../../../assets/images/student_sign_up.jpg";
+import signup_img from "../../../assets/images/Student_sign_up.jpg";
 import axios from "axios";
 
 export default function GuardianTrainingSelection() {

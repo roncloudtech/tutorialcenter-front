@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
 import ReturnArrow from "../../../assets/svg/return arrow.svg";
-import signup_img from "../../../assets/images/student_sign_up.jpg";
+import signup_img from "../../../assets/images/Student_sign_up.jpg";
 
 export const StudentTrainingDuration = () => {
   const navigate = useNavigate();

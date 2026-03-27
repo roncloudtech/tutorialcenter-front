@@ -1,4 +1,4 @@
-// components/private/students/PaymentRenewal.jsx
+// components/private/Students/PaymentRenewal.jsx
 
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";

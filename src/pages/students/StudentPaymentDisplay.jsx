@@ -1,11 +1,11 @@
-// pages/students/StudentPaymentDisplay.jsx
+// pages/Students/StudentPaymentDisplay.jsx
 
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import PaymentLayout from "../../components/private/students/PaymentLayout.jsx";
-import RemoveTraining from "../../components/private/students/RemoveTraining.jsx";
-import AddTraining from "../../components/private/students/AddTraining.jsx";
-import PaymentMethodModal from "../../components/private/students/PaymentMethodModal.jsx";
+import PaymentLayout from "../../components/private/Students/PaymentLayout.jsx";
+import RemoveTraining from "../../components/private/Students/RemoveTraining.jsx";
+import AddTraining from "../../components/private/Students/AddTraining.jsx";
+import PaymentMethodModal from "../../components/private/Students/PaymentMethodModal.jsx";
 import { BellIcon, ChevronLeftIcon} from "@heroicons/react/24/outline";
 import { useAuth } from "../../context/AuthContext.jsx";
 

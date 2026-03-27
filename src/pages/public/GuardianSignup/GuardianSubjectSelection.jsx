@@ -2,7 +2,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState, useRef } from "react";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
-import signup_img from "../../../assets/images/student_sign_up.jpg";
+import signup_img from "../../../assets/images/Student_sign_up.jpg";
 import { dropdownTheme } from "../../../utils/dropdownTheme";
 import { 
   ChevronLeftIcon

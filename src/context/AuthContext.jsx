@@ -37,7 +37,7 @@ export function AuthProvider({ children }) {
     try {
       if (token) {
         const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
-        await fetch(`${API_BASE_URL}/api/students/logout`, {
+        await fetch(`${API_BASE_URL}/api/Students/logout`, {
           method: "POST",
           headers: {
             "Authorization": `Bearer ${token}`,

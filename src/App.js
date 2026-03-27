@@ -1,7 +1,7 @@
 import About from "./pages/public/About.jsx";
 import Home from "./pages/public/Home.jsx";
 import Career from "./pages/public/Career.jsx"
-import Login from "./pages/public/Login";
+import Login from "./pages/public/StudentLogin.jsx";
 import SignUp from "./pages/public/SignUp.jsx";
 import { Route, Routes } from "react-router-dom";
 import StudentRegistration from "./pages/public/StudentSignUp/StudentRegistration.jsx";
@@ -28,14 +28,14 @@ import GuardianTrainingPayment from "./pages/public/GuardianSignup/GuardianTrain
 import { StudentTrainingDuration } from "./pages/public/StudentSignUp/StudentTrainingDuration.jsx";
 import { StudentTrainingPayment } from "./pages/public/StudentSignUp/StudentTrainingPayment.jsx";
 import StudentLogin from "./pages/public/StudentLogin.jsx";
-import StudentDashboard from "./pages/students/StudentDashboard.jsx";
-import StudentClassSchedule from "./pages/students/StudentClassSchedule.jsx";
+import StudentDashboard from "./pages/Students/StudentDashboard.jsx";
+import StudentClassSchedule from "./pages/Students/StudentClassSchedule.jsx";
 import ComingSoon from "./pages/public/ComingSoon.jsx";
 import Unauthorized from "./pages/public/Unauthorized.jsx";
 import NotFound from "./pages/public/NotFound.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import StaffLogin from "./pages/public/StaffLogin.jsx";
-import StudentCalendar from "./pages/students/StudentCalendar.jsx";
+import StudentCalendar from "./pages/Students/StudentCalendar.jsx";
 import StaffDashboard from "./pages/staffs/admin/StaffDashboard.jsx";
 import StaffRegistration from "./pages/staffs/admin/StaffRegistration.jsx"
 import StaffManagement from "./pages/staffs/admin/StaffManagement.jsx";
@@ -44,7 +44,7 @@ import TutorStudentManagement from "./pages/staffs/tutor/TutorStudentManagement.
 import TutorMasterClass from "./pages/staffs/tutor/TutorMasterClass.jsx";
 import StaffMasterClassList from "./pages/staffs/admin/StaffMasterClassList.jsx";
 import CoursesManagement from "./pages/staffs/admin/CoursesManagement.jsx";
-import StudentPaymentHistory from "./pages/students/StudentPaymentDisplay.jsx"
+import StudentPaymentHistory from "./pages/Students/StudentPaymentDisplay.jsx"
 
 
 function App() {

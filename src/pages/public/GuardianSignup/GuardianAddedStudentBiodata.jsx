@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { location } from "../../../data/locations";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
-import signup_img from "../../../assets/images/student_sign_up.jpg";
+import signup_img from "../../../assets/images/Student_sign_up.jpg";
 import { dropdownTheme } from "../../../utils/dropdownTheme";
 import { 
   UserIcon, 
@@ -184,7 +184,7 @@ export default function GuardianAddedStudentBiodata() {
           display_picture: student.display_picture,
         };
 
-        const bioRes = await axios.post(`${API_BASE_URL}/api/students/biodata`, biodataPayload);
+        const bioRes = await axios.post(`${API_BASE_URL}/api/Students/biodata`, biodataPayload);
         if (bioRes.data && bioRes.data.student) {
           updatedStudents.push({
             ...student,

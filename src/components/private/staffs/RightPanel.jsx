@@ -1,4 +1,4 @@
-import RightPanel from "../students/RightPanel.jsx";
+import RightPanel from "../Students/RightPanel.jsx";
 
 export default RightPanel;
 

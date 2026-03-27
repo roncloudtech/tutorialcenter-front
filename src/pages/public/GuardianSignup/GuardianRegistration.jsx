@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
-import signup_img from "../../../assets/images/student_sign_up.jpg";
+import signup_img from "../../../assets/images/Student_sign_up.jpg";
 import { 
   EyeIcon, 
   EyeSlashIcon, 

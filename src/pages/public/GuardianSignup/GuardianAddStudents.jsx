@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
-import signup_img from "../../../assets/images/student_sign_up.jpg";
+import signup_img from "../../../assets/images/Student_sign_up.jpg";
 import { 
   EyeIcon, 
   EyeSlashIcon, 
@@ -134,7 +134,7 @@ export default function GuardianAddStudents() {
     const count = { success: 0, failed: 0 };
     for (const student of emailStudents) {
       try {
-        await axios.post(`${API_BASE_URL}/api/students/register`, {
+        await axios.post(`${API_BASE_URL}/api/Students/register`, {
           email: student.cleanedEmail,
           password: sharedPassword,
           confirmPassword: sharedPassword,

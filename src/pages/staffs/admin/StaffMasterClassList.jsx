@@ -23,6 +23,7 @@ export default function MasterClassList() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [toast, setToast] = useState(null);
   const [copiedLink, setCopiedLink] = useState(null);
+  const [selectedClassDetail, setSelectedClassDetail] = useState(null);
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
   const token = localStorage.getItem("staff_token");
@@ -145,7 +146,10 @@ export default function MasterClassList() {
     }
 
     return (
-      <div className="flex items-center gap-6 py-5 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-all px-4 rounded-xl group">
+      <div 
+        onDoubleClick={() => setSelectedClassDetail(cls)}
+        className="flex items-center gap-6 py-5 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-all px-4 rounded-xl group cursor-pointer select-none"
+      >
         
         {/* Avatar with Status Dot */}
         <div className="relative flex-shrink-0">
@@ -171,8 +175,15 @@ export default function MasterClassList() {
              </span>
           </div>
 
-          {/* Date & Time - Compact group */}
+          {/* Created At & Date & Time - Compact group */}
           <div className="flex-shrink-0 flex items-center gap-4 text-center">
+            <div className="flex flex-col items-center min-w-[80px] hidden lg:flex">
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">Created At</span>
+              <span className="text-[11px] font-black text-[#0F2843] whitespace-nowrap">
+                {formatDate(cls.created_at)}
+              </span>
+            </div>
+            <div className="w-[1px] h-6 bg-gray-100 hidden lg:block" />
             <span className="text-sm font-bold text-gray-600 whitespace-nowrap hidden md:block">
               {formatDate(cls.start_date)}
             </span>
@@ -330,6 +341,133 @@ export default function MasterClassList() {
             </div>
           )}
       </div>
+      
+      {/* Detail Modal */}
+      {selectedClassDetail && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-[#0F2843]/40 backdrop-blur-sm" 
+            onClick={() => setSelectedClassDetail(null)} 
+          />
+          <div className="relative bg-white rounded-[40px] w-full max-w-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+            {/* Modal Header */}
+            <div className="bg-[#0F2843] p-10 text-white relative">
+              <button 
+                onClick={() => setSelectedClassDetail(null)}
+                className="absolute top-8 right-8 p-3 hover:bg-white/10 rounded-2xl transition-all"
+              >
+                <Icon icon="mdi:close" className="w-6 h-6" />
+              </button>
+              
+              <div className="flex items-center gap-6 mb-4">
+                <div className="w-16 h-16 rounded-3xl bg-[#76D287] flex items-center justify-center text-white text-2xl font-black shadow-lg">
+                  {selectedClassDetail.title?.[0]?.toUpperCase()}
+                </div>
+                <div>
+                  <h2 className="text-3xl font-black tracking-tighter uppercase leading-none">{selectedClassDetail.title}</h2>
+                  <p className="text-white/60 text-sm font-bold mt-2 uppercase tracking-widest">Master Class Details</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-10 max-h-[70vh] overflow-y-auto custom-scrollbar">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                {/* Left Column */}
+                <div className="space-y-8">
+                  <div>
+                    <h4 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Instructor / Admin</h4>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-[#0F2843] font-black text-xs">
+                        {getStaffName(selectedClassDetail)[0]}
+                      </div>
+                      <p className="text-[17px] font-black text-[#0F2843]">{getStaffName(selectedClassDetail)}</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Created On</h4>
+                    <div className="flex items-center gap-3 text-[#0F2843]">
+                      <Icon icon="mdi:calendar-clock" className="w-5 h-5 opacity-40" />
+                      <p className="text-[15px] font-bold">{formatDate(selectedClassDetail.created_at)}</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Description</h4>
+                    <p className="text-gray-500 text-sm leading-relaxed font-medium">
+                      {selectedClassDetail.description || "No description provided for this master class."}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right Column */}
+                <div className="space-y-8">
+                  <div>
+                    <h4 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Schedule Info</h4>
+                    <div className="bg-gray-50 rounded-3xl p-6 space-y-4">
+                      <div className="flex justify-between items-center pb-4 border-b border-gray-100">
+                        <span className="text-xs font-bold text-gray-400">Start Date</span>
+                        <span className="text-xs font-black text-[#0F2843]">{formatDate(selectedClassDetail.start_date)}</span>
+                      </div>
+                      {selectedClassDetail.schedules?.map((s, idx) => (
+                        <div key={idx} className="flex justify-between items-center py-2">
+                          <span className="text-xs font-bold text-gray-400 capitalize">{s.day_of_week}s</span>
+                          <span className="text-xs font-black text-[#76D287]">{formatTime(s.start_time)} - {formatTime(s.end_time)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Quick Links</h4>
+                    <div className="space-y-3">
+                      {selectedClassDetail.class_link && (
+                        <a 
+                          href={selectedClassDetail.class_link} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="flex items-center justify-between p-4 bg-blue-50 hover:bg-blue-100 rounded-2xl transition-all group"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Icon icon="mdi:link-variant" className="w-5 h-5 text-blue-500" />
+                            <span className="text-xs font-black text-blue-600">Join Class</span>
+                          </div>
+                          <Icon icon="mdi:arrow-right" className="w-4 h-4 text-blue-500 group-hover:translate-x-1 transition-transform" />
+                        </a>
+                      )}
+                      {selectedClassDetail.recording_link && (
+                        <a 
+                          href={selectedClassDetail.recording_link} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="flex items-center justify-between p-4 bg-green-50 hover:bg-green-100 rounded-2xl transition-all group"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Icon icon="mdi:video" className="w-5 h-5 text-green-500" />
+                            <span className="text-xs font-black text-green-600">Watch Recording</span>
+                          </div>
+                          <Icon icon="mdi:arrow-right" className="w-4 h-4 text-green-500 group-hover:translate-x-1 transition-transform" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-10 bg-gray-50 flex items-center justify-end gap-4">
+              <button 
+                onClick={() => setSelectedClassDetail(null)}
+                className="px-10 py-4 bg-white border border-gray-200 text-gray-500 font-black rounded-2xl text-[13px] uppercase tracking-widest hover:bg-gray-100 transition-all active:scale-95 shadow-sm"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </StaffDashboardLayout>
   );
-}
+}

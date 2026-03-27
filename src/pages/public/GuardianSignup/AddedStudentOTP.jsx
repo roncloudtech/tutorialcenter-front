@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
 import ReturnArrow from "../../../assets/svg/return arrow.svg";
-import signup_img from "../../../assets/images/student_sign_up.jpg";
+import signup_img from "../../../assets/images/Student_sign_up.jpg";
 
 export default function AddedStudentOTP() {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export default function AddedStudentOTP() {
     setMsg("");
 
     try {
-      await axios.post(`${API_BASE_URL}/api/students/register`, {
+      await axios.post(`${API_BASE_URL}/api/Students/register`, {
         tel: student.tel,
         password: password,
         confirmPassword: password,
@@ -172,7 +172,7 @@ export default function AddedStudentOTP() {
     try {
       const currentStudent = students[currentIndex];
       
-      await axios.post(`${API_BASE_URL}/api/students/verify-phone`, {
+      await axios.post(`${API_BASE_URL}/api/Students/verify-phone`, {
         tel: currentStudent.tel,
         otp: otpCode,
       });
@@ -216,7 +216,7 @@ export default function AddedStudentOTP() {
     const currentStudent = students[currentIndex];
     
     try {
-      await axios.post(`${API_BASE_URL}/api/students/resend-phone-otp`, {
+      await axios.post(`${API_BASE_URL}/api/Students/resend-phone-otp`, {
         tel: currentStudent.tel,
       });
       setCount(60);

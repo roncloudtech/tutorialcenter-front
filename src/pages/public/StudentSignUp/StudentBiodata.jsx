@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { location } from "../../../data/locations";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
-import signup_img from "../../../assets/images/student_sign_up.jpg";
+import signup_img from "../../../assets/images/Student_sign_up.jpg";
 import { dropdownTheme } from "../../../utils/dropdownTheme";
 import { 
   UserIcon, 
@@ -164,7 +164,7 @@ export default function StudentBiodata() {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/students/biodata`, formDataToSend, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const response = await axios.post(`${API_BASE_URL}/api/Students/biodata`, formDataToSend, { headers: { 'Content-Type': 'multipart/form-data' } });
       if (response.status === 200 || response.status === 201) {
         setToast({ type: "success", message: response.data.message || "Biodata saved successfully!" });
         localStorage.setItem('studentdata', JSON.stringify({ data: response.data.student }));

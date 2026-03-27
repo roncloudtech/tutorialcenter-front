@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
-import signup_img from "../../../assets/images/student_sign_up.jpg";
+import signup_img from "../../../assets/images/Student_sign_up.jpg";
 import { 
   EyeIcon, 
   EyeSlashIcon, 
@@ -68,7 +68,7 @@ export default function StudentRegistration() {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/students/register`, payload);
+      const response = await axios.post(`${API_BASE_URL}/api/Students/register`, payload);
 
       if (response.status === 201) {
         setIsEmailEntry(isEmail);

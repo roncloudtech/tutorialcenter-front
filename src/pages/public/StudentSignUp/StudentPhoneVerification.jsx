@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import signup_img from "../../../assets/images/student_sign_up.jpg";
+import signup_img from "../../../assets/images/Student_sign_up.jpg";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 export default function StudentPhoneVerification() {
@@ -126,7 +126,7 @@ export default function StudentPhoneVerification() {
 
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/api/students/verify-phone`,
+        `${API_BASE_URL}/api/Students/verify-phone`,
         {
           tel: tel,
           otp: otp,
@@ -170,7 +170,7 @@ export default function StudentPhoneVerification() {
   const handleResend = async () => {
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/api/students/resend-phone-otp`,
+        `${API_BASE_URL}/api/Students/resend-phone-otp`,
         { tel: tel },
       );
       setToast({ type: "success", message: response?.data?.message || "OTP resent successfully." });

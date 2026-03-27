@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
-import DashboardLayout from "../../components/private/students/DashboardLayout";
+import DashboardLayout from "../../components/private/Students/DashboardLayout";
 import { 
   BellIcon, 
   MagnifyingGlassIcon, 

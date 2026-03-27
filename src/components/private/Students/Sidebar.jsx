@@ -24,7 +24,7 @@ const menuItems = [
   {
     label: "Courses",
     icon: "mdi:book-open-page-variant",
-    destination: "/student/courses",
+    // destination: "/student/courses",
   },
   {
     label: "Master Class",
@@ -34,8 +34,7 @@ const menuItems = [
   },
   {
     label: "Exam Practice",
-    icon: "mdi:clipboard-text-outline",
-    destination: "/student/exam-practice",
+    icon: "mdi:clipboard-text-outline"
   },
   {
     label: "Calendar",
@@ -45,12 +44,12 @@ const menuItems = [
   {
     label: "Assessment",
     icon: "mdi:file-document-edit-outline",
-    destination: "/student/assessment",
+    // destination: "/student/assessment",
   },
   {
     label: "Games & Fun",
     icon: "mdi:controller-classic",
-    destination: "/student/games",
+    // destination: "/student/games",
   },
   {
     label: "Payment",
@@ -60,12 +59,12 @@ const menuItems = [
   {
     label: "Settings",
     icon: "mdi:cog-outline",
-    destination: "/student/settings",
+    // destination: "/student/settings",
   },
   {
     label: "Help",
     icon: "mdi:help-circle-outline",
-    destination: "/student/help",
+    // destination: "/student/help",
   },
 ];
 

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
 import ReturnArrow from "../../../assets/svg/return arrow.svg";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import signup_img from "../../../assets/images/student_sign_up.jpg";
+import signup_img from "../../../assets/images/Student_sign_up.jpg";
 
 export default function StudentEmailVerification() {
   const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test"; // Base URL for API
@@ -37,7 +37,7 @@ export default function StudentEmailVerification() {
     setLoading(true); // Set loading state to true
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/api/students/verify-email`,
+        `${API_BASE_URL}/api/Students/verify-email`,
         {
           token: token,
         },
@@ -77,7 +77,7 @@ export default function StudentEmailVerification() {
   const handleResend = async () => {
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/api/students/resend-email-verification`,
+        `${API_BASE_URL}/api/Students/resend-email-verification`,
         { email: email },
       );
       setToast({ type: "success", message: response?.data?.message || "Email verification resent successfully." });
