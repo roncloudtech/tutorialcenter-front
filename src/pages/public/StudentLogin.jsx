@@ -116,7 +116,7 @@ export default function StudentLogin() {
           {/* 1. TOP NAV */}
           <div className="relative w-full flex items-center justify-center mb-8 md:mb-10">
             <button
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/register")}
               className="absolute left-0 p-2 hover:bg-gray-200 rounded-full transition-all z-10"
             >
               <img

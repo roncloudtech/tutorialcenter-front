@@ -68,7 +68,7 @@ export default function StudentRegistration() {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/Students/register`, payload);
+      const response = await axios.post(`${API_BASE_URL}/api/students/register`, payload);
 
       if (response.status === 201) {
         setIsEmailEntry(isEmail);

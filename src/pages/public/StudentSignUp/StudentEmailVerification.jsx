@@ -37,7 +37,7 @@ export default function StudentEmailVerification() {
     setLoading(true); // Set loading state to true
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/api/Students/verify-email`,
+        `${API_BASE_URL}/api/students/verify-email`,
         {
           token: token,
         },
@@ -77,7 +77,7 @@ export default function StudentEmailVerification() {
   const handleResend = async () => {
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/api/Students/resend-email-verification`,
+        `${API_BASE_URL}/api/students/resend-email-verification`,
         { email: email },
       );
       setToast({ type: "success", message: response?.data?.message || "Email verification resent successfully." });

@@ -126,7 +126,7 @@ export default function StudentPhoneVerification() {
 
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/api/Students/verify-phone`,
+        `${API_BASE_URL}/api/students/verify-phone`,
         {
           tel: tel,
           otp: otp,
