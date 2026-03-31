@@ -38,9 +38,23 @@ export const GuardianRegistration = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.entry.trim()) newErrors.entry = "Email or Phone is required";
-    if (!formData.password) newErrors.password = "Password is required";
-    if (!formData.confirmPassword) newErrors.confirmPassword = "Confirm Password is required";
-    if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
+
+    // Password validation
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else {
+      if (formData.password.length < 8) {
+        newErrors.password = "Password must be at least 8 characters";
+      } else if (!/\d/.test(formData.password)) {
+        newErrors.password = "Password must contain at least one number";
+      } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.password)) {
+        newErrors.password = "Password must contain at least one symbol";
+      }
+    }
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Confirm Password is required";
+    } else if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
 

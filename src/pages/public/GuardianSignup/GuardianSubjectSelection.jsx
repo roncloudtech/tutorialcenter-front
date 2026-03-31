@@ -222,10 +222,10 @@ export default function GuardianSubjectSelection() {
 
               {student.expanded && (
                 <div className="p-2 pt-0 animate-fadeIn relative">
-                  <div className="bg-[#09314F] text-white rounded-2xl grid grid-cols-[100px_minmax(0,1fr)_60px] px-4 py-3 mb-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest px-2">Exam</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest px-2">Subjects</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-right">Count</span>
+                  <div className="bg-[#09314F] text-white rounded-2xl grid grid-cols-[90px_1fr_50px] md:grid-cols-[100px_1fr_60px] px-2 md:px-4 py-3 mb-1">
+                    <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest px-1 md:px-2">Exam</span>
+                    <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest px-1 md:px-2">Subjects</span>
+                    <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-right">Count</span>
                   </div>
 
                   <div className="space-y-1">
@@ -237,8 +237,8 @@ export default function GuardianSubjectSelection() {
                       const isOpen = openDropdown === currentKey;
 
                       return (
-                        <div key={course.id} className="grid grid-cols-[100px_minmax(0,1fr)_60px] items-center px-4 py-4 border-b border-gray-50 last:border-0 relative">
-                          <span className="text-xs font-extrabold text-[#09314F] uppercase truncate">{course.title}</span>
+                        <div key={course.id} className="grid grid-cols-[90px_1fr_50px] md:grid-cols-[100px_1fr_60px] items-center px-2 md:px-4 py-4 border-b border-gray-50 last:border-0 relative">
+                          <span className="text-[10px] md:text-xs font-extrabold text-[#09314F] uppercase truncate">{course.title}</span>
                           
                           <div className="px-2 relative">
                             <button
@@ -285,9 +285,9 @@ export default function GuardianSubjectSelection() {
                           </div>
 
                           <div className="text-right">
-                            <span className="text-xs font-black text-[#09314F]">{selectedIds.length}</span>
-                            <span className="text-xs font-bold text-gray-300"> / </span>
-                            <span className="text-xs font-bold text-gray-400">{limit}</span>
+                            <span className="text-[10px] md:text-xs font-black text-[#09314F]">{selectedIds.length}</span>
+                            <span className="text-[10px] md:text-xs font-bold text-gray-300"> / </span>
+                            <span className="text-[10px] md:text-xs font-bold text-gray-400">{limit}</span>
                           </div>
                         </div>
                       );

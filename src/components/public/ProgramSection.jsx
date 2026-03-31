@@ -41,7 +41,7 @@ const ProgramSection = () => {
                 topic2: "Weekly masterclasses",
                 topic3: "Mock tests and practice questions",
                 topic4: "Live Q&A sessions with experts",
-                path: "/learnMore",
+                path: "/about",
             },
             {
                 title: "NECO",
@@ -53,7 +53,7 @@ const ProgramSection = () => {
                 topic2: "Weekly masterclasses",
                 topic3: "Mock tests and practice questions",
                 topic4: "Live Q&A sessions with experts",
-                path: "/learnMore",
+                path: "/about",
             },
             {
                 title: "WAEC",
@@ -66,7 +66,7 @@ const ProgramSection = () => {
                 topic2: "Weekly quizzes and assignments",
                 topic3: "Interactive live sessions with subject tutors",
                 topic4: "Past question reviews and analysis",
-                path: "/learnMore",
+                path: "/about",
             },
             {
                 title: "WAEC",
@@ -79,7 +79,7 @@ const ProgramSection = () => {
                 topic2: "Weekly quizzes and assignments",
                 topic3: "Interactive live sessions with subject tutors",
                 topic4: "Past question reviews and analysis",
-                path: "/learnMore",
+                path: "/about",
             },
         ]
     ), []);
