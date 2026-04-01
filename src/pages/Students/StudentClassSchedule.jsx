@@ -32,8 +32,9 @@ export default function StudentClassSchedule() {
   const [expandedSessionId, setExpandedSessionId] = useState(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  // Responsive Breakpoint (Ultra-wide/High-res)
+  // Responsive Breakpoints
   const isHighRes = windowWidth >= 1800;
+  const isMobile = windowWidth < 1024; // Where the grid stacks
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -175,11 +176,11 @@ export default function StudentClassSchedule() {
     return (
       <div 
         onClick={() => {
-          if (isHighRes) return; // No expansion needed on high-res
+          if (isHighRes || isMobile) return; // No expansion needed on high-res or mobile stack
           setExpandedSessionId(isExpanded ? null : session.id);
         }}
         className={`relative flex flex-col bg-white rounded-[40px] border border-gray-50 shadow-sm transition-all cursor-pointer group mb-6 select-none ${
-          isHighRes 
+          isHighRes || isMobile
             ? "hover:translate-y-[-1px] hover:shadow-md" 
             : isExpanded 
               ? "ring-2 ring-[#BB9E7F]/20 scale-[1.01] -translate-y-1 py-2 hover:shadow-xl" 
@@ -187,7 +188,7 @@ export default function StudentClassSchedule() {
         }`}
       >
         {/* COMPACT VIEW (Normal Row) */}
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 items-center gap-y-6 lg:gap-3 xl:gap-4 px-8 py-6 transition-all ${!isHighRes && isExpanded ? "opacity-30 grayscale blur-[1px]" : ""}`}>
+        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 items-center gap-y-6 lg:gap-3 xl:gap-4 px-8 py-6 transition-all ${(!isHighRes && !isMobile) && isExpanded ? "opacity-30 grayscale blur-[1px]" : ""}`}>
           {/* FLOATING AVATAR (Visible ONLY at exactly 1024px-1279px / lg) */}
           <div className="hidden lg:flex xl:hidden absolute -top-5 -left-5 w-16 h-16 bg-white rounded-2xl shadow-lg border border-gray-50 items-center justify-center z-20 transition-all group-hover:scale-110 group-hover:-rotate-3">
              <div className="w-12 h-12 rounded-xl overflow-hidden border-2 border-[#BB9E7F]/30 group-hover:border-[#BB9E7F] transition-all">
@@ -222,8 +223,8 @@ export default function StudentClassSchedule() {
               {status === 'live' && <span className="absolute -bottom-0.5 -right-0.5 w-4.5 h-4.5 bg-[#22C55E] border-2 border-white rounded-full shadow-sm animate-pulse"></span>}
             </div>
             <div className="flex flex-col min-w-0">
-              <span className={`font-black text-[#0F2843] leading-tight uppercase truncate ${isHighRes ? "text-[16px]" : "text-[15px]"}`}>
-                {isHighRes 
+              <span className={`font-black text-[#0F2843] leading-tight uppercase truncate ${isHighRes || isMobile ? "text-[16px]" : "text-[15px]"}`}>
+                {isHighRes || isMobile
                   ? (session.class?.title || "Master Class")
                   : abbreviateTitle(session.class?.title || "Master Class")
                 }
@@ -283,7 +284,7 @@ export default function StudentClassSchedule() {
         </div>
 
         {/* EXPANDED VIEW (Info Card) */}
-        {!isHighRes && isExpanded && (
+        {!isHighRes && !isMobile && isExpanded && (
           <div className="w-full bg-white p-8 md:p-10 flex flex-col justify-between animate-in fade-in zoom-in-95 duration-300 border-t border-gray-50 mt-2">
              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
                <div className="flex items-center gap-8">
@@ -422,10 +423,7 @@ export default function StudentClassSchedule() {
                   <div className="flex-1">
                     <span className="px-3 py-1 bg-[#E83831] text-white rounded-full text-[10px] font-bold uppercase tracking-widest mb-3 inline-block shadow-sm">Recommended Session</span>
                     <h3 className="text-3xl font-black italic uppercase tracking-tighter mb-2 leading-tight">
-                      {isHighRes 
-                        ? (scheduleData.next_class.class?.title || "Master Class Session")
-                        : abbreviateTitle(scheduleData.next_class.class?.title) || "Master Class Session"
-                      }
+                      {scheduleData.next_class.class?.title || "Master Class Session"}
                     </h3>
                     <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-white/60 font-bold text-sm">
                       <div className="flex items-center gap-2">
@@ -483,10 +481,7 @@ export default function StudentClassSchedule() {
                 {/* Center: Class Info + Right: Button under Date */}
                 <div className="flex-1 flex flex-col gap-3">
                   <h3 className="text-2xl font-black italic uppercase tracking-tighter leading-tight">
-                    {isHighRes 
-                      ? (scheduleData.next_class.class?.title || "Master Class Session")
-                      : abbreviateTitle(scheduleData.next_class.class?.title) || "Master Class Session"
-                    }
+                    {scheduleData.next_class.class?.title || "Master Class Session"}
                   </h3>
                   <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-white/60 font-bold text-sm">
                     <div className="flex items-center gap-2">
@@ -539,7 +534,7 @@ export default function StudentClassSchedule() {
           <div>
             <div className="flex items-center gap-4 mb-6">
               <h2 className="text-[12px] font-black text-[#BB9E7F] uppercase tracking-[0.3em] pl-2 whitespace-nowrap">TODAY'S CLASSES</h2>
-              {!isHighRes && (
+              {(!isHighRes && !isMobile) && (
                 <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest italic hidden md:inline">— Click any session for more details</span>
               )}
               <div className="h-[1px] flex-1 bg-gray-100"></div>
@@ -565,7 +560,7 @@ export default function StudentClassSchedule() {
               onClick={() => setIsWeeklyOpen(!isWeeklyOpen)}
             >
               <h2 className="text-[12px] font-black text-[#BB9E7F] uppercase tracking-[0.3em] pl-2 whitespace-nowrap">WEEKLY SCHEDULE</h2>
-              {!isHighRes && (
+              {(!isHighRes && !isMobile) && (
                 <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest italic hidden md:inline">— Click any session for more details</span>
               )}
               <div className="h-[1px] flex-1 bg-gray-100 group-hover/header:bg-[#BB9E7F]/30 transition-all"></div>
