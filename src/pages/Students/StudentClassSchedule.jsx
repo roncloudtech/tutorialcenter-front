@@ -179,19 +179,18 @@ export default function StudentClassSchedule() {
           if (isHighRes || isMobile) return; // No expansion needed on high-res or mobile stack
           setExpandedSessionId(isExpanded ? null : session.id);
         }}
-        className={`relative flex flex-col bg-white rounded-[40px] border border-gray-50 shadow-sm transition-all cursor-pointer group mb-6 select-none ${
+        className={`relative flex flex-col bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md rounded-[40px] border border-gray-50 dark:border-[#09314F] shadow-sm transition-all cursor-pointer group mb-6 select-none ${
           isHighRes || isMobile
             ? "hover:translate-y-[-1px] hover:shadow-md" 
             : isExpanded 
-              ? "ring-2 ring-[#BB9E7F]/20 scale-[1.01] -translate-y-1 py-2 hover:shadow-xl" 
+              ? "ring-2 ring-[#BB9E7F]/20 scale-[1.01] -translate-y-1 py-2 hover:shadow-xl dark:ring-[#BB9E7F]/40" 
               : "hover:translate-y-[-2px] hover:shadow-xl"
         }`}
       >
-        {/* COMPACT VIEW (Normal Row) */}
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 items-center gap-y-6 lg:gap-3 xl:gap-4 px-8 py-6 transition-all ${(!isHighRes && !isMobile) && isExpanded ? "opacity-30 grayscale blur-[1px]" : ""}`}>
-          {/* FLOATING AVATAR (Visible ONLY at exactly 1024px-1279px / lg) */}
-          <div className="hidden lg:flex xl:hidden absolute -top-5 -left-5 w-16 h-16 bg-white rounded-2xl shadow-lg border border-gray-50 items-center justify-center z-20 transition-all group-hover:scale-110 group-hover:-rotate-3">
-             <div className="w-12 h-12 rounded-xl overflow-hidden border-2 border-[#BB9E7F]/30 group-hover:border-[#BB9E7F] transition-all">
+        {/* FLOATING POP-OUT AVATAR (Visible ONLY at exactly 1024px-1279px / lg) */}
+        {!isExpanded && (
+          <div className="hidden lg:flex xl:hidden absolute -top-5 -left-5 w-16 h-16 bg-white dark:bg-[#09314F] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-gray-50 dark:border-[#09314F] items-center justify-center z-[25] transition-all group-hover:scale-110 group-hover:-rotate-3">
+             <div className="w-12 h-12 rounded-xl overflow-hidden border-2 border-[#BB9E7F]/30 group-hover:border-[#BB9E7F] transition-all bg-gray-50">
                 {tutor?.profile_picture ? (
                   <img 
                     src={`${API_BASE_URL}/storage/${tutor.profile_picture}`}
@@ -204,9 +203,12 @@ export default function StudentClassSchedule() {
                 )}
              </div>
           </div>
+        )}
 
+        {/* COMPACT VIEW (Normal Row) */}
+        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 items-center gap-y-6 lg:gap-3 xl:gap-4 px-8 py-6 transition-all ${(!isHighRes && !isMobile) && isExpanded ? "opacity-30 grayscale blur-[1px]" : ""}`}>
           {/* Title Column */}
-          <div className="flex items-center gap-4 col-span-1 lg:pl-3 xl:pl-0 min-w-0">
+          <div className="flex items-center gap-4 col-span-1 lg:pl-6 xl:pl-0 min-w-0">
             <div className="relative shrink-0 lg:hidden xl:flex">
               <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-50 border-2 border-[#BB9E7F]/30 group-hover:border-[#BB9E7F] transition-all flex items-center justify-center">
                 {tutor?.profile_picture ? (
@@ -223,7 +225,7 @@ export default function StudentClassSchedule() {
               {status === 'live' && <span className="absolute -bottom-0.5 -right-0.5 w-4.5 h-4.5 bg-[#22C55E] border-2 border-white rounded-full shadow-sm animate-pulse"></span>}
             </div>
             <div className="flex flex-col min-w-0">
-              <span className={`font-black text-[#0F2843] leading-tight uppercase truncate ${isHighRes || isMobile ? "text-[16px]" : "text-[15px]"}`}>
+              <span className={`font-black text-[#0F2843] dark:text-white leading-tight uppercase truncate ${isHighRes || isMobile ? "text-[16px]" : "text-[15px]"}`}>
                 {isHighRes || isMobile
                   ? (session.class?.title || "Master Class")
                   : abbreviateTitle(session.class?.title || "Master Class")
@@ -247,17 +249,17 @@ export default function StudentClassSchedule() {
           
           {/* Instructor Column */}
           <div className="text-left sm:text-center min-w-0">
-            <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest block mb-1">Tutor</span>
-            <span className="text-[13px] font-black text-[#0F2843] truncate block">
+            <span className="text-[11px] font-black text-gray-400 dark:text-blue-300 uppercase tracking-widest block mb-1">Tutor</span>
+            <span className="text-[13px] font-black text-[#0F2843] dark:text-white truncate block">
               {tutor ? `${tutor.firstname} ${tutor.surname}` : "Expert Tutor"}
             </span>
           </div>
 
           {/* Link Column */}
           <div className="text-left lg:text-center min-w-0">
-            <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest block mb-1">Session</span>
+            <span className="text-[11px] font-black text-gray-400 dark:text-blue-300 uppercase tracking-widest block mb-1">Session</span>
             <span 
-              className="text-[#3A5ECC] text-[13px] font-bold underline decoration-dotted underline-offset-4 truncate block"
+              className="text-[#3A5ECC] dark:text-blue-400 text-[13px] font-bold underline decoration-dotted underline-offset-4 truncate block"
               onClick={(e) => e.stopPropagation()} // Prevent toggling the card when clicking the link
             >
               {session.recording_link || session.class_link || "Awaiting"}
@@ -266,8 +268,8 @@ export default function StudentClassSchedule() {
 
           {/* Time Column */}
           <div className="text-left sm:text-center min-w-0">
-            <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest block mb-1">Time</span>
-            <div className="flex items-center sm:justify-center gap-1.5 text-[#0F2843] font-black text-[14px]">
+            <span className="text-[11px] font-black text-gray-400 dark:text-blue-300 uppercase tracking-widest block mb-1">Time</span>
+            <div className="flex items-center sm:justify-center gap-1.5 text-[#0F2843] dark:text-white font-black text-[14px]">
               <ClockIcon className="w-4 h-4 text-[#BB9E7F]" />
               <span>{formatTime(session.starts_at)}</span>
             </div>
@@ -275,17 +277,17 @@ export default function StudentClassSchedule() {
 
           {/* Date Column */}
           <div className="text-left sm:text-center min-w-0">
-            <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest block mb-1 text-center">Date</span>
-            <div className="flex items-center sm:justify-center gap-1.5 text-gray-600 font-black text-[14px]">
+            <span className="text-[11px] font-black text-gray-400 dark:text-blue-300 uppercase tracking-widest block mb-1 text-center">Date</span>
+            <div className="flex items-center sm:justify-center gap-1.5 text-gray-600 dark:text-gray-200 font-black text-[14px]">
               <CalendarIcon className="w-4 h-4 text-[#BB9E7F]" />
-              <span>{new Date(session.session_date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</span>
+              <span>{new Date(session.session_date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}</span>
             </div>
           </div>
         </div>
 
         {/* EXPANDED VIEW (Info Card) */}
         {!isHighRes && !isMobile && isExpanded && (
-          <div className="w-full bg-white p-8 md:p-10 flex flex-col justify-between animate-in fade-in zoom-in-95 duration-300 border-t border-gray-50 mt-2">
+          <div className="w-full bg-white dark:bg-[#09314F]/80 dark:backdrop-blur-md p-8 md:p-10 flex flex-col justify-between animate-in fade-in zoom-in-95 duration-300 border-t border-gray-50 dark:border-white/10 mt-2 rounded-b-[40px]">
              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
                <div className="flex items-center gap-8">
                  <div className="w-20 h-20 rounded-3xl overflow-hidden bg-gray-50 border-2 border-[#BB9E7F]/30 p-1 shadow-lg">
@@ -301,7 +303,7 @@ export default function StudentClassSchedule() {
                  </div>
                  <div className="flex flex-col">
                    <span className="px-3 py-1 bg-[#BB9E7F] text-white rounded-full text-[10px] font-black uppercase tracking-widest mb-3 self-start shadow-sm">Full Session Details</span>
-                   <h3 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter text-[#0F2843] leading-none mb-2">
+                   <h3 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter text-[#0F2843] dark:text-white leading-none mb-2">
                      {session.class?.title || "Master Class Session"}
                    </h3>
                    <div className="flex flex-wrap items-center gap-4 text-gray-400 font-bold text-sm">
@@ -319,27 +321,27 @@ export default function StudentClassSchedule() {
                </div>
 
                <div className="flex flex-col items-start md:items-end gap-3 min-w-[200px] w-full md:w-auto">
-                 <div className="text-left md:text-right w-full">
-                    <span className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] mb-1 block">Live Meeting Link</span>
+                   <div className="text-left md:text-right w-full">
+                    <span className="text-[10px] font-black text-gray-300 dark:text-blue-300 uppercase tracking-[0.2em] mb-1 block">Live Meeting Link</span>
                     <a 
                       href={session.recording_link || session.class_link} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-sm font-bold text-[#3A5ECC] underline decoration-dotted underline-offset-4 break-all block"
+                      className="text-sm font-bold text-[#3A5ECC] dark:text-blue-400 underline decoration-dotted underline-offset-4 break-all block"
                       onClick={(e) => e.stopPropagation()} // Prevent toggling the card when clicking the link
                     >
                       {session.recording_link || session.class_link || "Link Awaiting Deployment..."}
                     </a>
                  </div>
-                 <div className="flex items-center gap-2 text-gray-400 font-black text-[12px] uppercase tracking-widest mt-2">
+                 <div className="flex items-center gap-2 text-gray-400 dark:text-blue-300 font-black text-[12px] uppercase tracking-widest mt-2">
                     <CalendarIcon className="w-4 h-4 text-[#BB9E7F]" />
                     <span>{formatSessionDate(session.session_date)}</span>
                  </div>
                </div>
              </div>
 
-             <div className="mt-8 pt-8 border-t border-gray-50 flex items-center justify-between">
-                <p className="hidden md:block text-[11px] font-black text-gray-300 uppercase tracking-[0.3em]">
+             <div className="mt-8 pt-8 border-t border-gray-50 dark:border-white/10 flex items-center justify-between">
+                <p className="hidden md:block text-[11px] font-black text-gray-300 dark:text-white/50 uppercase tracking-[0.3em]">
                   Click anywhere to close full view
                 </p>
                 <div className="flex items-center gap-4 w-full md:w-auto">
@@ -377,7 +379,7 @@ export default function StudentClassSchedule() {
         
         {/* ========= Header Section ========= */}
         <div className="flex items-center justify-between mb-10">
-          <h1 className="text-[42px] font-black text-[#0F2843] tracking-tighter leading-none italic uppercase">
+          <h1 className="text-[42px] font-black text-[#0F2843] dark:text-white tracking-tighter leading-none italic uppercase">
             MASTER <span className="text-[#BB9E7F] not-italic">CLASS</span>
           </h1>
           
@@ -522,7 +524,7 @@ export default function StudentClassSchedule() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search master classes..." 
-              className="w-full pl-16 pr-8 py-5 bg-white rounded-[32px] border-none shadow-[0_10px_35px_rgba(0,0,0,0.03)] focus:ring-4 focus:ring-[#BB9E7F]/10 text-[15px] font-bold text-[#0F2843] placeholder-gray-300 transition-all"
+              className="w-full pl-16 pr-8 py-5 bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md rounded-[32px] border-none shadow-[0_10px_35px_rgba(0,0,0,0.03)] focus:ring-4 focus:ring-[#BB9E7F]/10 text-[15px] font-bold text-[#0F2843] dark:text-white placeholder-gray-300 dark:placeholder-white/50 transition-all"
             />
           </div>
         </div>

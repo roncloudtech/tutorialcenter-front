@@ -135,7 +135,7 @@ export default function Sidebar({ collapsed, setCollapsed, isOpen, onClose }) {
             <img
               src={student?.profile_picture !== null ? `${API_BASE_URL}/storage/${student?.profile_picture}` : collapselogo}
               alt="Avatar"
-              className="rounded-full shadow-lg h-10 w-10 object-cover border-2 border-yellow-400"
+              className="rounded-full shadow-lg h-10 w-10 object-cover border-2 border-[#BB9E7F]"
             />
           ) : (
             <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
@@ -144,7 +144,7 @@ export default function Sidebar({ collapsed, setCollapsed, isOpen, onClose }) {
             <div>
               {studentLoaded ? (
                 <>
-                  <h6 className="text-yellow-400 text-sm">Hello Student</h6>
+                  <h6 className="text-[#BB9E7F] text-sm">Hello Student</h6>
                   <h3 className="font-bold dark:text-gray-50 text-sm">{fullName}</h3>
                 </>
               ) : (

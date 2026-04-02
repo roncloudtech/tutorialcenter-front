@@ -12,7 +12,7 @@ export default function ProgressCard({ title, end_date, subjects = [] }) {
       : 0;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
+    <div className="bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md border border-transparent dark:border-[#09314F] rounded-xl shadow overflow-hidden">
       
       {/* Accordion Header */}
       <button
@@ -38,9 +38,9 @@ export default function ProgressCard({ title, end_date, subjects = [] }) {
 
       {/* Course Progress Bar (Always Visible) */}
       <div className="px-4 pb-3">
-        <div className="h-2 bg-gray-200 rounded-full">
+        <div className="h-2 bg-gray-200 dark:bg-gray-700/50 rounded-full">
           <div
-            className="h-2 bg-blue-900 rounded-full transition-all duration-500"
+            className="h-2 bg-blue-900 dark:bg-blue-400 rounded-full transition-all duration-500"
             style={{ width: `${avgProgress}%` }}
           />
         </div>
@@ -56,18 +56,18 @@ export default function ProgressCard({ title, end_date, subjects = [] }) {
           {subjects.map((sub) => (
             <div
               key={sub.id}
-              className="bg-gray-100 dark:bg-gray-500 rounded-lg px-3 py-2"
+              className="bg-gray-100 dark:bg-[#09314F]/60 border border-transparent dark:border-[#09314F] rounded-lg px-3 py-2"
             >
-              <div className="flex justify-between items-center">
-                <span className="text-sm">{sub.name}</span>
-                <span className="text-xs font-semibold">
+              <div className="flex justify-between items-center text-gray-800 dark:text-gray-100">
+                <span className="text-sm font-medium">{sub.name}</span>
+                <span className="text-xs font-bold">
                   {Math.round(sub.progress || 0)}%
                 </span>
               </div>
 
-              <div className="h-2 bg-gray-300 rounded-full mt-1">
+              <div className="h-2 bg-gray-300 dark:bg-gray-700/50 rounded-full mt-1">
                 <div
-                  className="h-2 bg-blue-900 rounded-full transition-all duration-500"
+                  className="h-2 bg-blue-900 dark:bg-blue-400 rounded-full transition-all duration-500"
                   style={{ width: `${sub.progress || 0}%` }}
                 />
               </div>

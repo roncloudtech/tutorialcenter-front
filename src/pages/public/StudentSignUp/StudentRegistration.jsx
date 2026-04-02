@@ -37,6 +37,7 @@ export default function StudentRegistration() {
   const [isDepartmentOpen, setIsDepartmentOpen] = useState(false);
   
   const fileInputRef = useRef(null);
+  const dateInputRef = useRef(null);
   const genderRef = useRef(null);
   const departmentRef = useRef(null);
 
@@ -86,6 +87,10 @@ export default function StudentRegistration() {
     if (file) {
       if (!file.type.startsWith("image/")) {
         setToast({ type: "error", message: "Please upload an image file." });
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        setToast({ type: "error", message: "Image size must be less than 2MB." });
         return;
       }
       const previewUrl = URL.createObjectURL(file);
@@ -264,6 +269,33 @@ export default function StudentRegistration() {
         <div className="w-full max-w-lg bg-white rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.04)] p-8 md:p-10 border border-gray-100 flex flex-col items-center">
           <form onSubmit={handleSubmit} className="w-full space-y-6">
             
+            {/* Profile Picture Upload - THE CIRCLE BUBBLE */}
+            <div className="flex flex-col items-center py-6 w-full border-y border-gray-50">
+              <div 
+                onClick={() => fileInputRef.current.click()}
+                onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
+                className="relative cursor-pointer group"
+              >
+                <div className={`w-24 h-24 rounded-full border-4 transition-all group-hover:scale-105 overflow-hidden flex items-center justify-center ${
+                  isDragging ? "border-[#09314F] bg-blue-50 scale-105" : "border-[#FDF2F2] bg-[#F7EFEF]"
+                }`} style={{ boxShadow: isDragging ? "0 0 30px rgba(9, 49, 79, 0.2)" : "none" }}>
+                  {formData.profile_picture_preview ? (
+                    <img src={formData.profile_picture_preview} alt="Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex flex-col items-center text-[#888888]">
+                      <CameraIcon className="w-7 h-7 mb-1" />
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-center px-2">Upload Photo</span>
+                    </div>
+                  )}
+                </div>
+                <div className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-lg border border-gray-50">
+                  <CameraIcon className="h-4 w-4 text-[#E83831]" />
+                </div>
+                <input ref={fileInputRef} type="file" hidden accept="image/*" onChange={handleFileChange} />
+              </div>
+              <p className="mt-3 text-[10px] font-bold text-[#888888]">Profile Picture (Optional)</p>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-2">
               {/* First Name */}
               <div className="space-y-2">
@@ -385,40 +417,19 @@ export default function StudentRegistration() {
               </div>
             </div>
 
-            {/* Profile Picture Upload - THE CIRCLE BUBBLE */}
-            <div className="flex flex-col items-center py-6 w-full border-y border-gray-50">
-              <div 
-                onClick={() => fileInputRef.current.click()}
-                onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
-                className="relative cursor-pointer group"
-              >
-                <div className={`w-24 h-24 rounded-full border-4 transition-all group-hover:scale-105 overflow-hidden flex items-center justify-center ${
-                  isDragging ? "border-[#09314F] bg-blue-50 scale-105" : "border-[#FDF2F2] bg-[#F7EFEF]"
-                }`} style={{ boxShadow: isDragging ? "0 0 30px rgba(9, 49, 79, 0.2)" : "none" }}>
-                  {formData.profile_picture_preview ? (
-                    <img src={formData.profile_picture_preview} alt="Preview" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="flex flex-col items-center text-[#888888]">
-                      <CameraIcon className="w-7 h-7 mb-1" />
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-center px-2">Upload Photo</span>
-                    </div>
-                  )}
-                </div>
-                <div className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-lg border border-gray-50">
-                  <CameraIcon className="h-4 w-4 text-[#E83831]" />
-                </div>
-                <input ref={fileInputRef} type="file" hidden accept="image/*" onChange={handleFileChange} />
-              </div>
-              <p className="mt-3 text-[10px] font-bold text-[#888888]">Profile Picture (Optional)</p>
-            </div>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Date of Birth */}
               <div className="space-y-2">
                 <label className="text-xs font-black text-[#555555] uppercase tracking-widest px-1">Date of Birth</label>
                 <div className={getInputStyles("date_of_birth").container}>
-                  <CalendarIcon className={getInputStyles("date_of_birth").icon} />
+                  <CalendarIcon 
+                    className={`${getInputStyles("date_of_birth").icon} cursor-pointer hover:text-[#09314F] transition-colors`} 
+                    onClick={() => dateInputRef.current?.showPicker?.()}
+                  />
                   <input
+                    ref={dateInputRef}
                     name="date_of_birth"
                     type="date"
                     value={formData.date_of_birth}
@@ -562,6 +573,19 @@ export default function StudentRegistration() {
              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="h-5 w-5" />
              <span className="font-bold text-[#555555]">Sign up with Google</span>
           </button>
+
+          {/* Mobile Login Link */}
+          <div className="mt-8 text-center md:hidden">
+            <p className="text-sm text-gray-500 font-bold">
+              Already have an account?{" "}
+              <button 
+                onClick={() => navigate("/login")}
+                className="text-[#09314F] hover:underline transition-all"
+              >
+                Login
+              </button>
+            </p>
+          </div>
         </div>
       </div>
 
@@ -618,8 +642,10 @@ export default function StudentRegistration() {
 
       <style>{`
         input[type="date"]::-webkit-calendar-picker-indicator {
-          position: absolute; left: 0; top: 0; width: 100%; height: 100%; margin: 0; padding: 0; cursor: pointer; opacity: 0;
+          opacity: 0;
+          pointer-events: none;
         }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fadeIn { animation: fadeIn 0.4s ease-out forwards; }
       `}</style>

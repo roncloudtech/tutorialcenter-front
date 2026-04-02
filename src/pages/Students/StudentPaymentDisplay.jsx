@@ -177,9 +177,9 @@ export default function StudentPaymentDisplay() {
   const MainView = () => (
     <>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-black text-[#0F2843] tracking-tighter uppercase">Payment</h1>
-        <button className="relative p-2 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all">
-          <BellIcon className="w-6 h-6 text-[#0F2843]" />
+        <h1 className="text-3xl font-black text-[#0F2843] dark:text-white tracking-tighter uppercase">Payment</h1>
+        <button className="relative p-2 bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md rounded-xl shadow-sm border border-gray-100 dark:border-[#09314F] hover:shadow-md transition-all hover:bg-gray-50 dark:hover:bg-[#1a4a75]">
+          <BellIcon className="w-6 h-6 text-[#0F2843] dark:text-white" />
           <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-[#E83831] border-2 border-white rounded-full" />
         </button>
       </div>
@@ -187,31 +187,25 @@ export default function StudentPaymentDisplay() {
       <div className="space-y-3 mb-10">
         <button 
           onClick={() => setActiveView("add")}
-          className="w-full text-left px-6 py-4 bg-white border border-gray-200 rounded-xl text-[15px] font-bold text-[#0F2843] hover:shadow-md hover:border-gray-300 transition-all active:scale-[0.99]"
+          className="w-full text-left px-6 py-4 bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md border border-gray-200 dark:border-[#09314F] rounded-xl text-[15px] font-bold text-[#0F2843] dark:text-white hover:shadow-md hover:border-gray-300 dark:hover:border-blue-400 transition-all active:scale-[0.99]"
         >
           Add Training
         </button>
-        {/* <button
-          onClick={() => setActiveView("remove")}
-          className="w-full text-left px-6 py-4 bg-white border border-gray-200 rounded-xl text-[15px] font-bold text-[#0F2843] hover:shadow-md hover:border-gray-300 transition-all active:scale-[0.99]"
-        >
-          Remove Training
-        </button> */}
         <button
           onClick={() => setActiveView("renew")}
-          className="w-full text-left px-6 py-4 bg-white border border-gray-200 rounded-xl text-[15px] font-bold text-[#0F2843] hover:shadow-md hover:border-gray-300 transition-all active:scale-[0.99]"
+          className="w-full text-left px-6 py-4 bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md border border-gray-200 dark:border-[#09314F] rounded-xl text-[15px] font-bold text-[#0F2843] dark:text-white hover:shadow-md hover:border-gray-300 dark:hover:border-blue-400 transition-all active:scale-[0.99]"
         >
           Renew Payment
         </button>
       </div>
 
       <div>
-        <h2 className="text-lg font-black text-[#0F2843] mb-6">History</h2>
+        <h2 className="text-lg font-black text-[#0F2843] dark:text-[#3A5ECC] mb-6">History</h2>
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-[#09314F] mx-auto" />
-            <p className="mt-4 text-gray-500 font-bold text-sm">Loading payments...</p>
+            <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-[#09314F] dark:border-white mx-auto" />
+            <p className="mt-4 text-gray-500 dark:text-gray-400 font-bold text-sm">Loading payments...</p>
           </div>
         ) : payments.length === 0 ? (
           <div className="text-center py-12">
@@ -231,18 +225,23 @@ export default function StudentPaymentDisplay() {
               return (
                 <div
                   key={payment.id || `history-${index}`}
-                  className="flex flex-wrap items-center justify-between gap-4 py-4 border-b border-gray-200 last:border-0"
+                  className="flex flex-wrap items-center justify-between gap-4 py-4 border-b border-gray-200 dark:border-[#09314F]/50 last:border-0"
                 >
-                  <span className={`text-sm font-bold min-w-[80px] ${payment.status === 'cancelled' || payment.status === 'removed' ? 'text-red-500' : 'text-[#0F2843]'}`}>
+                  <span className={`text-sm font-black tracking-wide min-w-[80px] ${payment.status === 'cancelled' || payment.status === 'removed' ? 'text-red-500 dark:text-red-400' : 'text-[#0F2843] dark:text-[#3A5ECC]'}`}>
                     {displayTitle}
                   </span>
                   <div className="flex items-center gap-3">
-                    <span className="text-[12px] text-gray-500 font-medium whitespace-nowrap">
+                    <span className="text-[12px] text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
                       Paid - {formatDate(payment.start_date || payment.paid_at || payment.created_at)}
                     </span>
                     {(payment.status === 'cancelled' || payment.status === 'removed') && (
                       <span className="px-3 py-1 bg-red-50 text-red-600 rounded-full text-[10px] font-black uppercase tracking-tighter border border-red-100 shadow-sm">
                         Cancelled
+                      </span>
+                    )}
+                    {(payment.status === 'successful' || payment.status === 'paid') && (
+                      <span className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-[10px] font-black uppercase tracking-tighter border border-green-100 shadow-sm">
+                        Paid
                       </span>
                     )}
                     {(() => {
@@ -251,7 +250,7 @@ export default function StudentPaymentDisplay() {
                       const computedExpiry = calculateExpiryDate(startDate, payment.billing_cycle);
                       const expiryDisplay = computedExpiry ? formatDate(computedExpiry) : formatDate(payment.end_date || payment.expires_at || payment.expiry_date);
                       return (
-                        <span className={`text-[12px] font-medium whitespace-nowrap ${isCancelled ? 'text-red-400' : 'text-gray-500'}`}>
+                        <span className={`text-[12px] font-medium whitespace-nowrap ${isCancelled ? 'text-red-400' : 'text-gray-500 dark:text-gray-400'}`}>
                           {isCancelled ? 'Expired - --' : `Expires - ${expiryDisplay}`}
                         </span>
                       );
@@ -270,9 +269,9 @@ export default function StudentPaymentDisplay() {
   const RenewView = () => (
     <>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-black text-[#0F2843] tracking-tighter uppercase">Payment</h1>
-        <button className="relative p-2 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all">
-          <BellIcon className="w-6 h-6 text-[#0F2843]" />
+        <h1 className="text-3xl font-black text-[#0F2843] dark:text-white tracking-tighter uppercase">Payment</h1>
+        <button className="relative p-2 bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md rounded-xl shadow-sm border border-gray-100 dark:border-[#09314F] hover:shadow-md transition-all hover:bg-gray-50 dark:hover:bg-[#1a4a75]">
+          <BellIcon className="w-6 h-6 text-[#0F2843] dark:text-white" />
           <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-[#E83831] border-2 border-white rounded-full" />
         </button>
       </div>
@@ -281,18 +280,18 @@ export default function StudentPaymentDisplay() {
         onClick={() => setActiveView("main")}
         className="flex items-center gap-2 mb-8 group"
       >
-        <ChevronLeftIcon className="w-4 h-4 text-gray-500 group-hover:text-[#0F2843] transition-colors" />
-        <span className="text-sm text-gray-500 group-hover:text-[#0F2843] transition-colors">
-          Back / <span className="font-bold text-[#0F2843]">Renew Payment</span>
+        <ChevronLeftIcon className="w-4 h-4 text-gray-500 dark:text-gray-400 group-hover:text-[#0F2843] dark:group-hover:text-white transition-colors" />
+        <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-[#0F2843] dark:group-hover:text-white transition-colors">
+          Back / <span className="font-bold text-[#0F2843] dark:text-white">Renew Payment</span>
         </span>
       </button>
 
       <div>
-        <h3 className="text-sm font-bold text-gray-600 mb-5">On-going Training</h3>
+        <h3 className="text-sm font-bold text-gray-600 dark:text-gray-300 mb-5">On-going Training</h3>
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-[#09314F] mx-auto" />
+            <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-[#09314F] dark:border-white mx-auto" />
           </div>
         ) : activeCourses.length === 0 ? (
           <div className="text-center py-12">
@@ -307,11 +306,11 @@ export default function StudentPaymentDisplay() {
               return (
                 <div
                   key={item.enrollment_id || item.id || `active-${index}`}
-                  className={`bg-white border rounded-xl p-5 hover:shadow-sm transition-all ${isCancelled ? 'border-red-100 bg-red-50/10' : 'border-gray-200'}`}
+                  className={`bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md border rounded-xl p-5 hover:shadow-sm transition-all ${isCancelled ? 'border-red-100 bg-red-50/10 dark:bg-red-900/10 dark:border-red-900/30' : 'border-gray-200 dark:border-[#09314F]'}`}
                 >
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="flex flex-col gap-2">
-                      <h4 className="text-[15px] font-bold text-[#0F2843]">
+                      <h4 className="text-[15px] font-bold text-[#0F2843] dark:text-white">
                         {item.course?.title || item.course_name || `Enrollment #${item.enrollment_id}`}
                       </h4>
                       <div>
@@ -327,8 +326,8 @@ export default function StudentPaymentDisplay() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-gray-500">
-                        Sub: <span className="font-bold text-gray-700 ml-2 capitalize">{item.billing_cycle || "—"}</span>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Sub: <span className="font-bold text-gray-700 dark:text-gray-200 ml-2 capitalize">{item.billing_cycle || "—"}</span>
                       </p>
                       <p className="text-xs text-gray-400 mt-1">
                         {formatDate(item.start_date)} - {formatDate(item.end_date)}

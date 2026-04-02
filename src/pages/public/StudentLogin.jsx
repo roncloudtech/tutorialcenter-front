@@ -245,6 +245,19 @@ export default function StudentLogin() {
                     login
                   </button>
                 </form>
+
+                {/* Mobile Signup Link */}
+                <div className="mt-8 text-center md:hidden">
+                  <p className="text-sm text-gray-500 font-bold">
+                    Don't have an account?{" "}
+                    <button 
+                      onClick={() => navigate("/register")}
+                      className="text-blue-600 hover:underline transition-all"
+                    >
+                      Signup
+                    </button>
+                  </p>
+                </div>
               </div>
             </div>
           </div>

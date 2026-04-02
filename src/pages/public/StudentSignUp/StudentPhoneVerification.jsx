@@ -138,8 +138,8 @@ export default function StudentPhoneVerification() {
         setMsg(<span className="text-green-500">{response.data.message}</span>);
         localStorage.setItem("studentTel", tel); // Store phone number for later steps
         setTimeout(() => {
-          navigate("/register/student/biodata");
-        }, 5000);
+          navigate("/register/student/training/selection");
+        }, 2000);
       }
     } catch (error) {
       console.error("Verification error:", error.response?.data || error);

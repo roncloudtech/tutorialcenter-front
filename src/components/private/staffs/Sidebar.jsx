@@ -162,16 +162,16 @@ export default function StaffSidebar({ collapsed, setCollapsed, isOpen, onClose 
             <img 
               src={profilePic} 
               alt={fullName} 
-              className="rounded-full shadow-lg h-10 w-10 object-cover border-2 border-white dark:border-gray-800" 
+              className="rounded-full shadow-lg h-10 w-10 object-cover border-2 border-[#BB9E7F]" 
             />
           ) : (
-            <div className="rounded-full shadow-lg h-10 w-10 flex items-center justify-center bg-blue-900 text-white font-bold border-2 border-white dark:border-gray-800">
+            <div className="rounded-full shadow-lg h-10 w-10 flex items-center justify-center bg-blue-900 text-white font-bold border-2 border-[#BB9E7F]">
               {fullName?.[0] || "S"}
             </div>
           )}
           {!collapsed && (
             <div>
-              <h6 className="text-yellow-400 text-[11px] font-black uppercase tracking-widest leading-tight mb-0.5">
+              <h6 className="text-[#BB9E7F] text-[11px] font-black uppercase tracking-widest leading-tight mb-0.5">
                 Welcome {staffRole}
               </h6>
               <h3 className="font-bold dark:text-gray-50 text-[13px] leading-tight truncate max-w-[140px]">

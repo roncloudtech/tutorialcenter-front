@@ -224,7 +224,7 @@ export const StudentTrainingPayment = () => {
       {/* MODAL */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-          <div className="bg-white w-[90%] max-w-md rounded-xl p-6">
+          <div className="bg-white w-[90%] max-w-md rounded-xl p-6 relative">
             <h2 className="text-xl font-bold mb-4">{gateway} Payment</h2>
 
             <div className="text-2xl font-bold text-center mb-6">
@@ -249,6 +249,27 @@ export const StudentTrainingPayment = () => {
               Cancel
             </button>
           </div>
+        </div>
+      )}
+
+      {/* LOADING OVERLAY */}
+      {processing && (
+        <div className="fixed inset-0 bg-[#09314F]/80 backdrop-blur-sm z-[100] flex items-center justify-center transition-all duration-500">
+           <div className="bg-white p-10 rounded-[32px] shadow-2xl flex flex-col items-center max-w-[400px] text-center mx-4 animate-in zoom-in-95 duration-300">
+              <div className="relative mb-6">
+                <div className="w-20 h-20 border-4 border-gray-100 border-t-[#E83831] rounded-full animate-spin"></div>
+                <div className="absolute inset-x-0 inset-y-0 flex items-center justify-center">
+                   <div className="w-12 h-12 bg-[#09314F] rounded-2xl flex items-center justify-center shadow-lg transform rotate-45 animate-pulse">
+                      <div className="w-6 h-6 bg-white rounded-full -rotate-45"></div>
+                   </div>
+                </div>
+              </div>
+              <h2 className="text-2xl font-black text-[#09314F] mb-3 uppercase tracking-tighter italic">Authenticating Payment</h2>
+              <p className="text-gray-400 font-bold text-sm leading-relaxed">
+                 We are confirming your transaction and setting up your training dashboard.<br/> 
+                 <span className="text-[#E83831] animate-pulse">Please do not refresh this page.</span>
+              </p>
+           </div>
         </div>
       )}
     </div>

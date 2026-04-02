@@ -124,40 +124,40 @@ export default function StudentCalendar() {
 
   return (
     <DashboardLayout pagetitle="Calendar" hideHeader={true}>
-      <div className="p-4 md:p-6 max-w-7xl mx-auto w-full min-h-screen">
+      <div className="p-0 md:p-6 max-w-7xl mx-auto w-full min-h-screen">
 
         {/* ====== Header ====== */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-          <h1 className="text-[32px] md:text-[42px] font-black text-[#0F2843] tracking-tighter leading-none uppercase">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 px-4 md:px-0">
+          <h1 className="text-[28px] md:text-[32px] lg:text-[36px] xl:text-[42px] font-black text-[#0F2843] dark:text-white tracking-tighter leading-none uppercase truncate mr-2">
             CALENDAR
           </h1>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 md:gap-4 shrink-0">
             {/* View Toggle */}
-            <div className="flex bg-gray-100 p-1 rounded-xl border border-gray-200 mr-2">
+            <div className="flex bg-gray-100 dark:bg-[#09314F]/80 p-1 rounded-xl border border-gray-200 dark:border-[#09314F] mr-2">
               <button
                 onClick={() => setViewMode("week")}
-                className={`px-4 py-2 rounded-lg text-xs font-black uppercase transition-all ${viewMode === "week" ? "bg-white text-[#0F2843] shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+                className={`px-4 py-2 rounded-lg text-xs font-black uppercase transition-all ${viewMode === "week" ? "bg-white dark:bg-[#1a4a75] text-[#0F2843] dark:text-white shadow-sm" : "text-gray-400 dark:text-blue-300 hover:text-gray-600 dark:hover:text-white"}`}
               >
                 Week
               </button>
               <button
                 onClick={() => setViewMode("day")}
-                className={`px-4 py-2 rounded-lg text-xs font-black uppercase transition-all ${viewMode === "day" ? "bg-white text-[#0F2843] shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+                className={`px-4 py-2 rounded-lg text-xs font-black uppercase transition-all ${viewMode === "day" ? "bg-white dark:bg-[#1a4a75] text-[#0F2843] dark:text-white shadow-sm" : "text-gray-400 dark:text-blue-300 hover:text-gray-600 dark:hover:text-white"}`}
               >
                 Day
               </button>
             </div>
 
-            <div className="relative p-3 bg-white rounded-2xl shadow-sm border border-gray-100 cursor-pointer hover:bg-gray-50 transition-all">
-              <BellIcon className="w-7 h-7 text-[#0F2843]" />
+            <div className="relative p-3 bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md rounded-2xl shadow-sm border border-gray-100 dark:border-[#09314F] cursor-pointer hover:bg-gray-50 dark:hover:bg-[#1a4a75] transition-all">
+              <BellIcon className="w-7 h-7 text-[#0F2843] dark:text-white" />
               <span className="absolute top-3.5 right-3.5 w-3 h-3 bg-[#E83831] rounded-full border-2 border-white shadow-sm"></span>
             </div>
           </div>
         </div>
 
         {/* ====== Calendar Grid ====== */}
-        <div className="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md rounded-2xl md:rounded-3xl shadow-sm md:shadow-lg border border-gray-100 dark:border-[#09314F] overflow-hidden">
           {/* View Navigation + Day Headers */}
           <div className={`grid ${viewMode === "day" ? "grid-cols-[100px_1fr]" : "grid-cols-8"} bg-[#C5A97A] text-white`}>
             {/* Time column header with nav */}
@@ -207,15 +207,15 @@ export default function StudentCalendar() {
           {/* Time Rows */}
           {loading ? (
             <div className="text-center py-20">
-              <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-[#0F2843] mx-auto" />
-              <p className="mt-4 text-gray-400 font-bold text-sm">Loading schedule...</p>
+              <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-[#0F2843] dark:border-white mx-auto" />
+              <p className="mt-4 text-gray-400 dark:text-gray-300 font-bold text-sm">Loading schedule...</p>
             </div>
           ) : (
             <div className="max-h-[85vh] overflow-y-auto">
               {HOURS.map((hour) => (
-                <div key={hour} className={`grid ${viewMode === "day" ? "grid-cols-[100px_1fr]" : "grid-cols-8"} border-b border-gray-100 last:border-0`}>
+                <div key={hour} className={`grid ${viewMode === "day" ? "grid-cols-[100px_1fr]" : "grid-cols-8"} border-b border-gray-100 dark:border-white/10 last:border-0`}>
                   {/* Time Label */}
-                  <div className="p-2 md:p-3 text-[11px] md:text-xs font-bold text-gray-400 uppercase flex items-start justify-center pt-3 border-r border-gray-100">
+                  <div className="p-2 md:p-3 text-[11px] md:text-xs font-bold text-gray-400 dark:text-blue-300 uppercase flex items-start justify-center pt-3 border-r border-gray-100 dark:border-white/10">
                     {formatHour(hour)}
                   </div>
 
@@ -227,18 +227,18 @@ export default function StudentCalendar() {
                     return (
                       <div
                         key={dayIdx}
-                        className={`relative min-h-[90px] md:min-h-[110px] border-r border-gray-100 last:border-0 p-0.5 md:p-1 ${today ? "bg-blue-50/30" : ""} ${viewMode === 'day' ? 'px-4 py-2' : ''}`}
+                        className={`relative min-h-[90px] md:min-h-[110px] border-r border-gray-100 dark:border-white/10 last:border-0 p-0.5 md:p-1 ${today ? "bg-blue-50/30 dark:bg-white/5" : ""} ${viewMode === 'day' ? 'px-4 py-2' : ''}`}
                       >
                         {cellSessions.map((s, sIdx) => (
                           <button
                             key={s.id || sIdx}
                             onClick={() => setSelectedSession(s)}
-                            className={`w-full text-left bg-gray-200/80 hover:bg-gray-300/90 text-gray-700 font-bold rounded-md mb-0.5 truncate transition-all hover:shadow-sm active:scale-[0.97] cursor-pointer leading-tight ${viewMode === 'day' ? 'p-3 text-xs shadow-sm bg-white border border-gray-100 hover:border-gray-200' : 'p-1 md:p-1.5 text-[9px] md:text-[10px]'}`}
+                            className={`w-full text-left bg-gray-200/80 dark:bg-[#1a4a75]/80 hover:bg-gray-300/90 dark:hover:bg-[#1a4a75] text-gray-700 dark:text-gray-100 font-bold rounded-md mb-0.5 truncate transition-all hover:shadow-sm active:scale-[0.97] cursor-pointer leading-tight ${viewMode === 'day' ? 'p-3 text-xs shadow-sm bg-white dark:bg-[#09314F] border border-gray-100 dark:border-[#1a4a75] hover:border-gray-200 dark:hover:border-blue-400' : 'p-1 md:p-1.5 text-[9px] md:text-[10px]'}`}
                           >
                             <div className="flex flex-col gap-0.5">
-                              <span className={viewMode === 'day' ? 'text-[#0F2843] text-sm' : ''}>{s.class?.title || s.title || "Class"}</span>
+                              <span className={viewMode === 'day' ? 'text-[#0F2843] dark:text-white text-sm' : ''}>{s.class?.title || s.title || "Class"}</span>
                               {viewMode === 'day' && s.starts_at && (
-                                <span className="text-[10px] text-gray-400 font-medium">{formatModalTime(s.starts_at)} {s.ends_at ? ` - ${formatModalTime(s.ends_at)}` : ''}</span>
+                                <span className="text-[10px] text-gray-400 dark:text-blue-300 font-medium">{formatModalTime(s.starts_at)} {s.ends_at ? ` - ${formatModalTime(s.ends_at)}` : ''}</span>
                               )}
                             </div>
                           </button>
@@ -257,13 +257,13 @@ export default function StudentCalendar() {
       {selectedSession && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedSession(null)} />
-          <div className="relative bg-white rounded-3xl p-8 md:p-10 w-[90%] max-w-md shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative bg-white dark:bg-[#09314F]/90 dark:backdrop-blur-md rounded-3xl p-8 md:p-10 w-[90%] max-w-md shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-200 border border-transparent dark:border-[#1a4a75]">
             {/* Header */}
             <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 rounded-full bg-[#0F2843] flex items-center justify-center text-white font-black text-sm shrink-0">
+              <div className="w-12 h-12 rounded-full bg-[#0F2843] dark:bg-black/20 flex items-center justify-center text-white font-black text-sm shrink-0">
                 {getInitials(selectedSession.class?.title || selectedSession.title || "MC")}
               </div>
-              <h3 className="text-lg font-black text-[#0F2843] leading-tight">
+              <h3 className="text-lg font-black text-[#0F2843] dark:text-white leading-tight">
                 {selectedSession.class?.title || selectedSession.title || "Master Class"}
               </h3>
             </div>
@@ -271,46 +271,46 @@ export default function StudentCalendar() {
             {/* Details */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold text-gray-400">Date:</span>
-                <span className="text-sm font-black text-[#0F2843]">
+                <span className="text-sm font-bold text-gray-400 dark:text-blue-300">Date:</span>
+                <span className="text-sm font-black text-[#0F2843] dark:text-white">
                   {formatModalDate(selectedSession.session_date)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold text-gray-400">Time:</span>
-                <span className="text-sm font-black text-[#0F2843]">
+                <span className="text-sm font-bold text-gray-400 dark:text-blue-300">Time:</span>
+                <span className="text-sm font-black text-[#0F2843] dark:text-white">
                   {formatModalTime(selectedSession.starts_at)}
                   {selectedSession.ends_at ? ` – ${formatModalTime(selectedSession.ends_at)}` : ""}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <span className="text-sm font-bold text-gray-400 shrink-0">Class Link:</span>
+                <span className="text-sm font-bold text-gray-400 dark:text-blue-300 shrink-0">Class Link:</span>
                 {selectedSession.class_link ? (
                   <a
                     href={selectedSession.class_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-bold text-[#3A5ECC] underline decoration-dotted underline-offset-4 hover:text-[#0F2843] transition-colors truncate"
+                    className="text-sm font-bold text-[#3A5ECC] dark:text-blue-400 underline decoration-dotted underline-offset-4 hover:text-[#0F2843] dark:hover:text-white transition-colors truncate"
                   >
                     {selectedSession.class_link}
                   </a>
                 ) : (
-                  <span className="text-sm text-gray-300 italic">No link yet.</span>
+                  <span className="text-sm text-gray-300 dark:text-gray-500 italic">No link yet.</span>
                 )}
               </div>
               <div className="flex items-center justify-between gap-4">
-                <span className="text-sm font-bold text-gray-400 shrink-0">Video Link:</span>
+                <span className="text-sm font-bold text-gray-400 dark:text-blue-300 shrink-0">Video Link:</span>
                 {selectedSession.recording_link ? (
                   <a
                     href={selectedSession.recording_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-bold text-[#3A5ECC] underline decoration-dotted underline-offset-4 hover:text-[#0F2843] transition-colors truncate"
+                    className="text-sm font-bold text-[#3A5ECC] dark:text-blue-400 underline decoration-dotted underline-offset-4 hover:text-[#0F2843] dark:hover:text-white transition-colors truncate"
                   >
                     {selectedSession.recording_link}
                   </a>
                 ) : (
-                  <span className="text-sm text-gray-300 italic">No video uploaded yet.</span>
+                  <span className="text-sm text-gray-300 dark:text-gray-500 italic">No video uploaded yet.</span>
                 )}
               </div>
             </div>
