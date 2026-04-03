@@ -11,10 +11,12 @@ import {
   ChevronUpIcon, 
   SignalIcon
 } from "@heroicons/react/24/outline";
+import { useNavigate } from "react-router-dom";
 
 export default function StudentClassSchedule() {
   const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
   const authToken = localStorage.getItem("student_token");
+  const navigate = useNavigate();
 
   // --- STATE ---
   const [scheduleData, setScheduleData] = useState({
@@ -162,6 +164,21 @@ export default function StudentClassSchedule() {
   /* =============================
      UI COMPONENTS
   ============================= */
+  
+  const handleJoinClass = (e, sessionObj) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const link = sessionObj?.recording_link || sessionObj?.class_link;
+    if (!link) return;
+    
+    navigate('/student/meet', {
+        state: {
+            class_link: link,
+            class_schedule_id: sessionObj.id
+        }
+    });
+  };
+
   // Helper: find the staff member with role 'tutor', fallback to first staff
   const getTutor = (staffs) => {
     if (!staffs || staffs.length === 0) return null;
@@ -323,15 +340,12 @@ export default function StudentClassSchedule() {
                <div className="flex flex-col items-start md:items-end gap-3 min-w-[200px] w-full md:w-auto">
                    <div className="text-left md:text-right w-full">
                     <span className="text-[10px] font-black text-gray-300 dark:text-blue-300 uppercase tracking-[0.2em] mb-1 block">Live Meeting Link</span>
-                    <a 
-                      href={session.recording_link || session.class_link} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-sm font-bold text-[#3A5ECC] dark:text-blue-400 underline decoration-dotted underline-offset-4 break-all block"
-                      onClick={(e) => e.stopPropagation()} // Prevent toggling the card when clicking the link
+                    <button 
+                      onClick={(e) => handleJoinClass(e, session)}
+                      className="text-sm font-bold text-[#3A5ECC] dark:text-blue-400 underline decoration-dotted underline-offset-4 break-all block text-left"
                     >
                       {session.recording_link || session.class_link || "Link Awaiting Deployment..."}
-                    </a>
+                    </button>
                  </div>
                  <div className="flex items-center gap-2 text-gray-400 dark:text-blue-300 font-black text-[12px] uppercase tracking-widest mt-2">
                     <CalendarIcon className="w-4 h-4 text-[#BB9E7F]" />
@@ -345,15 +359,12 @@ export default function StudentClassSchedule() {
                   Click anywhere to close full view
                 </p>
                 <div className="flex items-center gap-4 w-full md:w-auto">
-                  <a 
-                    href={session.recording_link || session.class_link} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                  <button 
+                    onClick={(e) => handleJoinClass(e, session)}
                     className="flex-1 md:flex-none px-10 py-5 bg-[#0F2843] text-white font-black rounded-2xl hover:bg-black transition-all shadow-xl active:scale-95 uppercase tracking-widest text-[11px] text-center"
-                    onClick={(e) => e.stopPropagation()} // Prevent toggling the card when clicking the link
                   >
                     Join Now
-                  </a>
+                  </button>
                   <button 
                     onClick={(e) => { e.stopPropagation(); setExpandedSessionId(null); }}
                     className="md:hidden flex-1 px-8 py-5 bg-gray-100 text-[#0F2843] font-black rounded-2xl uppercase tracking-widest text-[11px]"
@@ -449,14 +460,12 @@ export default function StudentClassSchedule() {
                       <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-1">Live Meeting ID</span>
                       <span className="text-sm font-mono font-bold text-[#BB9E7F]">{(scheduleData.next_class.recording_link || scheduleData.next_class.class_link)?.split('/').pop() || "Awaiting..."}</span>
                    </div>
-                   <a 
-                     href={scheduleData.next_class.recording_link || scheduleData.next_class.class_link} 
-                     target="_blank" 
-                     rel="noopener noreferrer"
+                   <button 
+                     onClick={(e) => handleJoinClass(e, scheduleData.next_class)}
                      className="px-10 py-5 bg-[#BB9E7F] text-[#0F2843] font-black rounded-2xl hover:bg-white transition-all shadow-xl shadow-black/20 group-hover:px-12 active:scale-95 uppercase tracking-widest text-xs"
                    >
                      Join Session
-                   </a>
+                   </button>
                 </div>
               </div>
 
@@ -500,14 +509,12 @@ export default function StudentClassSchedule() {
                       <CalendarIcon className="w-4 h-4 text-[#BB9E7F]" />
                       <span>{formatSessionDate(scheduleData.next_class.session_date)}</span>
                     </div>
-                    <a 
-                      href={scheduleData.next_class.recording_link || scheduleData.next_class.class_link} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
+                    <button 
+                      onClick={(e) => handleJoinClass(e, scheduleData.next_class)}
                       className="px-8 py-3 bg-[#BB9E7F] text-[#0F2843] font-black rounded-xl hover:bg-white transition-all shadow-xl shadow-black/20 active:scale-95 uppercase tracking-widest text-[10px]"
                     >
                       Join Session
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>
