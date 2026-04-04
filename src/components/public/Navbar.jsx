@@ -81,32 +81,37 @@ const MobileNavigation = ({ setVisible, visible }) => {
     {
       name: "Home",
       path: "/",
-      icon: "mynaui:home-solid",
+      icon: "heroicons:home",
     },
     {
       name: "Training",
-      path: "/",
-      icon: "healthicons:i-training-class",
+      path: "/training",
+      icon: "heroicons:academic-cap",
+    },
+    {
+      name: "Career",
+      path: "/career",
+      icon: "heroicons:briefcase",
     },
     {
       name: "About Us",
       path: "/about",
-      icon: "ic:outline-info",
+      icon: "heroicons:information-circle",
     },
     {
       name: "Contact Us",
       path: "/contact",
-      icon: "grommet-icons:contact",
+      icon: "heroicons:phone",
     },
     {
       name: "Blog",
-      path: "/",
-      icon: "streamline-logos:bloglovin-logo-solid",
+      path: "/blog",
+      icon: "heroicons:newspaper",
     },
     {
       name: "Login / Signup",
       path: "/login",
-      icon: "cuida:login-outline",
+      icon: "heroicons:arrow-right-on-rectangle",
     },
   ];
   useEffect(() => {
@@ -124,8 +129,8 @@ const MobileNavigation = ({ setVisible, visible }) => {
       className={`${
         visible
           ? "visible opacity-100"
-          : "invisible opacity-0 transition-all ease-in-out duration-1000"
-      } w-full h-full fixed  top-0 left-0 bg-black bg-opacity-50 z-[100] flex flex-col items-end justify-end p-2`}
+          : "invisible opacity-0"
+      } w-full h-full fixed top-0 left-0 bg-black/40 backdrop-blur-sm z-[100] transition-all duration-300 flex flex-col items-end justify-end`}
     >
       <div
         onClick={() => setVisible(false)}
@@ -134,28 +139,42 @@ const MobileNavigation = ({ setVisible, visible }) => {
       <div
         className={`${
           visible ? "translate-x-0" : "translate-x-full"
-        }  z-[500] transition-all ease-in-out duration-500 max-w-56 w-full h-full relative rounded-xl bg-white flex flex-col items-end justify-between p-6`}
+        } z-[500] transition-transform duration-500 ease-out max-w-[280px] w-full h-full relative bg-white dark:bg-gray-900 flex flex-col p-8 shadow-2xl`}
       >
         <button
           onClick={() => setVisible(false)}
-          className="absolute transition-all top-0 left-0 -translate-y-[10%] -translate-x-1/2 close-modal-button flex items-center justify-center w-[50px] h-[50px] rounded-full shadow-[0_4px_10px_#0000002b] bg-white text-[#563725] z-50"
+          className="absolute -left-4 top-8 w-10 h-10 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center text-gray-500 hover:text-red-500 transition-colors z-50 ring-4 ring-black/5"
         >
           <Icon
-            icon="uil:plus"
-            width="35"
-            height="35"
-            className={`rotate-45`}
+            icon="heroicons:x-mark"
+            width="24"
+            height="24"
           />
         </button>
-        <div className="flex flex-col gap-8 items-end overflow-auto">
+
+        <div className="flex flex-col gap-1 mt-12 overflow-y-auto">
           {navLinks.map((items, i) => (
-            <Link key={i} to={items.path} onClick={() => setVisible(false)} className="flex items-center gap-3">
-              <Icon icon={items.icon} width="24" height="24" />
-              <span className="text-sm font-medium dark:text-darkGray">
+            <Link 
+              key={i} 
+              to={items.path} 
+              onClick={() => setVisible(false)} 
+              className="flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800/50 group transition-all duration-200"
+            >
+              <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center group-hover:bg-[#09314F] group-hover:text-white transition-all duration-300">
+                <Icon icon={items.icon} width="20" height="20" />
+              </div>
+              <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-[#09314F] dark:group-hover:text-white transition-colors">
                 {items.name}
               </span>
             </Link>
           ))}
+        </div>
+
+        <div className="mt-auto pt-8 border-t border-gray-100 dark:border-gray-800">
+          <div className="bg-[#09314F]/5 dark:bg-blue-600/10 p-5 rounded-3xl">
+            <p className="text-[10px] font-black text-[#09314F] dark:text-blue-400 uppercase tracking-widest mb-1 opacity-60">Tutorial Center</p>
+            <p className="text-[11px] text-[#09314F]/70 dark:text-gray-400 leading-relaxed font-medium">Empowering minds, achieving excellence through premium education.</p>
+          </div>
         </div>
       </div>
     </div>

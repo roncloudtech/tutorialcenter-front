@@ -3,7 +3,7 @@ import icon from "../../assets/images/Frame.png";
 const TestimonialCard = ({ name, title, image, desc }) => {
     return (
         <>
-            <div className="w-[300px] rounded-3xl bg-[#E336291F] p-6 text-center mt-8 relative">
+            <div className="w-full max-w-[340px] rounded-3xl bg-[#E336291F] p-6 text-center mt-12 md:mt-8 relative flex-1">
                 <div className="flex flex-col items-center justify-center">
                     <img
                         src={image}

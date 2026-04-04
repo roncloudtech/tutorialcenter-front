@@ -110,7 +110,7 @@ export const MobileHero = () => {
                             <span className="text-ascent">Exams</span> , Secure <br /> Your
                             Future!
                         </h1>
-                        <p className="text-sm font-medium leading-7 mb-9">
+                        <p className="text-sm font-medium leading-7 mb-9 text-white">
                             Your Ultimate Guide to{" "}
                             <span className="text-ascent">JAMB, WAEC,</span> <br />{" "}
                             <span className="text-ascent">NECO</span> And{" "}

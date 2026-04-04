@@ -16,6 +16,9 @@ import {
   MapIcon
 } from "@heroicons/react/24/outline";
 
+const isIOS = () =>
+  /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
 export default function StudentBiodata() {
   const navigate = useNavigate();
   const [toast, setToast] = useState(null);
@@ -337,13 +340,13 @@ export default function StudentBiodata() {
               {/* Date of Birth */}
               <div className="space-y-2">
                 <label className="text-xs font-black text-[#555555] uppercase tracking-widest px-1">Date of Birth</label>
-                <div ref={dateContainerRef} className={`${getInputStyles("date_of_birth").container} relative`}>
+                <div ref={dateContainerRef} className={`${getInputStyles("date_of_birth").container} relative`} style={{ position: "relative" }}>
                   <CalendarIcon 
                     className={`${getInputStyles("date_of_birth").icon} cursor-pointer hover:text-[#09314F] transition-colors relative z-10`} 
                     onClick={() => {
-                      if (dateInputRef.current?.showPicker) {
+                      if (!isIOS() && dateInputRef.current?.showPicker) {
                         dateInputRef.current.showPicker();
-                      } else {
+                      } else if (!isIOS()) {
                         dateInputRef.current?.focus();
                       }
                     }}
@@ -355,15 +358,23 @@ export default function StudentBiodata() {
                     value={formData.date_of_birth}
                     onChange={handleChange}
                     onClick={() => {
-                      if (dateInputRef.current?.showPicker) {
+                      if (!isIOS() && dateInputRef.current?.showPicker) {
                         dateInputRef.current.showPicker();
-                      } else {
-                        dateInputRef.current?.focus();
                       }
                     }}
                     onFocus={() => setFocusedField("date_of_birth")}
                     onBlur={() => setFocusedField(null)}
                     className={`${getInputStyles("date_of_birth").input} cursor-pointer`}
+                    style={isIOS() ? {
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      opacity: 0,
+                      cursor: "pointer",
+                      zIndex: 20,
+                    } : {}}
                   />
                 </div>
                 {errors.date_of_birth && <p className="text-xs text-red-500 font-bold px-1">{errors.date_of_birth}</p>}
@@ -549,9 +560,11 @@ export default function StudentBiodata() {
           -moz-appearance: none;
           appearance: none;
         }
-        input[type="date"]::-webkit-calendar-picker-indicator {
-          display: none;
-          -webkit-appearance: none;
+        @supports not (-webkit-touch-callout: none) {
+          input[type="date"]::-webkit-calendar-picker-indicator {
+            display: none;
+            -webkit-appearance: none;
+          }
         }
       `}</style>
     </div>
