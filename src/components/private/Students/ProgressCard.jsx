@@ -12,7 +12,7 @@ export default function ProgressCard({ title, end_date, subjects = [] }) {
       : 0;
 
   return (
-    <div className="bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md border border-transparent dark:border-[#09314F] rounded-xl shadow overflow-hidden">
+    <div className="bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md border border-transparent dark:border-[#09314F] rounded-xl shadow overflow-hidden isolate">
       
       {/* Accordion Header */}
       <button
@@ -48,9 +48,9 @@ export default function ProgressCard({ title, end_date, subjects = [] }) {
 
       {/* Accordion Body */}
       <div
-        className={`transition-all duration-300 ease-in-out ${
-          open ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
-        } overflow-hidden`}
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${
+          open ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0 pointer-events-none"
+        }`}
       >
         <div className="px-4 pb-4 space-y-3">
           {subjects.map((sub) => (

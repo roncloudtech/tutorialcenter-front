@@ -259,9 +259,9 @@ export default function StudentRegistration() {
         <div className="w-full relative flex items-center mb-10">
           <button
             onClick={() => navigate("/register")}
-            className="p-3 hover:bg-white rounded-full transition-all duration-200 shadow-sm"
+            className="p-3 bg-white hover:bg-gray-50 rounded-2xl shadow-sm transition-all active:scale-90"
           >
-            <ChevronLeftIcon className="h-6 w-6 text-gray-700" />
+            <ChevronLeftIcon className="h-5 w-5 text-[#09314F] stroke-[2.5]" />
           </button>
         </div>
 

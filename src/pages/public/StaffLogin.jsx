@@ -3,8 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import login_img from "../../assets/images/login_img.jpg";
 import TC_logo from "../../assets/images/tutorial_logo.png";
-import ReturnArrow from "../../assets/svg/return arrow.svg";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, EyeSlashIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 export default function StaffLogin() {
   const navigate = useNavigate();
@@ -227,13 +226,9 @@ export default function StaffLogin() {
         <div className="relative w-full flex items-center justify-center mb-8 md:mb-10">
           <button
             onClick={() => navigate("/")}
-            className="absolute left-0 p-2 hover:bg-gray-200 rounded-full transition-all z-10"
+            className="absolute left-0 p-3 bg-white hover:bg-gray-50 rounded-2xl shadow-sm transition-all active:scale-90 z-10"
           >
-            <img
-              src={ReturnArrow}
-              alt="Back"
-              className="h-6 w-6 lg:h-5 lg:w-5"
-            />
+            <ChevronLeftIcon className="h-5 w-5 text-[#09314F] stroke-[2.5]" />
           </button>
           <img
             src={TC_logo}

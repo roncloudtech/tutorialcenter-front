@@ -1,7 +1,7 @@
 import React from "react"; 
 import ComingSoonImg from "../../assets/images/comingSoon.jpg";
 import TC_logo from "../../assets/images/tutorial_logo.png";
-import ReturnArrow from "../../assets/svg/return arrow.svg";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 const ComingSoon = ({ onBack }) => {
   return (
@@ -29,9 +29,9 @@ const ComingSoon = ({ onBack }) => {
       {/* Back Button - Top Right */}
       <button 
         onClick={onBack}
-        className="absolute top-6 right-6 md:top-10 md:right-10 z-30 p-2 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full transition-all group"
+        className="absolute top-6 right-6 md:top-10 md:right-10 z-30 p-3 bg-white hover:bg-gray-50 rounded-2xl shadow-sm transition-all active:scale-90 group"
       >
-        <img src={ReturnArrow} alt="Back" className="w-6 h-6 md:w-8 md:h-8 invert brightness-0 group-hover:scale-110 transition-transform" />
+        <ChevronLeftIcon className="h-5 w-5 text-[#09314F] stroke-[2.5] transition-transform group-hover:scale-110" />
       </button>
 
       {/* 3. Bottom Middle Text */}

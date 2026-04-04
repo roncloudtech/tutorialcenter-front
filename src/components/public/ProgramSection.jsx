@@ -123,9 +123,9 @@ const ProgramSection = () => {
 
     return (
         <>
-            <SectionHeading title={"Our program"} position_right={false} />
-            <div className="relative">
-                <div className="programs Container">
+            <SectionHeading title={"Our program"} position_right={false} fullWidth={true} />
+            <div className="relative w-full">
+                <div className="programs Container !overflow-visible">
                     <div className="py-10">
                         <div className="mb-9">
                             <p className="text-sm leading-6">

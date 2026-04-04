@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
-import ReturnArrow from "../../../assets/svg/return arrow.svg";
 import signup_img from "../../../assets/images/Student_sign_up.jpg";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 export default function AddedStudentOTP() {
   const navigate = useNavigate();
@@ -249,9 +249,9 @@ export default function AddedStudentOTP() {
         <div className="relative w-full flex items-center justify-center mb-8">
           <button
             onClick={() => navigate("/register/guardian/addstudent")}
-            className="absolute left-0 p-2 hover:bg-gray-200 rounded-full transition-all z-10"
+            className="absolute left-0 p-3 bg-white hover:bg-gray-50 rounded-2xl shadow-sm transition-all active:scale-90 z-10"
           >
-            <img src={ReturnArrow} alt="Back" className="h-6 w-6" />
+            <ChevronLeftIcon className="h-5 w-5 text-[#09314F] stroke-[2.5]" />
           </button>
           <img src={TC_logo} alt="Logo" className="h-[60px] md:h-[80px] w-auto" />
         </div>

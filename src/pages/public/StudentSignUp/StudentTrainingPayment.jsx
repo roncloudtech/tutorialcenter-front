@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
-import ReturnArrow from "../../../assets/svg/return arrow.svg";
 import signup_img from "../../../assets/images/Student_sign_up.jpg";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import Paystack from "../../../components/Paystack";
 
 export const StudentTrainingPayment = () => {
@@ -11,6 +11,7 @@ export const StudentTrainingPayment = () => {
 
   const [studentData, setStudentData] = useState(null);
   const [selectedDurations, setSelectedDurations] = useState({});
+  const [selectedGateway, setSelectedGateway] = useState(null);
   const [gateway, setGateway] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -179,45 +180,90 @@ export const StudentTrainingPayment = () => {
     }
   };
   return (
-    <div className="w-full min-h-screen md:h-screen flex flex-col md:flex-row">
+    <div className="w-full min-h-screen md:h-screen flex flex-col md:flex-row font-sans overflow-x-hidden">
       {/* LEFT */}
-      <div className="w-full md:w-1/2 bg-[#F4F4F4] px-6 py-10 lg:px-[100px]">
-        <div className="relative flex justify-center mb-6">
-          <button
-            onClick={() => navigate("/register/student/training/duration")}
-            className="absolute left-0 p-2"
-          >
-            <img src={ReturnArrow} alt="Back" className="h-6 w-6" />
-          </button>
-          <img src={TC_logo} alt="Logo" className="h-[70px]" />
-        </div>
-
-        <h1 className="text-center text-2xl font-bold text-[#09314F] mb-6">
-          Select Payment Method
-        </h1>
-
-        <div className="bg-white rounded-lg p-4 mb-6 border">
-          <div className="flex justify-between font-bold">
-            <span>Total Payable</span>
-            <span>₦{totalAmount.toLocaleString()}</span>
+      <div className="w-full md:w-1/2 bg-[#F8F9FA] flex flex-col items-center py-8 px-6 lg:px-8 xl:px-[100px] overflow-y-auto pb-32 order-2 md:order-1">
+        
+        {/* NAV & HEADER */}
+        <div className="w-full max-w-[500px] mb-10 text-center">
+          <div className="flex items-center relative h-12 mb-6">
+            <button
+              onClick={() => navigate("/register/student/training/duration")}
+              className="absolute left-0 p-3 bg-white hover:bg-gray-50 rounded-2xl shadow-sm transition-all active:scale-90"
+            >
+              <ChevronLeftIcon className="h-5 w-5 text-[#09314F] stroke-[2.5]" />
+            </button>
+            <div className="w-full flex justify-center">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-[#09314F]">
+                Payment Method
+              </h1>
+            </div>
           </div>
         </div>
 
-        {["Paystack", "Flutterwave", "PayPal", "Interswitch"].map((item) => (
+        {/* Card Container */}
+        <div className="w-full max-w-[500px] bg-white rounded-[8px] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-gray-100 mb-8 p-8 md:p-10 flex flex-col">
+          
+          <p className="text-[#888888] font-medium text-sm mb-8 text-center">
+            Select a preferred method of payment
+          </p>
+
+          <div className="flex flex-col space-y-4 mb-10">
+            {["Paystack", "Flutterwave", "PayPal", "Interswitch"].map((item) => {
+              const isSelected = selectedGateway === item;
+              return (
+                <button
+                  key={item}
+                  onClick={() => setSelectedGateway(item)}
+                  className={`w-full flex items-center justify-between px-6 py-4 rounded-xl border-2 transition-all duration-200 ${
+                    isSelected
+                      ? "border-[#76D287] bg-green-50"
+                      : "border-gray-200 hover:border-[#09314F] bg-white"
+                  }`}
+                >
+                  <span className={`font-bold text-sm md:text-base ${
+                    isSelected ? "text-[#09314F]" : "text-gray-600"
+                  }`}>
+                    {item}
+                  </span>
+                  <span className={`font-bold text-lg ${
+                    isSelected ? "text-[#76D287]" : "text-[#09314F]"
+                  }`}>
+                    {isSelected ? "✓" : "›"}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
           <button
-            key={item}
-            onClick={() => openGateway(item)}
-            className="w-full mb-4 bg-white border rounded-lg px-4 py-4 font-semibold flex justify-between"
+            onClick={() => {
+              if (!selectedGateway) {
+                alert("Please select a payment method.");
+                return;
+              }
+              openGateway(selectedGateway);
+            }}
+            className={`w-full py-5 rounded-[12px] font-bold text-lg text-white shadow-xl transition-all hover:-translate-y-0.5 active:scale-[0.98] ${
+              selectedGateway
+                ? "bg-gradient-to-r from-[#09314F] to-[#E83831] hover:shadow-[#E8383144]"
+                : "bg-gray-300 cursor-not-allowed"
+            }`}
+            disabled={!selectedGateway}
           >
-            <span>{item}</span>
-            <span>→</span>
+            Continue = ₦{totalAmount.toLocaleString()}
           </button>
-        ))}
+        </div>
+
+        {/* Brand */}
+        <div className="mt-auto py-10 opacity-30 grayscale pointer-events-none">
+          <img src={TC_logo} alt="Tutorial Center" className="h-10" />
+        </div>
       </div>
 
-      {/* RIGHT */}
+      {/* RIGHT SIDE: Visual Image */}
       <div
-        className="w-full md:w-1/2 bg-cover bg-center"
+        className="w-full h-[250px] md:w-1/2 md:h-full bg-cover bg-center relative bg-gray-300 order-1 md:order-2"
         style={{ backgroundImage: `url(${signup_img})` }}
       />
 

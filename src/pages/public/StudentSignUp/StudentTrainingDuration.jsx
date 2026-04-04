@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import TC_logo from "../../../assets/images/tutorial_logo.png";
-import ReturnArrow from "../../../assets/svg/return arrow.svg";
 import signup_img from "../../../assets/images/Student_sign_up.jpg";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 export const StudentTrainingDuration = () => {
   const navigate = useNavigate();
@@ -114,85 +114,105 @@ export const StudentTrainingDuration = () => {
   };
 
   return (
-    <div className="w-full min-h-screen md:h-screen flex flex-col md:flex-row font-sans">
+    <div className="w-full min-h-screen md:h-screen flex flex-col md:flex-row font-sans overflow-x-hidden">
       {/* LEFT */}
-      <div className="w-full md:w-1/2 bg-[#F4F4F4] px-6 py-10 lg:px-[100px] overflow-y-auto">
-        {/* NAV */}
-        <div className="relative flex justify-center mb-6">
-          <button onClick={() => navigate(-1)} className="absolute left-0 p-2">
-            <img src={ReturnArrow} alt="Back" className="h-6 w-6" />
-          </button>
-          <img src={TC_logo} alt="Logo" className="h-[70px]" />
-        </div>
-
-        <h1 className="text-center text-2xl font-bold text-[#09314F] mb-6">
-          Select Training Duration
-        </h1>
-
-        <div className="grid grid-cols-3 bg-[#09314F] text-white text-sm font-bold rounded-t-lg">
-          <div className="p-2">Course</div>
-          <div className="p-2">Duration</div>
-          <div className="p-2 text-right">Price (₦)</div>
-        </div>
-
-        {courses.map((course) => {
-          const selected = selectedDurations[course.id];
-
-          return (
-            <div
-              key={course.id}
-              className="grid grid-cols-3 gap-4 items-center border-b py-4 text-sm"
+      <div className="w-full md:w-1/2 bg-[#F8F9FA] flex flex-col items-center py-8 px-6 lg:px-8 xl:px-[100px] overflow-y-auto pb-32 order-2 md:order-1">
+        
+        {/* NAV & HEADER */}
+        <div className="w-full max-w-[500px] mb-10 text-center">
+          <div className="flex items-center relative h-12 mb-6">
+            <button 
+              onClick={() => navigate(-1)} 
+              className="absolute left-0 p-3 bg-white hover:bg-gray-50 rounded-2xl shadow-sm transition-all active:scale-90"
             >
-              <div className="font-semibold text-[#09314F]">
-                {course.title}
-              </div>
-
-              <select
-                className="bg-gray-300 rounded px-3 py-2 text-xs"
-                value={selected?.duration || ""}
-                onChange={(e) =>
-                  handleDurationChange(course, e.target.value)
-                }
-              >
-                <option value="">Select duration</option>
-                {DURATION_OPTIONS.map((d) => (
-                  <option key={d.key} value={d.key}>
-                    {d.label}
-                  </option>
-                ))}
-              </select>
-
-              <div className="text-right font-bold">
-                {selected
-                  ? `₦${selected.price.toLocaleString()}`
-                  : "—"}
-              </div>
+              <ChevronLeftIcon className="h-5 w-5 text-[#09314F] stroke-[2.5]" />
+            </button>
+            <div className="w-full flex justify-center">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-[#09314F]">
+                Training Duration
+              </h1>
             </div>
-          );
-        })}
-
-        <div className="flex justify-between mt-6 font-bold text-lg text-[#09314F]">
-          <span>Total</span>
-          <span>₦{totalAmount.toLocaleString()}</span>
+          </div>
+          <p className="text-[#888888] font-medium max-w-[340px] mx-auto">
+            Select your preferred training duration for your examination.
+          </p>
         </div>
 
-        {error && (
-          <p className="text-red-500 text-xs text-center mt-4">
-            Please select a duration for each course
-          </p>
-        )}
+        {/* Card Container */}
+        <div className="w-full max-w-[500px] bg-white rounded-[8px] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-gray-100 mb-8 relative z-10 overflow-hidden">
+          {/* Table Header */}
+          <div className="grid grid-cols-3 bg-[#09314F] text-white px-4 md:px-6 py-4 rounded-t-[8px]">
+            <span className="text-[10px] md:text-sm font-black uppercase tracking-wider text-left">Examination</span>
+            <span className="text-[10px] md:text-sm font-black uppercase tracking-wider text-center">Duration</span>
+            <span className="text-[10px] md:text-sm font-black uppercase tracking-wider text-right">Amount</span>
+          </div>
 
-        <button
-          onClick={handleContinue}
-          className="mt-6 w-full py-3 rounded bg-gradient-to-r from-[#09314F] to-[#E83831] text-white"
-        >
-          Continue to Payment
-        </button>
+          <div className="space-y-0">
+            {courses.map((course) => {
+              const selected = selectedDurations[course.id];
+
+              return (
+                <div
+                  key={course.id}
+                  className="grid grid-cols-3 items-center px-4 md:px-6 py-4 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors"
+                >
+                  <div className="text-[11px] md:text-sm font-extrabold text-[#09314F] uppercase tracking-wide truncate">
+                    {course.title}
+                  </div>
+
+                  <div className="flex justify-center">
+                    <select
+                      className="bg-[#D1D5DB] text-[#4B5563] text-[10px] md:text-xs font-bold rounded-lg px-3 py-2 outline-none cursor-pointer hover:bg-gray-400 transition-colors text-center appearance-none min-w-[100px]"
+                      value={selected?.duration || ""}
+                      onChange={(e) =>
+                        handleDurationChange(course, e.target.value)
+                      }
+                    >
+                      <option value="">Select</option>
+                      {DURATION_OPTIONS.map((d) => (
+                        <option key={d.key} value={d.key}>
+                          {d.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="text-right text-[11px] md:text-sm font-black text-[#09314F]">
+                    {selected
+                      ? `₦${selected.price.toLocaleString()}`
+                      : "NO"}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* TOTAL & CONTINUE */}
+        <div className="w-full max-w-[500px]">
+          {error && (
+            <p className="text-red-500 text-xs text-center mb-4 font-bold">
+              Please select a duration for each course.
+            </p>
+          )}
+          
+          <button
+            onClick={handleContinue}
+            className="w-full py-5 rounded-[12px] font-bold text-lg text-white bg-gradient-to-r from-[#09314F] to-[#E83831] shadow-xl hover:shadow-[#E8383144] transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+          >
+            Continue = ₦{totalAmount.toLocaleString()}
+          </button>
+        </div>
+
+        {/* Brand */}
+        <div className="mt-auto py-10 opacity-30 grayscale pointer-events-none">
+          <img src={TC_logo} alt="Tutorial Center" className="h-10" />
+        </div>
       </div>
 
-      {/* RIGHT */}
+      {/* RIGHT SIDE: Visual Image */}
       <div
-        className="w-full md:w-1/2 bg-cover bg-center"
+        className="w-full h-[250px] md:w-1/2 md:h-full bg-cover bg-center relative bg-gray-300 order-1 md:order-2"
         style={{ backgroundImage: `url(${signup_img})` }}
       />
     </div>

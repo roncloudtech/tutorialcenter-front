@@ -200,10 +200,10 @@ export const StudentSubjectSelection = () => {
         </div>
 
         {/* Table Container — ref placed here so click-outside works for ALL course dropdowns */}
-        <div ref={dropdownRef} className="w-full max-w-[500px] bg-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-gray-100 mb-8 relative z-10">
+        <div ref={dropdownRef} className="w-full max-w-[500px] bg-white rounded-[8px] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-gray-100 mb-8 relative z-10">
           {/* Table Header */}
-          <div className="grid grid-cols-[110px_1fr_60px] md:grid-cols-[140px_1fr_80px] bg-[#09314F] text-white px-4 md:px-6 py-4 rounded-t-[32px]">
-            <span className="text-[10px] md:text-sm font-black uppercase tracking-wider">Examination</span>
+          <div className="grid grid-cols-3 bg-[#09314F] text-white px-4 md:px-6 py-4 rounded-t-[8px]">
+            <span className="text-[10px] md:text-sm font-black uppercase tracking-wider text-left">Examination</span>
             <span className="text-[10px] md:text-sm font-black uppercase tracking-wider text-center">Subjects</span>
             <span className="text-[10px] md:text-sm font-black uppercase tracking-wider text-right">Number</span>
           </div>
@@ -216,21 +216,21 @@ export const StudentSubjectSelection = () => {
               const isOpen = openDropdown === course.id;
 
               return (
-                <div key={course.id} className={`grid grid-cols-[110px_1fr_60px] md:grid-cols-[140px_1fr_80px] items-center px-4 md:px-6 py-6 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors relative ${isOpen ? 'z-50' : 'z-10'}`}>
+                <div key={course.id} className={`grid grid-cols-3 items-center px-4 md:px-6 py-4 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors relative ${isOpen ? 'z-50' : 'z-10'}`}>
                   <div className="text-[11px] md:text-sm font-extrabold text-[#09314F] uppercase tracking-wide truncate">
                     {course.title}
                   </div>
 
-                  <div className="min-w-0 lg:relative">
+                  <div className="min-w-0 lg:relative flex justify-center">
                     <button
                       id={`toggle-${course.id}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         setOpenDropdown(isOpen ? null : course.id);
                       }}
-                      className="w-full min-w-0 min-h-[44px] flex items-center transition-all group pointer-events-auto"
+                      className="w-full max-w-[180px] min-w-0 min-h-[44px] flex items-center justify-center transition-all group pointer-events-auto"
                     >
-                      <div className={dropdownTheme.subjectPreview}>
+                      <div className={`${dropdownTheme.subjectPreview} text-center`}>
                         {selectedIds.length > 0 ? (
                           subjects
                             .filter((s) => selectedIds.includes(s.id))

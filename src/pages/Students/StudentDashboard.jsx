@@ -107,10 +107,10 @@ export default function StudentDashboard() {
               <p className="text-sm text-gray-500 animate-pulse">Loading active courses...</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-10">
-              {courses.map((course) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-10 items-start">
+              {courses.map((course, index) => (
                 <ProgressCard
-                  key={course.enrollment_id}
+                  key={`course-${course.enrollment_id || index}`}
                   title={course.course?.title}
                   subjects={course.subjects}
                   end_date={course.end_date}

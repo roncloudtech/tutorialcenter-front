@@ -49,7 +49,7 @@ export default function CommunityGrowth() {
     }, [nextSlide, autoSlideInterval]);
 
     return (
-        <div className="w-full max-w-[1300px] overflow-hidden mx-auto">
+        <div className="w-full overflow-hidden">
             <div
                 className="flex w-full transition-transform ease-custom duration-500"
                 style={{ transform: `translateX(-${currentSlide * 100}%)` }}

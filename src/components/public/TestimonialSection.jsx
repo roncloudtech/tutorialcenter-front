@@ -23,31 +23,33 @@ const data = [
 const TestimonialSection = () => {
   return (
     <>
-      <SectionHeading title={"testimonial"} position_right={true} />
-      <div className="Container">
-        <div className="area-wrapper !py-8 lg:!py-16">
-          <div className="flex flex-col gap-12 md:flex-row md:gap-8 items-center justify-center">
-            <div className="blockContent flex-1 text-center md:text-left">
-              <h4 className="font-bold semi-title text-[#020D14] mb-4">
-                Check out what our clients <br /> are saying about us
-              </h4>
-              <p className="text-[#020D14] text-sm font-medium mb-8 uppercase tracking-wide">
-                So what are you waiting for join us now
-              </p>
-              <Link to="/register" className="btn-title">
-                Get Started
-              </Link>
-            </div>
-            <div className="flex flex-col md:flex-row gap-8 flex-1 w-full items-center">
-              {data.map((item, index) => (
-                <TestimonialCard
-                  key={index}
-                  name={item.name}
-                  title={item.title}
-                  image={item.image}
-                  desc={item.desc}
-                />
-              ))}
+      <SectionHeading title={"testimonial"} position_right={true} fullWidth={true} />
+      <div className="w-full">
+        <div className="Container !overflow-visible">
+          <div className="area-wrapper !py-8 lg:!py-16">
+            <div className="flex flex-col gap-12 md:flex-row md:gap-8 items-center justify-center">
+              <div className="blockContent flex-1 text-center md:text-left">
+                <h4 className="font-bold semi-title text-[#020D14] mb-4">
+                  Check out what our clients <br /> are saying about us
+                </h4>
+                <p className="text-[#020D14] text-sm font-medium mb-8 uppercase tracking-wide">
+                  So what are you waiting for join us now
+                </p>
+                <Link to="/register" className="btn-title">
+                  Get Started
+                </Link>
+              </div>
+              <div className="flex flex-col md:flex-row gap-8 flex-1 w-full items-center">
+                {data.map((item, index) => (
+                  <TestimonialCard
+                    key={index}
+                    name={item.name}
+                    title={item.title}
+                    image={item.image}
+                    desc={item.desc}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>

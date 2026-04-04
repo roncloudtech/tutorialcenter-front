@@ -3,7 +3,7 @@ import icon from "../../assets/svg/tc_icon.svg";
 const SectionHeading = ({ title, position_right, fullWidth = false }) => {
     return (
         <div className={`bg-primary py-3 relative w-full ${fullWidth ? "" : "xl:max-w-[1300px] mx-auto"} mb-10 md:mb-20`}>
-            <div className="max-w-7xl mx-auto px-6 relative">
+            <div className="xl:max-w-[1200px] w-full mx-auto 2xl:px-9 lg:px-8 px-5 relative">
                 <h1 className="semi-title text-center text-white uppercase">{title}</h1>
                 <img 
                     src={icon} 

@@ -20,7 +20,7 @@ export default function Hero() {
         {/* Hero Section for extra large screen */}
         <div className="pt-2 pb-10 max-[1279px]:p-0">
             <div className="Container">
-                <div className="flex items-center justify-between max-xl:hidden pl-5 pr-20">
+                <div className="flex items-center justify-between max-xl:hidden">
                     <div className="">
                         <h1 className="font-bold text-[40px] mb-3 uppercase">
                             <span className="text-ascent">Ace</span> Your{" "}

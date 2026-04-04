@@ -41,8 +41,8 @@ export default function BenefitSection() {
 
     return (
         <>
-            <div className="py-14">
-                <div className="Container">
+            <div className="py-14 w-full">
+                <div className="Container !overflow-visible">
                     <div className="mb-4 area-wrapper">
                         <h3 className="header-title uppercase text-center mb-4">
                             Our Core Benefits

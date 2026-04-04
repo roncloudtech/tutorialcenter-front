@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ReturnArrow from "../../../assets/svg/return arrow.svg";
 import signup_img from "../../../assets/images/Student_sign_up.jpg";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 
 export default function GuardianTrainingSelection() {
@@ -157,13 +157,9 @@ export default function GuardianTrainingSelection() {
           <div className="relative w-full flex items-center justify-center mb-6 mt-4">
             <button
               onClick={() => navigate("/register/guardian/student/biodata")}
-              className="absolute left-0 p-2 hover:bg-gray-200 rounded-full"
+              className="absolute left-0 p-3 bg-white hover:bg-gray-50 rounded-2xl shadow-sm transition-all active:scale-90 z-10"
             >
-              <img
-                className="w-5 h-5"
-                src={ReturnArrow}
-                alt="Back"
-              />
+              <ChevronLeftIcon className="h-5 w-5 text-[#09314F] stroke-[2.5]" />
             </button>
             <h1 className="text-2xl md:text-3xl font-bold text-[#09314F]">
               Select Training
