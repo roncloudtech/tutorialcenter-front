@@ -5,7 +5,7 @@ import Sidebar from "../../components/private/Students/Sidebar.jsx";
 import SettingsSidebar from "../../components/private/Students/SettingsSidebar.jsx";
 import MobileHeader from "../../components/private/Students/MobileHeader.jsx";
 import MobileBottomNav from "../../components/private/Students/MobileBottomNav.jsx";
-import { ChevronLeftIcon, BellIcon, PencilSquareIcon, EnvelopeIcon, PhoneIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import { ChevronLeftIcon, BellIcon, PencilSquareIcon, EnvelopeIcon, PhoneIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { OTPModal, PasswordChangeModal, SuccessModal, ContactInputModal } from "../../components/private/Students/SettingsModals.jsx";
 

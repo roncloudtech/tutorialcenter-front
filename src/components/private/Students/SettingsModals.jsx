@@ -61,7 +61,7 @@ export function ContactInputModal({ isOpen, onClose, type, onSubmit, loading }) 
 export function OTPModal({ isOpen, onClose, contactType, onVerify, loading, onResend }) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [timeLeft, setTimeLeft] = useState(59);
-  const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
+  const inputRefs = useRef([]);
 
   // Countdown timer
   useEffect(() => {
@@ -136,7 +136,7 @@ export function OTPModal({ isOpen, onClose, contactType, onVerify, loading, onRe
         {otp.map((digit, index) => (
           <input
             key={index}
-            ref={inputRefs[index]}
+            ref={(el) => (inputRefs.current[index] = el)}
             type="text"
             maxLength="6"
             value={digit}
