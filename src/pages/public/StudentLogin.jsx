@@ -5,6 +5,7 @@ import login_img from "../../assets/images/login_img.jpg";
 import TC_logo from "../../assets/images/tutorial_logo.png";
 import { EyeIcon, EyeSlashIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "../../context/AuthContext";
+import { OTPModal, PasswordChangeModal, SuccessModal, ForgotInputModal } from "../../components/private/Students/SettingsModals.jsx";
 
 export default function StudentLogin() {
   const navigate = useNavigate(); // Initializing navigation
@@ -18,6 +19,13 @@ export default function StudentLogin() {
     entry: "",
     password: "",
   });
+
+  // Forgot Password Flow States
+  const [modalType, setModalType] = useState(null); // 'input' | 'otp' | 'password' | 'success'
+  const [flowTarget, setFlowTarget] = useState("");
+  const [otpToken, setOtpToken] = useState("");
+  const [modalLoading, setModalLoading] = useState(false);
+
   const API_BASE_URL =
     process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
 
@@ -91,8 +99,68 @@ export default function StudentLogin() {
     }
   };
 
+  // --- Forgot Password Flow Mathods ---
+  const closeModals = () => {
+    setModalType(null); setFlowTarget(""); setOtpToken(""); setModalLoading(false);
+  };
+
+  const handleForgotSubmit = async (target) => {
+    setFlowTarget(target);
+    setModalLoading(true);
+    try {
+      // Determine if email or tel based on target string (basic regex)
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(target);
+      const payloadKey = isEmail ? "email" : "tel";
+      
+      await axios.post(`${API_BASE_URL}/api/students/forget-password`, { [payloadKey]: target }, {
+          headers: { Accept: "application/json" } // No token, they are not logged in!
+      }).catch(err => console.log("Forgot Password API Request Triggered:", err));
+
+      setModalType("otp");
+    } catch (err) {
+      alert("Failed to request reset code. Please check your credentials and try again.");
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
+  const handleResetVerify = async (code) => {
+    // In actual flows, verification is sometimes checked immediately or bundled into the final payload.
+    // Given the previous setup, we collect the code and push to password change!
+    setOtpToken(code);
+    setModalType("password");
+  };
+
+  const handleResetSave = async ({ password, confirmPassword }) => {
+    setModalLoading(true);
+    try {
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(flowTarget);
+      const payload = {
+        otp: otpToken,
+        password,
+        confirmPassword,
+        [isEmail ? "email" : "tel"]: flowTarget
+      };
+
+      await axios.post(`${API_BASE_URL}/api/students/change-password`, payload, {
+          headers: { Accept: "application/json" }
+      });
+
+      setModalType("success");
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to reset password. Please try again.");
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
   return (
     <>
+      <ForgotInputModal isOpen={modalType === "input"} onClose={closeModals} onSubmit={handleForgotSubmit} loading={modalLoading} />
+      <OTPModal isOpen={modalType === "otp"} onClose={closeModals} contactType="account address" onVerify={handleResetVerify} loading={modalLoading} onResend={() => handleForgotSubmit(flowTarget)} />
+      <PasswordChangeModal isOpen={modalType === "password"} onClose={closeModals} onSave={handleResetSave} loading={modalLoading} />
+      <SuccessModal isOpen={modalType === "success"} onClose={closeModals} title="Password Reset" message="Your password has been successfully changed!" />
+
       <div className="w-full min-h-screen md:h-screen flex flex-col md:flex-row font-sans overflow-x-hidden">
         {/* LEFT SIDE: The Visual Image */}
         <div
@@ -225,6 +293,15 @@ export default function StudentLogin() {
                         {errors.password}
                       </p>
                     )}
+                    <div className="flex justify-end mt-2">
+                       <button 
+                         type="button"
+                         onClick={(e) => { e.preventDefault(); setModalType("input"); }}
+                         className="text-sm font-semibold text-[#09314F] hover:text-blue-600 transition-colors"
+                       >
+                         Forgot Password?
+                       </button>
+                    </div>
                   </div>
 
                   {/* Sign Up Button */}

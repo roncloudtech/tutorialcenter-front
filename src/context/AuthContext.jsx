@@ -64,6 +64,14 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const updateStudent = (updatedFields) => {
+    setStudent((prev) => {
+      const merged = { ...prev, ...updatedFields };
+      localStorage.setItem("student_info", JSON.stringify(merged));
+      return merged;
+    });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -71,6 +79,7 @@ export function AuthProvider({ children }) {
         student,
         login,
         logout,
+        updateStudent,
         isAuthenticated: Boolean(token),
         loading,
       }}

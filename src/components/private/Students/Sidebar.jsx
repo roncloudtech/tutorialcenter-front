@@ -59,7 +59,7 @@ const menuItems = [
   {
     label: "Settings",
     icon: "mdi:cog-outline",
-    // destination: "/student/settings",
+    destination: "/student/settings",
   },
   {
     label: "Help",

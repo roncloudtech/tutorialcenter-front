@@ -46,6 +46,7 @@ import StaffMasterClassList from "./pages/staffs/admin/StaffMasterClassList.jsx"
 import CoursesManagement from "./pages/staffs/admin/CoursesManagement.jsx";
 import StudentPaymentHistory from "./pages/Students/StudentPaymentDisplay.jsx";
 import StudentMeetWrapper from "./pages/Students/StudentMeetWrapper.jsx";
+import StudentSettings from "./pages/Students/StudentSettings.jsx";
 
 
 function App() {
@@ -95,6 +96,7 @@ function App() {
           <Route path="/student/payment-history" element={<StudentPaymentHistory />} />
           <Route path="/student/class-schedule" element={<StudentClassSchedule />} />
           <Route path="/student/meet" element={<StudentMeetWrapper />} />
+          <Route path="/student/settings" element={<StudentSettings />} />
 
           {/* Staff Routes */}
           <Route path="/staffs/dashboard" element={<StaffDashboard />} />
