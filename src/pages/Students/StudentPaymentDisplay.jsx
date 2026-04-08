@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import PaymentLayout from "../../components/private/Students/PaymentLayout.jsx";
+import DashboardLayout from "../../components/private/Students/DashboardLayout.jsx";
 import RemoveTraining from "../../components/private/Students/RemoveTraining.jsx";
 import AddTraining from "../../components/private/Students/AddTraining.jsx";
 import PaymentMethodModal from "../../components/private/Students/PaymentMethodModal.jsx";
-import { BellIcon, ChevronLeftIcon} from "@heroicons/react/24/outline";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function StudentPaymentDisplay() {
@@ -176,31 +176,23 @@ export default function StudentPaymentDisplay() {
   // ===================== MAIN VIEW =====================
   const MainView = () => (
     <>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-black text-[#0F2843] dark:text-white tracking-tighter uppercase">Payment</h1>
-        <button className="relative p-2 bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md rounded-xl shadow-sm border border-gray-100 dark:border-[#09314F] hover:shadow-md transition-all hover:bg-gray-50 dark:hover:bg-[#1a4a75]">
-          <BellIcon className="w-6 h-6 text-[#0F2843] dark:text-white" />
-          <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-[#E83831] border-2 border-white rounded-full" />
-        </button>
-      </div>
-
       <div className="space-y-3 mb-10">
         <button 
           onClick={() => setActiveView("add")}
-          className="w-full text-left px-6 py-4 bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md border border-gray-200 dark:border-[#09314F] rounded-xl text-[15px] font-bold text-[#0F2843] dark:text-white hover:shadow-md hover:border-gray-300 dark:hover:border-blue-400 transition-all active:scale-[0.99]"
+          className="w-full text-left px-6 py-4 bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md border border-gray-200 dark:border-[#09314F] rounded-xl text-[15px] font-bold text-[#09314F] dark:text-white hover:shadow-md hover:border-gray-300 dark:hover:border-blue-400 transition-all active:scale-[0.99]"
         >
           Add Training
         </button>
         <button
           onClick={() => setActiveView("renew")}
-          className="w-full text-left px-6 py-4 bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md border border-gray-200 dark:border-[#09314F] rounded-xl text-[15px] font-bold text-[#0F2843] dark:text-white hover:shadow-md hover:border-gray-300 dark:hover:border-blue-400 transition-all active:scale-[0.99]"
+          className="w-full text-left px-6 py-4 bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md border border-gray-200 dark:border-[#09314F] rounded-xl text-[15px] font-bold text-[#09314F] dark:text-white hover:shadow-md hover:border-gray-300 dark:hover:border-blue-400 transition-all active:scale-[0.99]"
         >
           Renew Payment
         </button>
       </div>
 
       <div>
-        <h2 className="text-lg font-black text-[#0F2843] dark:text-[#3A5ECC] mb-6">History</h2>
+        <h2 className="text-lg font-black text-[#09314F] dark:text-[#3A5ECC] mb-6">History</h2>
 
         {loading ? (
           <div className="text-center py-12">
@@ -227,7 +219,7 @@ export default function StudentPaymentDisplay() {
                   key={payment.id || `history-${index}`}
                   className="flex flex-wrap items-center justify-between gap-4 py-4 border-b border-gray-200 dark:border-[#09314F]/50 last:border-0"
                 >
-                  <span className={`text-sm font-black tracking-wide min-w-[80px] ${payment.status === 'cancelled' || payment.status === 'removed' ? 'text-red-500 dark:text-red-400' : 'text-[#0F2843] dark:text-[#3A5ECC]'}`}>
+                  <span className={`text-sm font-black tracking-wide min-w-[80px] ${payment.status === 'cancelled' || payment.status === 'removed' ? 'text-red-500 dark:text-red-400' : 'text-[#09314F] dark:text-[#3A5ECC]'}`}>
                     {displayTitle}
                   </span>
                   <div className="flex items-center gap-3">
@@ -268,21 +260,13 @@ export default function StudentPaymentDisplay() {
   // ===================== RENEW VIEW (ON-GOING TRAINING) =====================
   const RenewView = () => (
     <>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-black text-[#0F2843] dark:text-white tracking-tighter uppercase">Payment</h1>
-        <button className="relative p-2 bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md rounded-xl shadow-sm border border-gray-100 dark:border-[#09314F] hover:shadow-md transition-all hover:bg-gray-50 dark:hover:bg-[#1a4a75]">
-          <BellIcon className="w-6 h-6 text-[#0F2843] dark:text-white" />
-          <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-[#E83831] border-2 border-white rounded-full" />
-        </button>
-      </div>
-
       <button
         onClick={() => setActiveView("main")}
-        className="flex items-center gap-2 mb-8 group"
+        className="flex items-center gap-2 mb-8 group mt-4"
       >
-        <ChevronLeftIcon className="w-4 h-4 text-gray-500 dark:text-gray-400 group-hover:text-[#0F2843] dark:group-hover:text-white transition-colors" />
-        <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-[#0F2843] dark:group-hover:text-white transition-colors">
-          Back / <span className="font-bold text-[#0F2843] dark:text-white">Renew Payment</span>
+        <ChevronLeftIcon className="w-4 h-4 text-gray-500 dark:text-gray-400 group-hover:text-[#09314F] dark:group-hover:text-white transition-colors" />
+        <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-[#09314F] dark:group-hover:text-white transition-colors">
+          Back / <span className="font-bold text-[#09314F] dark:text-white">Renew Payment</span>
         </span>
       </button>
 
@@ -310,7 +294,7 @@ export default function StudentPaymentDisplay() {
                 >
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="flex flex-col gap-2">
-                      <h4 className="text-[15px] font-bold text-[#0F2843] dark:text-white">
+                      <h4 className="text-[15px] font-bold text-[#09314F] dark:text-white">
                         {item.course?.title || item.course_name || `Enrollment #${item.enrollment_id}`}
                       </h4>
                       <div>
@@ -368,7 +352,7 @@ export default function StudentPaymentDisplay() {
           <h2 className="text-2xl font-black text-[#09314F] mb-6 text-center">Select Duration</h2>
           <div className="bg-gray-50 rounded-2xl p-4 mb-6">
             <p className="text-xs text-gray-500 mb-1">Training</p>
-            <p className="font-black text-[#0F2843]">{selectedPayment?.course?.title || selectedPayment?.course_name}</p>
+            <p className="font-black text-[#09314F]">{selectedPayment?.course?.title || selectedPayment?.course_name}</p>
           </div>
           <div className="space-y-3 mb-8">
             {DURATION_OPTIONS.map((opt) => (
@@ -388,16 +372,14 @@ export default function StudentPaymentDisplay() {
 
 
   return (
-    <PaymentLayout>
+    <DashboardLayout pagetitle="Payment">
       {toast && (
         <div className={`fixed top-5 left-1/2 -translate-x-1/2 z-[120] px-6 py-4 rounded-2xl shadow-2xl text-white ${toast.type === "success" ? "bg-[#76D287]" : "bg-[#E83831] transition-all"}`}>
           <p className="font-bold text-sm">{toast.message}</p>
         </div>
       )}
-      {showDurationModal && <DurationModal />}
-      {showPaymentModal && <PaymentMethodModal />}
       
-      <div className="p-6 max-w-5xl mx-auto w-full min-h-screen">
+      <div className="max-w-5xl mx-auto w-full min-h-screen">
         {activeView === "main" ? (
           <MainView />
         ) : activeView === "renew" ? (
@@ -418,6 +400,7 @@ export default function StudentPaymentDisplay() {
         )}
       </div>
 
+      {showDurationModal && <DurationModal />}
       {showPaymentModal && (
         <PaymentMethodModal
           isOpen={showPaymentModal}
@@ -431,6 +414,6 @@ export default function StudentPaymentDisplay() {
           loading={renewLoading}
         />
       )}
-    </PaymentLayout>
+    </DashboardLayout>
   );
 }

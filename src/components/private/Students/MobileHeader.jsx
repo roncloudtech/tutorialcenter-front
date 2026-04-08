@@ -2,7 +2,7 @@ import Sidebar from "./Sidebar.jsx";
 import { useState } from "react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-export default function MobileHeader({pagetitle}) {
+export default function MobileHeader({ pagetitle, hideTitle = false, hideBell = false }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -38,11 +38,17 @@ export default function MobileHeader({pagetitle}) {
           )}
         </button>
 
-        <h1 className="text-sm font-semibold tracking-wide">
-          {pagetitle || "Dashboard"}
-        </h1>
+        {!hideTitle && (
+          <h1 className="text-sm font-semibold tracking-wide">
+            {pagetitle || "Dashboard"}
+          </h1>
+        )}
 
-        <BellIcon className="w-6 h-6" />
+        {!hideBell ? (
+          <BellIcon className="w-6 h-6" />
+        ) : (
+          <div className="w-6 h-6" /> // Empty placeholder to keep flex spacing
+        )}
       </header>
     </>
   );

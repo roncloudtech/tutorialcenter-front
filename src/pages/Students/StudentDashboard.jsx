@@ -42,7 +42,7 @@ export default function StudentDashboard() {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col xl:flex-row gap-6 p-2 lg:p-6 w-full max-w-[1600px] mx-auto text-gray-800 dark:text-gray-100">
+      <div className="flex flex-col xl:flex-row gap-6 w-full max-w-[1600px] mx-auto text-gray-800 dark:text-gray-100">
         
         {/* --- LEFT MAIN COLUMN --- */}
         <div className="flex-1 flex flex-col space-y-6">
@@ -59,29 +59,35 @@ export default function StudentDashboard() {
           </div> */}
 
           {/* Profile Alert Banner */}
-          <div className="bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md border border-gray-200 dark:border-[#09314F] p-4 rounded-xl shadow-sm flex items-start sm:items-center gap-3">
-            <ExclamationTriangleIcon className="w-6 h-6 text-red-500 dark:text-red-400 flex-shrink-0" />
-            <p className="text-sm text-gray-600 dark:text-gray-200">
+          <div className="bg-white dark:bg-[#09314F]/40 dark:backdrop-blur-md border border-gray-100 dark:border-[#09314F] p-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] flex items-center gap-3">
+            <div className="bg-red-50 dark:bg-red-900/20 p-2 rounded-lg">
+              <ExclamationTriangleIcon className="w-5 h-5 text-red-500" />
+            </div>
+            <p className="text-[13px] font-bold text-[#09314F] dark:text-gray-200">
               Please complete your profile! Click the link to{" "}
-              <a href="/student/settings" className="text-blue-500 dark:text-blue-400 hover:underline font-medium">
+              <a href="/student/settings" className="text-blue-500 hover:underline">
                 update profile
               </a>
             </p>
           </div>
 
           {/* Assessment Notification */}
-          <div className="bg-[#f8fafc] dark:bg-[#09314F]/50 dark:backdrop-blur-md border border-gray-200 dark:border-[#09314F] p-5 rounded-xl flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 shadow-sm">
-            <p className="text-sm font-medium text-gray-700 dark:text-white">
-              You have English and Mathematics assessment
-            </p>
-            <span className="text-xs text-gray-500 dark:text-gray-300 font-medium">10:15am</span>
+          <div className="bg-white dark:bg-[#09314F]/40 dark:backdrop-blur-md rounded-xl p-2 border border-[#C5A97A]/40 shadow-[0_8px_30px_rgb(0,0,0,0.03)]">
+            <div className="bg-[#E6E9EC]/60 dark:bg-[#09314F]/80 p-5 rounded-lg relative min-h-[100px] flex flex-col justify-between">
+              <p className="text-[14px] font-bold text-[#09314F] dark:text-gray-200">
+                You have English and Mathematics assessment
+              </p>
+              <div className="flex justify-end">
+                <span className="text-[11px] font-black text-[#09314F] dark:text-gray-400">10:15am</span>
+              </div>
+            </div>
           </div>
 
           {/* Overall Progress Section */}
           <div className="pt-4">
             <div className="flex justify-between items-end mb-3 border-b border-gray-200 dark:border-[#09314F]/50 pb-2">
               <div className="flex items-center gap-2">
-                <Icon icon="mdi:chart-bar" className="w-6 h-6 text-gray-500 dark:text-blue-300" />
+                <Icon icon="game-icons:progression" className="w-6 h-6 text-[#09314F] dark:text-blue-300" />
                 <h2 className="text-lg font-bold dark:text-white">Progress Level</h2>
               </div>
               <span className="text-sm font-bold text-gray-600 dark:text-gray-300">

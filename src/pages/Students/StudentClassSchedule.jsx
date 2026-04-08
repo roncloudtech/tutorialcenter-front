@@ -242,7 +242,7 @@ export default function StudentClassSchedule() {
               {status === 'live' && <span className="absolute -bottom-0.5 -right-0.5 w-4.5 h-4.5 bg-[#22C55E] border-2 border-white rounded-full shadow-sm animate-pulse"></span>}
             </div>
             <div className="flex flex-col min-w-0">
-              <span className={`font-black text-[#0F2843] dark:text-white leading-tight uppercase truncate ${isHighRes || isMobile ? "text-[16px]" : "text-[15px]"}`}>
+              <span className={`font-black text-[#09314F] dark:text-white leading-tight uppercase truncate ${isHighRes || isMobile ? "text-[16px]" : "text-[15px]"}`}>
                 {isHighRes || isMobile
                   ? (session.class?.title || "Master Class")
                   : abbreviateTitle(session.class?.title || "Master Class")
@@ -267,7 +267,7 @@ export default function StudentClassSchedule() {
           {/* Instructor Column */}
           <div className="text-left sm:text-center min-w-0">
             <span className="text-[11px] font-black text-gray-400 dark:text-blue-300 uppercase tracking-widest block mb-1">Tutor</span>
-            <span className="text-[13px] font-black text-[#0F2843] dark:text-white truncate block">
+            <span className="text-[13px] font-black text-[#09314F] dark:text-white truncate block">
               {tutor ? `${tutor.firstname} ${tutor.surname}` : "Expert Tutor"}
             </span>
           </div>
@@ -286,7 +286,7 @@ export default function StudentClassSchedule() {
           {/* Time Column */}
           <div className="text-left sm:text-center min-w-0">
             <span className="text-[11px] font-black text-gray-400 dark:text-blue-300 uppercase tracking-widest block mb-1">Time</span>
-            <div className="flex items-center sm:justify-center gap-1.5 text-[#0F2843] dark:text-white font-black text-[14px]">
+            <div className="flex items-center sm:justify-center gap-1.5 text-[#09314F] dark:text-white font-black text-[14px]">
               <ClockIcon className="w-4 h-4 text-[#BB9E7F]" />
               <span>{formatTime(session.starts_at)}</span>
             </div>
@@ -320,7 +320,7 @@ export default function StudentClassSchedule() {
                  </div>
                  <div className="flex flex-col">
                    <span className="px-3 py-1 bg-[#BB9E7F] text-white rounded-full text-[10px] font-black uppercase tracking-widest mb-3 self-start shadow-sm">Full Session Details</span>
-                   <h3 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter text-[#0F2843] dark:text-white leading-none mb-2">
+                   <h3 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter text-[#09314F] dark:text-white leading-none mb-2">
                      {session.class?.title || "Master Class Session"}
                    </h3>
                    <div className="flex flex-wrap items-center gap-4 text-gray-400 font-bold text-sm">
@@ -361,13 +361,13 @@ export default function StudentClassSchedule() {
                 <div className="flex items-center gap-4 w-full md:w-auto">
                   <button 
                     onClick={(e) => handleJoinClass(e, session)}
-                    className="flex-1 md:flex-none px-10 py-5 bg-[#0F2843] text-white font-black rounded-2xl hover:bg-black transition-all shadow-xl active:scale-95 uppercase tracking-widest text-[11px] text-center"
+                    className="flex-1 md:flex-none px-10 py-5 bg-[#09314F] text-white font-black rounded-2xl hover:bg-black transition-all shadow-xl active:scale-95 uppercase tracking-widest text-[11px] text-center"
                   >
                     Join Now
                   </button>
                   <button 
                     onClick={(e) => { e.stopPropagation(); setExpandedSessionId(null); }}
-                    className="md:hidden flex-1 px-8 py-5 bg-gray-100 text-[#0F2843] font-black rounded-2xl uppercase tracking-widest text-[11px]"
+                    className="md:hidden flex-1 px-8 py-5 bg-gray-100 text-[#09314F] font-black rounded-2xl uppercase tracking-widest text-[11px]"
                   >
                     Close
                   </button>
@@ -376,7 +376,7 @@ export default function StudentClassSchedule() {
              
              {/* Bottom tag as requested */}
              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-20 group-hover:opacity-100 transition-opacity">
-                <span className="text-[9px] font-black text-[#0F2843] uppercase tracking-[0.5em] whitespace-nowrap">Click To Close</span>
+                <span className="text-[9px] font-black text-[#09314F] uppercase tracking-[0.5em] whitespace-nowrap">Click To Close</span>
              </div>
           </div>
         )}
@@ -385,18 +385,24 @@ export default function StudentClassSchedule() {
   };
 
   return (
-    <DashboardLayout pagetitle="Class Schedule" hideHeader={true}>
-      <div className="p-6 max-w-[1600px] xl:px-10 mx-auto w-full min-h-screen">
+    <DashboardLayout 
+      pagetitle="Class Schedule" 
+      hideHeader={true}
+      hideMobileTitle={false}
+      hideMobileBell={false}
+    >
+      <div className="max-w-[1600px] xl:px-10 mx-auto w-full min-h-screen">
         
-        {/* ========= Header Section ========= */}
-        <div className="flex items-center justify-between mb-10">
-          <h1 className="text-[42px] font-black text-[#0F2843] dark:text-white tracking-tighter leading-none italic uppercase">
+        {/* ========= Header Section ========= 
+           This page has a custom header for desktop. We'll hide it on mobile. */}
+        <div className="hidden md:flex items-center justify-between mb-10">
+          <h1 className="text-[42px] font-black text-[#09314F] dark:text-white tracking-tighter leading-none italic uppercase">
             MASTER <span className="text-[#BB9E7F] not-italic">CLASS</span>
           </h1>
           
           <div className="flex items-center gap-4">
             <div className="relative p-3 bg-white rounded-2xl shadow-sm border border-gray-100 cursor-pointer hover:bg-gray-50 transition-all">
-              <BellIcon className="w-7 h-7 text-[#0F2843]" />
+              <BellIcon className="w-7 h-7 text-[#09314F]" />
               <span className="absolute top-3.5 right-3.5 w-3 h-3 bg-[#E83831] rounded-full border-2 border-white shadow-sm"></span>
             </div>
           </div>
@@ -412,7 +418,7 @@ export default function StudentClassSchedule() {
               <div className="h-[1px] flex-1 bg-red-100"></div>
             </div>
             
-            <div className="bg-[#0F2843] rounded-[40px] p-8 md:p-10 text-white relative overflow-hidden shadow-2xl group transition-all hover:translate-y-[-4px]">
+            <div className="bg-[#09314F] rounded-[40px] p-8 md:p-10 text-white relative overflow-hidden shadow-2xl group transition-all hover:translate-y-[-4px]">
               {/* Background Accents */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-white/10 to-transparent rounded-full -mr-20 -mt-20 blur-3xl"></div>
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#BB9E7F]/10 rounded-full -ml-20 -mb-20 blur-2xl"></div>
@@ -462,7 +468,7 @@ export default function StudentClassSchedule() {
                    </div>
                    <button 
                      onClick={(e) => handleJoinClass(e, scheduleData.next_class)}
-                     className="px-10 py-5 bg-[#BB9E7F] text-[#0F2843] font-black rounded-2xl hover:bg-white transition-all shadow-xl shadow-black/20 group-hover:px-12 active:scale-95 uppercase tracking-widest text-xs"
+                     className="px-10 py-5 bg-[#BB9E7F] text-[#09314F] font-black rounded-2xl hover:bg-white transition-all shadow-xl shadow-black/20 group-hover:px-12 active:scale-95 uppercase tracking-widest text-xs"
                    >
                      Join Session
                    </button>
@@ -511,7 +517,7 @@ export default function StudentClassSchedule() {
                     </div>
                     <button 
                       onClick={(e) => handleJoinClass(e, scheduleData.next_class)}
-                      className="px-8 py-3 bg-[#BB9E7F] text-[#0F2843] font-black rounded-xl hover:bg-white transition-all shadow-xl shadow-black/20 active:scale-95 uppercase tracking-widest text-[10px]"
+                      className="px-8 py-3 bg-[#BB9E7F] text-[#09314F] font-black rounded-xl hover:bg-white transition-all shadow-xl shadow-black/20 active:scale-95 uppercase tracking-widest text-[10px]"
                     >
                       Join Session
                     </button>
@@ -531,7 +537,7 @@ export default function StudentClassSchedule() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search master classes..." 
-              className="w-full pl-16 pr-8 py-5 bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md rounded-[32px] border-none shadow-[0_10px_35px_rgba(0,0,0,0.03)] focus:ring-4 focus:ring-[#BB9E7F]/10 text-[15px] font-bold text-[#0F2843] dark:text-white placeholder-gray-300 dark:placeholder-white/50 transition-all"
+              className="w-full pl-16 pr-8 py-5 bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md rounded-[32px] border-none shadow-[0_10px_35px_rgba(0,0,0,0.03)] focus:ring-4 focus:ring-[#BB9E7F]/10 text-[15px] font-bold text-[#09314F] dark:text-white placeholder-gray-300 dark:placeholder-white/50 transition-all"
             />
           </div>
         </div>
@@ -621,7 +627,7 @@ export default function StudentClassSchedule() {
 
         {/* Loading State */}
         {loading && (
-          <div className="fixed bottom-10 right-10 z-[100] bg-[#0F2843] text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 animate-in slide-in-from-right-4">
+          <div className="fixed bottom-10 right-10 z-[100] bg-[#09314F] text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 animate-in slide-in-from-right-4">
              <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
              <span className="text-sm font-black uppercase tracking-widest italic">Syncing Class Schedule...</span>
           </div>
