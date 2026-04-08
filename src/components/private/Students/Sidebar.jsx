@@ -146,7 +146,7 @@ export default function Sidebar({ collapsed, setCollapsed, isOpen, onClose }) {
                     : collapselogo
                 }
                 alt="Avatar"
-                className="rounded-full shadow-lg h-10 w-10 object-cover border-2 border-amber-200 flex-shrink-0"
+                className="rounded-full shadow-lg h-10 w-10 object-cover border-2 border-[#BB9E7F] flex-shrink-0"
               />
             ) : (
               <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse flex-shrink-0" />
@@ -155,7 +155,7 @@ export default function Sidebar({ collapsed, setCollapsed, isOpen, onClose }) {
               <div className="min-w-0">
                 {studentLoaded ? (
                   <>
-                    <h6 className="text-amber-600 text-xs">Welcome Student</h6>
+                    <h6 className="text-[#BB9E7F] text-xs">Welcome Student</h6>
                     <h3 className="font-bold dark:text-gray-50 text-sm truncate">
                       {fullName}
                     </h3>
