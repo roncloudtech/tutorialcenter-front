@@ -7,7 +7,6 @@ import {
   MoonIcon,
 } from "@heroicons/react/24/outline";
 
-
 import { NavLink } from "react-router-dom";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useAuth } from "../../../context/AuthContext";
@@ -34,7 +33,7 @@ const menuItems = [
   },
   {
     label: "Exam Practice",
-    icon: "mdi:clipboard-text-outline"
+    icon: "mdi:clipboard-text-outline",
   },
   {
     label: "Calendar",
@@ -71,10 +70,13 @@ const menuItems = [
 export default function Sidebar({ collapsed, setCollapsed, isOpen, onClose }) {
   const { theme, setTheme } = useTheme();
   const { student, logout } = useAuth();
-  const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
+  const API_BASE_URL =
+    process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
 
   const studentLoaded = student?.firstname && student?.surname;
-  const fullName = studentLoaded ? `${student.firstname} ${student.surname}` : null;
+  const fullName = studentLoaded
+    ? `${student.firstname} ${student.surname}`
+    : null;
 
   return (
     <>
@@ -87,23 +89,23 @@ export default function Sidebar({ collapsed, setCollapsed, isOpen, onClose }) {
 
       <aside
         className={`
-          fixed top-0 left-0 z-50 h-screen
+          fixed top-2 left-2 z-50 h-[calc(100vh-22px)]
           bg-white dark:bg-gray-900
-          border-r dark:border-gray-800
+          rounded-xl shadow-2xl
           flex flex-col
           transition-all duration-300
           ${collapsed ? "w-20" : "w-64"}
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          lg:translate-x-0
+          ${isOpen ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"}
+          lg:translate-x-0 lg:opacity-100
         `}
       >
         {/* Logo */}
-        <div className="relative flex items-center justify-center p-6 mt-2 mb-2">
+        <div className="relative flex items-center justify-center p-2 md:p-3 lg:p-6 mt-0 md:mt-1 mb-0 md:mb-1 overflow-visible flex-shrink-0">
           <img
             src={collapsed ? collapselogo : logo}
             alt="TC Logo"
             className={`transition-all duration-300 object-contain ${
-              collapsed ? "w-10 h-10" : "w-40 h-auto"
+              collapsed ? "w-10 h-10" : "w-28 md:w-32 lg:w-40 h-auto"
             }`}
           />
 
@@ -116,120 +118,183 @@ export default function Sidebar({ collapsed, setCollapsed, isOpen, onClose }) {
               setCollapsed(!collapsed);
             }}
             className="
-              absolute -right-3 top-1/2 -translate-y-1/2
-              bg-blue-900 text-white
-              p-1.5 rounded-full shadow-lg hover:bg-blue-800 z-10
+   absolute -right-0 top-[70%] -translate-y-1/2
+  bg-[#09314F] text-white
+  w-5 h-9
+  rounded-l-xl
+  flex items-center justify-center
+  hover:bg-[#09314F]/80 z-10
+  transition-all duration-300 ease-in-out
             "
           >
             {collapsed ? (
-              <ChevronRightIcon className="w-4 h-4" />
+              <ChevronRightIcon className="w-5 h-5" />
             ) : (
-              <ChevronLeftIcon className="w-4 h-4" />
+              <ChevronLeftIcon className="w-5 h-5" />
             )}
           </button>
         </div>
 
         {/* Avatar & Name */}
-        <div className="flex px-3 space-y-2 flex-wrap gap-3 items-center">
-          {studentLoaded ? (
-            <img
-              src={student?.profile_picture !== null ? `${API_BASE_URL}/storage/${student?.profile_picture}` : collapselogo}
-              alt="Avatar"
-              className="rounded-full shadow-lg h-10 w-10 object-cover border-2 border-[#BB9E7F]"
-            />
-          ) : (
-            <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
-          )}
-          {!collapsed && (
-            <div>
-              {studentLoaded ? (
-                <>
-                  <h6 className="text-[#BB9E7F] text-sm">Hello Student</h6>
-                  <h3 className="font-bold dark:text-gray-50 text-sm">{fullName}</h3>
-                </>
-              ) : (
-                <>
-                  <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse mb-2" />
-                  <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
-                </>
+        <div className="flex-1 overflow-y-auto min-h-0 px-2 md:px-3 lg:px-4">
+          <div className="flex px-1 md:px-1 lg:px-2 py-1 md:py-2 items-center gap-2 md:gap-3">
+            {studentLoaded ? (
+              <img
+                src={
+                  student?.profile_picture !== null
+                    ? `${API_BASE_URL}/storage/${student?.profile_picture}`
+                    : collapselogo
+                }
+                alt="Avatar"
+                className="rounded-full shadow-lg h-10 w-10 object-cover border-2 border-[#BB9E7F] flex-shrink-0"
+              />
+            ) : (
+              <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse flex-shrink-0" />
+            )}
+            {!collapsed && (
+              <div className="min-w-0">
+                {studentLoaded ? (
+                  <>
+                    <h6 className="text-[#BB9E7F] text-xs">Welcome Student</h6>
+                    <h3 className="font-bold dark:text-gray-50 text-sm truncate">
+                      {fullName}
+                    </h3>
+                  </>
+                ) : (
+                  <>
+                    <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse mb-1" />
+                    <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Menu */}
+          <nav className="px-0.5 md:px-2 lg:px-3 space-y-1 md:space-y-1.5 lg:space-y-2 mt-2 md:mt-3 lg:mt-6 flex flex-col">
+            {menuItems.map(({ label, icon, destination }) => {
+              if (!destination) {
+                return (
+                  <div
+                    key={label}
+                    className="w-full flex items-center gap-3 px-2 md:px-3 py-1.5 md:py-2 lg:py-2.5 rounded-lg text-xs md:text-sm font-medium text-gray-400 cursor-not-allowed"
+                  >
+                    <Icon icon={icon} className="w-5 h-5 flex-shrink-0" />
+                    {!collapsed && <span>{label}</span>}
+                  </div>
+                );
+              }
+
+              return (
+                <NavLink
+                  key={label}
+                  to={destination}
+                  className={({ isActive }) => `
+                  w-full flex items-center gap-3 px-2 md:px-3 lg:px-3 py-1.5 md:py-2 lg:py-2.5 rounded-lg
+                    text-xs md:text-sm font-medium transition duration-200
+                    ${
+                      isActive
+                        ? "bg-[#09314F] text-white shadow-md"
+                        : "text-slate-600 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-gray-800"
+                    }
+                  `}
+                >
+                  <Icon icon={icon} className="w-5 h-5 flex-shrink-0" />
+                  {!collapsed && <span>{label}</span>}
+                </NavLink>
+              );
+            })}
+          </nav>
+
+          {/* Footer - scrolls on mobile/tablet */}
+          <div className="p-1 md:p-2 lg:p-3 pt-1 md:pt-2 lg:pt-3 space-y-3 md:space-y-3 lg:space-y-5 mt-auto lg:hidden">
+            {/* Theme Toggle */}
+            <div
+              className={`flex items-center gap-1 ${collapsed ? "justify-center" : "justify-between px-2"}`}
+            >
+              {!collapsed && (
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  Light
+                </span>
+              )}
+
+              <button
+                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                className={`
+        relative w-12 h-6 rounded-full transition-all duration-300
+        ${theme === "dark" ? "bg-blue-900" : "bg-gray-300"}
+      `}
+              >
+                <span
+                  className={`
+          absolute top-1 w-4 h-4 rounded-full shadow transition-all duration-300 flex items-center justify-center
+          ${theme === "dark" ? "right-1 bg-gray-800" : "left-1 bg-white"}
+        `}
+                >
+                  {theme === "light" ? (
+                    <SunIcon className="w-3 h-3 text-yellow-500" />
+                  ) : (
+                    <MoonIcon className="w-3 h-3 text-blue-300" />
+                  )}
+                </span>
+              </button>
+
+              {!collapsed && (
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  Dark
+                </span>
               )}
             </div>
-          )}
+
+            {/* Logout */}
+            <button
+              onClick={logout}
+              className="flex items-center justify-center gap-2 text-red-500 hover:text-red-600"
+            >
+              <ArrowRightOnRectangleIcon className="w-5 h-5" />
+              {!collapsed && <span className="text-sm">Logout</span>}
+            </button>
+          </div>
         </div>
 
-        {/* Menu */}
-        <nav className="flex-1 px-3 space-y-1 overflow-y-auto mt-4">
-          {menuItems.map(({ label, icon, destination }) => {
-            if (!destination) {
-              return (
-                <div
-                  key={label}
-                  className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-400 cursor-not-allowed"
-                >
-                  <Icon icon={icon} className="w-5 h-5" />
-                  {!collapsed && <span>{label}</span>}
-                </div>
-              );
-            }
-
-            return (
-              <NavLink
-                key={label}
-                to={destination}
-                className={({ isActive }) => `
-                  w-full flex items-center gap-3 px-3 py-3 rounded-lg
-                  text-sm font-medium transition
-                  ${
-                    isActive
-                      ? "bg-blue-900 text-white"
-                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }
-                `}
-              >
-                <Icon icon={icon} className="w-5 h-5" />
-                {!collapsed && <span>{label}</span>}
-              </NavLink>
-            );
-          })}
-        </nav>
-
-        {/* Footer */}
-        <div className="p-4 space-y-4">
+        {/* Footer - fixed on desktop */}
+        <div className="hidden lg:block p-3 pt-3 space-y-3 flex-shrink-0">
           {/* Theme Toggle */}
           <div
-            className={`
-              flex items-center bg-gray-100 dark:bg-gray-800
-              rounded-full px-2 py-1
-              ${collapsed ? "justify-center" : "justify-between"}
-            `}
+            className={`flex items-center gap-1 ${collapsed ? "justify-center" : "justify-between px-2"}`}
           >
-            <button
-              onClick={() => setTheme("light")}
-              className={`flex items-center gap-2 px-3 py-1 rounded-full transition
-                ${
-                  theme === "light"
-                    ? "bg-white text-yellow-500 shadow ring-2 ring-yellow-400/40"
-                    : "text-gray-400 hover:text-yellow-500"
-                }
-              `}
-            >
-              <SunIcon className="w-4 h-4" />
-              {!collapsed && <span className="text-xs">Light</span>}
-            </button>
+            {!collapsed && (
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Light
+              </span>
+            )}
 
             <button
-              onClick={() => setTheme("dark")}
-              className={`flex items-center gap-2 px-3 py-1 rounded-full transition
-                ${
-                  theme === "dark"
-                    ? "bg-gray-900 text-blue-400 ring-2 ring-blue-400/40"
-                    : "text-gray-400 hover:text-blue-400"
-                }
-              `}
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              className={`
+      relative w-12 h-6 rounded-full transition-all duration-300
+      ${theme === "dark" ? "bg-blue-900" : "bg-gray-300"}
+    `}
             >
-              <MoonIcon className="w-4 h-4" />
-              {!collapsed && <span className="text-xs">Dark</span>}
+              <span
+                className={`
+        absolute top-1 w-4 h-4 rounded-full shadow transition-all duration-300 flex items-center justify-center
+        ${theme === "dark" ? "right-1 bg-gray-800" : "left-1 bg-white"}
+      `}
+              >
+                {theme === "light" ? (
+                  <SunIcon className="w-3 h-3 text-yellow-500" />
+                ) : (
+                  <MoonIcon className="w-3 h-3 text-blue-300" />
+                )}
+              </span>
             </button>
+
+            {!collapsed && (
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Dark
+              </span>
+            )}
           </div>
 
           {/* Logout */}

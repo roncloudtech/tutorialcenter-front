@@ -149,12 +149,17 @@ export default function StudentCalendar() {
   }, []);
 
   return (
-    <DashboardLayout pagetitle="Calendar" hideHeader={true}>
-      <div className="p-0 md:p-6 max-w-7xl mx-auto w-full min-h-screen">
+    <DashboardLayout 
+      pagetitle="Calendar" 
+      hideHeader={true}
+      hideMobileTitle={false}
+      hideMobileBell={false}
+    >
+      <div className="max-w-7xl mx-auto w-full min-h-screen">
 
         {/* ====== Header ====== */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 px-4 md:px-0">
-          <h1 className="text-[28px] md:text-[32px] lg:text-[36px] xl:text-[42px] font-black text-[#0F2843] dark:text-white tracking-tighter leading-none uppercase truncate mr-2">
+        <div className="hidden md:flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 px-4 md:px-0">
+          <h1 className="text-[28px] md:text-[32px] lg:text-[36px] xl:text-[42px] font-black text-[#09314F] dark:text-white tracking-tighter leading-none uppercase truncate mr-2">
             CALENDAR
           </h1>
           
@@ -163,20 +168,20 @@ export default function StudentCalendar() {
             <div className="flex bg-gray-100 dark:bg-[#09314F]/80 p-1 rounded-xl border border-gray-200 dark:border-[#09314F] mr-2">
               <button
                 onClick={() => setViewMode("week")}
-                className={`px-4 py-2 rounded-lg text-xs font-black uppercase transition-all ${viewMode === "week" ? "bg-white dark:bg-[#1a4a75] text-[#0F2843] dark:text-white shadow-sm" : "text-gray-400 dark:text-blue-300 hover:text-gray-600 dark:hover:text-white"}`}
+                className={`px-4 py-2 rounded-lg text-xs font-black uppercase transition-all ${viewMode === "week" ? "bg-white dark:bg-[#1a4a75] text-[#09314F] dark:text-white shadow-sm" : "text-gray-400 dark:text-blue-300 hover:text-gray-600 dark:hover:text-white"}`}
               >
                 Week
               </button>
               <button
                 onClick={() => setViewMode("day")}
-                className={`px-4 py-2 rounded-lg text-xs font-black uppercase transition-all ${viewMode === "day" ? "bg-white dark:bg-[#1a4a75] text-[#0F2843] dark:text-white shadow-sm" : "text-gray-400 dark:text-blue-300 hover:text-gray-600 dark:hover:text-white"}`}
+                className={`px-4 py-2 rounded-lg text-xs font-black uppercase transition-all ${viewMode === "day" ? "bg-white dark:bg-[#1a4a75] text-[#09314F] dark:text-white shadow-sm" : "text-gray-400 dark:text-blue-300 hover:text-gray-600 dark:hover:text-white"}`}
               >
                 Day
               </button>
             </div>
 
             <div className="relative p-3 bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md rounded-2xl shadow-sm border border-gray-100 dark:border-[#09314F] cursor-pointer hover:bg-gray-50 dark:hover:bg-[#1a4a75] transition-all">
-              <BellIcon className="w-7 h-7 text-[#0F2843] dark:text-white" />
+              <BellIcon className="w-7 h-7 text-[#09314F] dark:text-white" />
               <span className="absolute top-3.5 right-3.5 w-3 h-3 bg-[#E83831] rounded-full border-2 border-white shadow-sm"></span>
             </div>
           </div>
@@ -217,7 +222,7 @@ export default function StudentCalendar() {
               return (
                 <div
                   key={i}
-                  className={`p-3 text-center border-r border-[#BB9E7F]/30 last:border-0 transition-all ${today ? "bg-[#0F2843]" : ""}`}
+                  className={`p-3 text-center border-r border-[#BB9E7F]/30 last:border-0 transition-all ${today ? "bg-[#09314F]" : ""}`}
                 >
                   <div className={`text-[11px] font-bold uppercase tracking-wider ${today ? "text-white" : "text-white/80"}`}>
                     {label}
@@ -233,7 +238,7 @@ export default function StudentCalendar() {
           {/* Time Rows */}
           {loading ? (
             <div className="text-center py-20">
-              <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-[#0F2843] dark:border-white mx-auto" />
+              <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-[#09314F] dark:border-white mx-auto" />
               <p className="mt-4 text-gray-400 dark:text-gray-300 font-bold text-sm">Loading schedule...</p>
             </div>
           ) : (
@@ -262,7 +267,7 @@ export default function StudentCalendar() {
                             className={`w-full text-left bg-gray-200/80 dark:bg-[#1a4a75]/80 hover:bg-gray-300/90 dark:hover:bg-[#1a4a75] text-gray-700 dark:text-gray-100 font-bold rounded-md mb-0.5 truncate transition-all hover:shadow-sm active:scale-[0.97] cursor-pointer leading-tight ${viewMode === 'day' ? 'p-3 text-xs shadow-sm bg-white dark:bg-[#09314F] border border-gray-100 dark:border-[#1a4a75] hover:border-gray-200 dark:hover:border-blue-400' : 'p-1 md:p-1.5 text-[9px] md:text-[10px]'}`}
                           >
                             <div className="flex flex-col gap-0.5">
-                              <span className={viewMode === 'day' ? 'text-[#0F2843] dark:text-white text-sm' : ''}>{s.class?.title || s.title || "Class"}</span>
+                              <span className={viewMode === 'day' ? 'text-[#09314F] dark:text-white text-sm' : ''}>{s.class?.title || s.title || "Class"}</span>
                               {viewMode === 'day' && s.starts_at && (
                                 <span className="text-[10px] text-gray-400 dark:text-blue-300 font-medium">{formatModalTime(s.starts_at)} {s.ends_at ? ` - ${formatModalTime(s.ends_at)}` : ''}</span>
                               )}
@@ -286,10 +291,10 @@ export default function StudentCalendar() {
           <div className="relative bg-white dark:bg-[#09314F]/90 dark:backdrop-blur-md rounded-3xl p-8 md:p-10 w-[90%] max-w-md shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-200 border border-transparent dark:border-[#1a4a75]">
             {/* Header */}
             <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 rounded-full bg-[#0F2843] dark:bg-black/20 flex items-center justify-center text-white font-black text-sm shrink-0">
+              <div className="w-12 h-12 rounded-full bg-[#09314F] dark:bg-black/20 flex items-center justify-center text-white font-black text-sm shrink-0">
                 {getInitials(selectedSession.class?.title || selectedSession.title || "MC")}
               </div>
-              <h3 className="text-lg font-black text-[#0F2843] dark:text-white leading-tight">
+              <h3 className="text-lg font-black text-[#09314F] dark:text-white leading-tight">
                 {selectedSession.class?.title || selectedSession.title || "Master Class"}
               </h3>
             </div>
@@ -298,13 +303,13 @@ export default function StudentCalendar() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-gray-400 dark:text-blue-300">Date:</span>
-                <span className="text-sm font-black text-[#0F2843] dark:text-white">
+                <span className="text-sm font-black text-[#09314F] dark:text-white">
                   {formatModalDate(selectedSession.session_date)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-gray-400 dark:text-blue-300">Time:</span>
-                <span className="text-sm font-black text-[#0F2843] dark:text-white">
+                <span className="text-sm font-black text-[#09314F] dark:text-white">
                   {formatModalTime(selectedSession.starts_at)}
                   {selectedSession.ends_at ? ` – ${formatModalTime(selectedSession.ends_at)}` : ""}
                 </span>
@@ -316,7 +321,7 @@ export default function StudentCalendar() {
                     href={selectedSession.class_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-bold text-[#3A5ECC] dark:text-blue-400 underline decoration-dotted underline-offset-4 hover:text-[#0F2843] dark:hover:text-white transition-colors truncate"
+                    className="text-sm font-bold text-[#3A5ECC] dark:text-blue-400 underline decoration-dotted underline-offset-4 hover:text-[#09314F] dark:hover:text-white transition-colors truncate"
                   >
                     {selectedSession.class_link}
                   </a>
@@ -331,7 +336,7 @@ export default function StudentCalendar() {
                     href={selectedSession.recording_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-bold text-[#3A5ECC] dark:text-blue-400 underline decoration-dotted underline-offset-4 hover:text-[#0F2843] dark:hover:text-white transition-colors truncate"
+                    className="text-sm font-bold text-[#3A5ECC] dark:text-blue-400 underline decoration-dotted underline-offset-4 hover:text-[#09314F] dark:hover:text-white transition-colors truncate"
                   >
                     {selectedSession.recording_link}
                   </a>
@@ -344,7 +349,7 @@ export default function StudentCalendar() {
             {/* Close Button */}
             <button
               onClick={() => setSelectedSession(null)}
-              className="mt-8 w-full py-4 bg-[#0F2843] text-white font-black rounded-2xl hover:bg-[#1a3d5c] transition-all shadow-lg active:scale-[0.98] uppercase tracking-widest text-xs"
+              className="mt-8 w-full py-4 bg-[#09314F] text-white font-black rounded-2xl hover:bg-[#1a3d5c] transition-all shadow-lg active:scale-[0.98] uppercase tracking-widest text-xs"
             >
               Cancel
             </button>

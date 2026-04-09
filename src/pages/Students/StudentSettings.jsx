@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
-import Sidebar from "../../components/private/Students/Sidebar.jsx";
+import DashboardLayout from "../../components/private/Students/DashboardLayout.jsx";
 import SettingsSidebar from "../../components/private/Students/SettingsSidebar.jsx";
-import MobileHeader from "../../components/private/Students/MobileHeader.jsx";
-import MobileBottomNav from "../../components/private/Students/MobileBottomNav.jsx";
-import { ChevronLeftIcon, BellIcon, PencilSquareIcon, EnvelopeIcon, PhoneIcon } from "@heroicons/react/24/outline";
+import { ChevronLeftIcon, PencilSquareIcon, EnvelopeIcon, PhoneIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { OTPModal, PasswordChangeModal, SuccessModal, ContactInputModal } from "../../components/private/Students/SettingsModals.jsx";
 
@@ -13,10 +11,6 @@ export default function StudentSettings() {
   const { student, token, updateStudent } = useAuth();
   const navigate = useNavigate();
   const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
-
-  // Layout states
-  const [leftCollapsed, setLeftCollapsed] = useState(false);
-  const [rightCollapsed, setRightCollapsed] = useState(false);
 
   // View states: "menu" | "edit_profile"
   const [activeView, setActiveView] = useState("menu");
@@ -215,50 +209,24 @@ export default function StudentSettings() {
 
 
   return (
-    <div className="min-h-screen bg-[#F4F5F7] dark:bg-gray-900 font-sans">
-       {/* Modals placed outside main container */}
-       <ContactInputModal isOpen={modalType === "input"} onClose={closeModals} type={flowContext} onSubmit={handleContactInputSubmit} loading={modalLoading} />
-       <OTPModal isOpen={modalType === "otp"} onClose={closeModals} contactType={flowContext === 'password' ? 'registered address' : (flowContext === 'email' ? 'email' : 'phone number')} onVerify={handleVerifyOTP} loading={modalLoading} onResend={() => requestOTP(flowContext, flowTarget)} />
-       <PasswordChangeModal isOpen={modalType === "password"} onClose={closeModals} onSave={handleSavePassword} loading={modalLoading} />
-       <SuccessModal isOpen={modalType === "success"} onClose={closeModals} title={modalTitle} message={modalMessage} />
+    <DashboardLayout 
+      pagetitle="Settings" 
+      RightPanelComponent={SettingsSidebar}
+    >
+      {/* Modals placed outside main container */}
+      <ContactInputModal isOpen={modalType === "input"} onClose={closeModals} type={flowContext} onSubmit={handleContactInputSubmit} loading={modalLoading} />
+      <OTPModal isOpen={modalType === "otp"} onClose={closeModals} contactType={flowContext === 'password' ? 'registered address' : (flowContext === 'email' ? 'email' : 'phone number')} onVerify={handleVerifyOTP} loading={modalLoading} onResend={() => requestOTP(flowContext, flowTarget)} />
+      <PasswordChangeModal isOpen={modalType === "password"} onClose={closeModals} onSave={handleSavePassword} loading={modalLoading} />
+      <SuccessModal isOpen={modalType === "success"} onClose={closeModals} title={modalTitle} message={modalMessage} />
 
-      {/* ===== MOBILE LAYOUT ===== */}
-      <div className="lg:hidden">
-        <MobileHeader pagetitle="Settings" />
-        <main className="pt-16 pb-20 px-4">
-          {activeView === "menu" ? (
-             <SettingsMenu initiateFlow={initiateFlow} setActiveView={setActiveView} navigate={navigate} />
-          ) : (
+      <div className="w-full">
+         {activeView === "menu" ? (
+            <SettingsMenu initiateFlow={initiateFlow} setActiveView={setActiveView} navigate={navigate} />
+         ) : (
             <SettingsContent formData={formData} handleInputChange={handleInputChange} handleFileChange={handleFileChange} handleSubmit={handleProfileSubmit} loading={loading} errors={errors} successMsg={successMsg} previewImage={previewImage} InputField={InputField} setActiveView={setActiveView} />
-          )}
-        </main>
-        <MobileBottomNav />
+         )}
       </div>
-
-      {/* ===== DESKTOP LAYOUT ===== */}
-      <div className="hidden lg:block">
-        <Sidebar collapsed={leftCollapsed} setCollapsed={setLeftCollapsed} />
-        <SettingsSidebar collapsed={rightCollapsed} setCollapsed={setRightCollapsed} />
-        <main className={`transition-all duration-300 p-8 ${leftCollapsed ? "ml-20" : "ml-64"} ${rightCollapsed ? "mr-1" : "mr-80"}`}>
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-black text-[#09314F] dark:text-white uppercase tracking-wider">Settings</h1>
-            <div className="flex items-center gap-4">
-               <button className="relative p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 hover:bg-gray-50 transition">
-                 <BellIcon className="w-6 h-6 text-[#E83831]" />
-                  <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#09314F] rounded-full border border-white"></span>
-               </button>
-            </div>
-          </div>
-          <div className="w-full">
-             {activeView === "menu" ? (
-                <SettingsMenu initiateFlow={initiateFlow} setActiveView={setActiveView} navigate={navigate} />
-             ) : (
-                <SettingsContent formData={formData} handleInputChange={handleInputChange} handleFileChange={handleFileChange} handleSubmit={handleProfileSubmit} loading={loading} errors={errors} successMsg={successMsg} previewImage={previewImage} setActiveView={setActiveView} />
-             )}
-          </div>
-        </main>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 }
 
