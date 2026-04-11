@@ -45,6 +45,7 @@ import CoursesManagement from "./pages/staffs/admin/CoursesManagement.jsx";
 import StudentPaymentHistory from "./pages/Students/StudentPaymentDisplay.jsx";
 import StudentMeetWrapper from "./pages/Students/StudentMeetWrapper.jsx";
 import StudentSettings from "./pages/Students/StudentSettings.jsx";
+import RecordedClasses from "./pages/Students/RecordedClasses.jsx";
 import StaffEmailVerification from "./pages/public/StaffSignUp/StaffEmailVerification.jsx";
 
 
@@ -97,6 +98,7 @@ function App() {
           <Route path="/student/class-schedule" element={<StudentClassSchedule />} />
           <Route path="/student/meet" element={<StudentMeetWrapper />} />
           <Route path="/student/settings" element={<StudentSettings />} />
+          <Route path="/student/recorded-classes" element={<RecordedClasses />} />
 
           {/* Staff Routes */}
           <Route path="/staffs/dashboard" element={<StaffDashboard />} />
