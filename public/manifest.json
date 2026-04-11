@@ -1,25 +1,26 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Tutorial Center",
+  "name": "Tutorial Center App",
+  "description": "Tutorial Center is an educational platform for exam preparation and learning support.",
   "icons": [
     {
-      "src": "TC 1.png",
+      "src": "tc_icon.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/png"
     },
     {
-      "src": "logo192.png",
+      "src": "tc_icon.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
+      "src": "tc_icon.png",
       "type": "image/png",
       "sizes": "512x512"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
+  "theme_color": "#1E3A5F",
   "background_color": "#ffffff"
 }

@@ -9,8 +9,6 @@ import StudentPhoneVerification from "./pages/public/StudentSignUp/StudentPhoneV
 import StudentEmailVerification from "./pages/public/StudentSignUp/StudentEmailVerification.jsx";
 import StudentBiodata from "./pages/public/StudentSignUp/StudentBiodata.jsx";
 import StudentTrainingSelection from "./pages/public/StudentSignUp/StudentTrainingSelection.jsx";
-// import StudentTrainingDuration from "./pages/public/StudentSignUp/StudentTrainingDuration.jsx";
-// import StudentPaymentSelection from "./pages/public/StudentSignUp/StudentPaymentSelection.jsx";
 import { StudentSubjectSelection } from "./pages/public/StudentSignUp/StudentSubjectSelection.jsx";
 import { StudentPaymentSuccessScreen } from "./pages/public/StudentSignUp/StudentPaymentSuccessScreen.jsx";
 
@@ -47,6 +45,7 @@ import CoursesManagement from "./pages/staffs/admin/CoursesManagement.jsx";
 import StudentPaymentHistory from "./pages/Students/StudentPaymentDisplay.jsx";
 import StudentMeetWrapper from "./pages/Students/StudentMeetWrapper.jsx";
 import StudentSettings from "./pages/Students/StudentSettings.jsx";
+import StaffEmailVerification from "./pages/public/StaffSignUp/StaffEmailVerification.jsx";
 
 
 function App() {
@@ -62,6 +61,7 @@ function App() {
         <Route path="/register" element={<SignUp />} />
         <Route path="/comingsoon" element={<ComingSoon />} />
         <Route path="/staff/login" element={<StaffLogin />} />
+        <Route path="/staff-verify-email" element={<StaffEmailVerification />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
 
         {/* Guardian Registration Routes */}
