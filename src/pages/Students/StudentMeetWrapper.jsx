@@ -41,7 +41,8 @@ export default function StudentMeetWrapper() {
     setSessionDetails({
       class_link: state.class_link,
       class_schedule_id: state.class_schedule_id,
-      studentId: studentId
+      studentId: studentId,
+      alreadyOpened: state.alreadyOpened || false
     });
   }, [location, navigate, student, loading]);
 
@@ -60,6 +61,7 @@ export default function StudentMeetWrapper() {
           class_link={sessionDetails.class_link}
           class_schedule_id={sessionDetails.class_schedule_id}
           studentId={sessionDetails.studentId}
+          alreadyOpened={sessionDetails.alreadyOpened}
         />
       </div>
     </DashboardLayout>

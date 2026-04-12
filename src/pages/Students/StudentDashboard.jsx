@@ -9,7 +9,7 @@ export default function StudentDashboard() {
   const API_BASE_URL =
     process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
 
-  const { student, token: authToken } = useAuth();
+  const { token: authToken } = useAuth();
 
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);

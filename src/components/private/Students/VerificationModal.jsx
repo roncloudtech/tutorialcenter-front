@@ -21,7 +21,6 @@ export default function VerificationModal() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
-  const [resendCount, setResendCount] = useState(0);
   const [resendCooldown, setResendCooldown] = useState(0);
   
   const [otp, setOtp] = useState({
@@ -43,7 +42,7 @@ export default function VerificationModal() {
       setError(null);
       setSuccess(false);
     }
-  }, [isVerificationModalOpen, success]);
+  }, [isVerificationModalOpen, success, inputRefs.num1]);
 
   // Handle Cooldown
   useEffect(() => {
@@ -88,7 +87,6 @@ export default function VerificationModal() {
 
       await axios.post(`${API_BASE_URL}${endpoint}`, payload);
       setResendCooldown(60);
-      setResendCount(prev => prev + 1);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to resend code.");
     } finally {

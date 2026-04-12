@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useAuth } from "../../../context/AuthContext";
 
-export default function GoogleMeetSessions({ class_link, studentId, class_schedule_id }) {
+export default function GoogleMeetSessions({ class_link, studentId, class_schedule_id, alreadyOpened }) {
     const { setIsClassActive } = useAuth();
     const sessions = useRef([]);
     const hasUnmounted = useRef(false);
@@ -64,6 +64,14 @@ export default function GoogleMeetSessions({ class_link, studentId, class_schedu
     useEffect(() => {
         setIsClassActive(true);
         
+        // Adopt globally opened popup if available
+        if (alreadyOpened && window.activeClassPopup && !window.activeClassPopup.closed) {
+            popupRef.current = window.activeClassPopup;
+            window.activeClassPopup = null; // Clear after adopting
+            hasOpened.current = true;
+            handleJoin();
+        }
+
         if (!hasOpened.current) {
             startClassSession();
             hasOpened.current = true;
