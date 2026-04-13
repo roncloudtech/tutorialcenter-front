@@ -14,11 +14,7 @@ export default function PaymentMethodModal({
 }) {
   if (!isOpen) return null;
 
-  const paymentMethods = [
-    { id: "paystack", name: "Paystack" },
-    { id: "paypal", name: "Paypal" },
-    { id: "interswitch", name: "Inter-switch" },
-  ];
+
 
   const reference = `TC-PAY-${Date.now()}`;
 
@@ -41,22 +37,35 @@ export default function PaymentMethodModal({
           </div>
         </div>
 
-        <div className="flex flex-col space-y-3 mb-10">
-          {paymentMethods.map((method) => (
-            <button 
-              key={method.id} 
-              onClick={() => setSelectedMethod(method.id)} 
-              className={`w-full flex items-center justify-between px-6 py-4 rounded-2xl border-2 transition-all duration-300 ${selectedMethod === method.id ? "border-[#0F2843] bg-gray-50/50 shadow-sm" : "border-gray-100 hover:border-[#0F2843]/10 bg-white"}`}
-            >
-              <span className={`font-black text-xs uppercase tracking-widest ${selectedMethod === method.id ? "text-[#0F2843]" : "text-gray-400"}`}>{method.name}</span>
-              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedMethod === method.id ? "border-[#0F2843] bg-[#0F2843]" : "border-gray-100"}`}>
-                {selectedMethod === method.id && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
-              </div>
-            </button>
-          ))}
+        <div className="flex flex-col space-y-4 mb-10">
+          {["Paystack", "Flutterwave", "PayPal", "Interswitch"].map((item) => {
+            const isSelected = selectedMethod === item;
+            return (
+              <button
+                key={item}
+                onClick={() => setSelectedMethod(item)}
+                className={`w-full flex items-center justify-between px-6 py-4 rounded-xl border-2 transition-all duration-200 ${
+                  isSelected
+                    ? "border-[#76D287] bg-green-50"
+                    : "border-gray-200 hover:border-[#09314F] bg-white"
+                }`}
+              >
+                <span className={`font-bold text-sm md:text-base ${
+                  isSelected ? "text-[#09314F]" : "text-gray-600"
+                }`}>
+                  {item}
+                </span>
+                <span className={`font-bold text-lg ${
+                  isSelected ? "text-[#76D287]" : "text-[#09314F]"
+                }`}>
+                  {isSelected ? "✓" : "›"}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
-        {selectedMethod === "paystack" ? (
+        {selectedMethod === "Paystack" ? (
           <Paystack
             amount={amount}
             email={email}
@@ -68,14 +77,18 @@ export default function PaymentMethodModal({
           <button 
             onClick={onContinue} 
             disabled={loading || !selectedMethod} 
-            className={`w-full py-5 px-6 rounded-2xl font-black text-white shadow-xl transition-all duration-300 transform active:scale-[0.98] ${loading || !selectedMethod ? "bg-gray-200 cursor-not-allowed shadow-none" : "bg-[#0F2843] hover:shadow-[#0F284344] hover:-translate-y-0.5"}`}
+            className={`w-full py-5 rounded-[12px] font-bold text-lg text-white shadow-xl transition-all hover:-translate-y-0.5 active:scale-[0.98] ${
+              selectedMethod
+                ? "bg-gradient-to-r from-[#09314F] to-[#E83831] hover:shadow-[#E8383144]"
+                : "bg-gray-300 cursor-not-allowed"
+            }`}
           >
             {loading ? (
               <div className="flex items-center justify-center gap-2">
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 <span>Processing...</span>
               </div>
-            ) : "Complete Payment"}
+            ) : `Continue = ₦${amount.toLocaleString()}`}
           </button>
         )}
       </div>

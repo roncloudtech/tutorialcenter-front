@@ -85,9 +85,9 @@ export default function SubjectSelectionModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-y-auto">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white w-full max-w-xl rounded-[40px] shadow-2xl p-8 md:p-10 border border-white/20 flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-300">
+      <div className="relative bg-white w-full max-w-xl rounded-[40px] shadow-2xl p-8 md:p-10 border border-white/20 flex flex-col my-8 animate-in fade-in zoom-in-95 duration-300">
         
         <div className="flex justify-between items-center mb-8 shrink-0">
           <div>
@@ -99,12 +99,12 @@ export default function SubjectSelectionModal({
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto pr-2 pb-32 custom-scrollbar">
-          <div ref={dropdownRef} className="w-full bg-white rounded-3xl border border-gray-100 shadow-sm mb-8">
-            <div className="grid grid-cols-[120px_minmax(0,1fr)_80px] bg-[#09314F] text-white px-6 py-4 rounded-t-3xl">
-              <span className="text-[10px] font-black uppercase tracking-widest">Examination</span>
-              <span className="text-[10px] font-black uppercase tracking-widest px-4">Subjects</span>
-              <span className="text-[10px] font-black uppercase tracking-widest text-right">Number</span>
+        <div className="flex-1 overflow-visible pr-2 pb-32">
+          <div ref={dropdownRef} className="w-full bg-white rounded-[8px] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-gray-100 mb-8 relative z-10 w-full">
+            <div className="grid grid-cols-3 bg-[#09314F] text-white px-4 md:px-6 py-4 rounded-t-[8px]">
+              <span className="text-[8px] sm:text-[10px] md:text-sm font-black uppercase tracking-wider text-left leading-tight">Examination</span>
+              <span className="text-[8px] sm:text-[10px] md:text-sm font-black uppercase tracking-wider text-center leading-tight">Subjects</span>
+              <span className="text-[8px] sm:text-[10px] md:text-sm font-black uppercase tracking-wider text-right leading-tight">Number</span>
             </div>
 
             {loading ? (
@@ -113,7 +113,7 @@ export default function SubjectSelectionModal({
                 <p className="text-gray-400 font-bold text-xs uppercase tracking-widest italic animate-pulse">Syncing Subjects...</p>
               </div>
             ) : (
-              <div className="divide-y divide-gray-50">
+              <div className="space-y-0">
                 {selectedCourses.map((course) => {
                   const selectedIds = selectedSubjects[course.id] || [];
                   const subjects = subjectsByCourse[course.id] || [];
@@ -121,25 +121,30 @@ export default function SubjectSelectionModal({
                   const isOpen = openDropdown === course.id;
 
                   return (
-                    <div key={course.id} className="grid grid-cols-[120px_minmax(0,1fr)_80px] items-center px-6 py-5 group hover:bg-gray-50/50 transition-colors">
-                      <div className="text-sm font-black text-[#09314F] uppercase tracking-tight truncate leading-none">
+                    <div key={course.id} className={`grid grid-cols-3 items-center px-4 md:px-6 py-4 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors relative ${isOpen ? 'z-50' : 'z-10'}`}>
+                      <div className="text-[9px] sm:text-[11px] md:text-sm font-extrabold text-[#09314F] uppercase tracking-wide truncate leading-tight">
                         {course.title}
                       </div>
 
-                      <div className="px-4 relative min-w-0">
+                      <div className="min-w-0 lg:relative flex justify-center">
                         <button
-                          onClick={() => setOpenDropdown(isOpen ? null : course.id)}
-                          className={`w-full text-left min-h-[44px] px-4 py-2 rounded-xl border transition-all truncate text-xs font-bold ${selectedIds.length > 0 ? "border-[#09314F]/20 text-[#09314F] bg-blue-50/20" : "border-gray-100 text-gray-300 italic"}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenDropdown(isOpen ? null : course.id);
+                          }}
+                          className="w-full max-w-[180px] min-w-0 min-h-[44px] flex items-center justify-center transition-all group pointer-events-auto text-[9px] sm:text-[11px] md:text-sm leading-tight"
                         >
-                          {selectedIds.length > 0 ? (
-                            subjects.filter(s => selectedIds.includes(s.id)).map(s => s.name).join(", ")
-                          ) : "Select a subject"}
+                          <div className={`${dropdownTheme.subjectPreview} text-center`}>
+                            {selectedIds.length > 0 ? (
+                              subjects.filter(s => selectedIds.includes(s.id)).map(s => s.name).join(", ")
+                            ) : "Select subjects"}
+                          </div>
                         </button>
 
                         {isOpen && (
-                          <div className={dropdownTheme.overlay.container}>
+                          <div className={`${dropdownTheme.overlay.container} !w-auto !left-4 !right-4 lg:!left-0 lg:!right-auto lg:!w-[280px] lg:!translate-x-0 z-[200] shadow-2xl`}>
                              <p className={dropdownTheme.overlay.header}>Choose up to {limit} subjects</p>
-                             <div className="space-y-1">
+                             <div className="space-y-1.5">
                                {subjects.map((subject) => {
                                  const isSelected = selectedIds.includes(subject.id);
                                  const isLimitReached = !isSelected && selectedIds.length >= limit;
@@ -161,11 +166,11 @@ export default function SubjectSelectionModal({
                       </div>
 
                       <div className="text-right">
-                        <span className={`text-sm font-black ${selectedIds.length === limit ? "text-green-500" : "text-[#09314F]"}`}>
+                        <span className={`text-[9px] sm:text-[11px] md:text-sm font-black transition-colors ${selectedIds.length === limit ? "text-green-500" : "text-[#09314F]"}`}>
                           {selectedIds.length}
                         </span>
-                        <span className="text-gray-300 font-bold mx-1">/</span>
-                        <span className="text-gray-400 font-bold">{limit}</span>
+                        <span className="text-[9px] sm:text-[11px] md:text-sm font-bold text-gray-300"> / </span>
+                        <span className="text-[9px] sm:text-[11px] md:text-sm font-bold text-gray-400">{limit}</span>
                       </div>
                     </div>
                   );

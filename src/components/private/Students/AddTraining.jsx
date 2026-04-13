@@ -11,7 +11,7 @@ import PaymentMethodModal from "./PaymentMethodModal";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
 
-export default function AddTraining({ onBack }) {
+export default function AddTraining({ onBack, onSuccess }) {
   const [courses, setCourses] = useState([]);
   const [activeEnrollments, setActiveEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -123,8 +123,11 @@ export default function AddTraining({ onBack }) {
         });
       }
 
-      alert("Training added successfully!");
-      onBack(); // Return to main view
+      if (onSuccess) {
+        onSuccess("Training added successfully!");
+      } else {
+        onBack(); // Return to main view
+      }
     } catch (err) {
       console.error("Enrollment failed", err);
       alert("Something went wrong during enrollment. Please try again.");

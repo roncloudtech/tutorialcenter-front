@@ -203,9 +203,9 @@ export const StudentSubjectSelection = () => {
         <div ref={dropdownRef} className="w-full max-w-[500px] bg-white rounded-[8px] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-gray-100 mb-8 relative z-10">
           {/* Table Header */}
           <div className="grid grid-cols-3 bg-[#09314F] text-white px-4 md:px-6 py-4 rounded-t-[8px]">
-            <span className="text-[10px] md:text-sm font-black uppercase tracking-wider text-left">Examination</span>
-            <span className="text-[10px] md:text-sm font-black uppercase tracking-wider text-center">Subjects</span>
-            <span className="text-[10px] md:text-sm font-black uppercase tracking-wider text-right">Number</span>
+            <span className="text-[8px] sm:text-[10px] md:text-sm font-black uppercase tracking-wider text-left leading-tight">Examination</span>
+            <span className="text-[8px] sm:text-[10px] md:text-sm font-black uppercase tracking-wider text-center leading-tight">Subjects</span>
+            <span className="text-[8px] sm:text-[10px] md:text-sm font-black uppercase tracking-wider text-right leading-tight">Number</span>
           </div>
 
           <div className="space-y-0">
@@ -217,7 +217,7 @@ export const StudentSubjectSelection = () => {
 
               return (
                 <div key={course.id} className={`grid grid-cols-3 items-center px-4 md:px-6 py-4 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors relative ${isOpen ? 'z-50' : 'z-10'}`}>
-                  <div className="text-[11px] md:text-sm font-extrabold text-[#09314F] uppercase tracking-wide truncate">
+                  <div className="text-[9px] sm:text-[11px] md:text-sm font-extrabold text-[#09314F] uppercase tracking-wide truncate leading-tight">
                     {course.title}
                   </div>
 
@@ -228,7 +228,7 @@ export const StudentSubjectSelection = () => {
                         e.stopPropagation();
                         setOpenDropdown(isOpen ? null : course.id);
                       }}
-                      className="w-full max-w-[180px] min-w-0 min-h-[44px] flex items-center justify-center transition-all group pointer-events-auto"
+                      className="w-full max-w-[180px] min-w-0 min-h-[44px] flex items-center justify-center transition-all group pointer-events-auto text-[9px] sm:text-[11px] md:text-sm leading-tight"
                     >
                       <div className={`${dropdownTheme.subjectPreview} text-center`}>
                         {selectedIds.length > 0 ? (
@@ -273,11 +273,11 @@ export const StudentSubjectSelection = () => {
                   </div>
 
                   <div className="text-right">
-                    <span className={`text-[11px] md:text-sm font-black transition-colors ${selectedIds.length === limit ? "text-[#76D287]" : "text-[#09314F]"}`}>
+                    <span className={`text-[9px] sm:text-[11px] md:text-sm font-black transition-colors ${selectedIds.length === limit ? "text-[#76D287]" : "text-[#09314F]"}`}>
                       {selectedIds.length}
                     </span>
-                    <span className="text-[11px] md:text-sm font-bold text-gray-300"> / </span>
-                    <span className="text-[11px] md:text-sm font-bold text-gray-400">{limit}</span>
+                    <span className="text-[9px] sm:text-[11px] md:text-sm font-bold text-gray-300"> / </span>
+                    <span className="text-[9px] sm:text-[11px] md:text-sm font-bold text-gray-400">{limit}</span>
                   </div>
                 </div>
               );

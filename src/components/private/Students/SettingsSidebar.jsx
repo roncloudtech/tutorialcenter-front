@@ -80,7 +80,7 @@ export default function SettingsSidebar({ collapsed, setCollapsed }) {
               <InfoRow label="Name:" value={fullName} />
               <InfoRow label="Email:" value={email} />
               <InfoRow label="Phone:" value={student?.tel || "+234 123 456 7890"} />
-              <InfoRow label="DOB:" value={student?.date_of_birth || "19/10/2000"} />
+              <InfoRow label="DOB:" value={student?.date_of_birth ? student.date_of_birth.split("T")[0] : "19/10/2000"} />
               <InfoRow label="Address:" value={student?.address || "12 Bode Thomas, Surulere"} />
               <InfoRow label="Location:" value={student?.location || "Lagos, Nigeria"} />
               <InfoRow label="Class:" value="#01" />

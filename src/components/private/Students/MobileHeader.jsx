@@ -1,9 +1,11 @@
 import Sidebar from "./Sidebar.jsx";
 import { useState } from "react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import NotificationsDropdown from "./NotificationsDropdown";
 
 export default function MobileHeader({ pagetitle, hideTitle = false, hideBell = false }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(prev => !prev);
@@ -45,7 +47,16 @@ export default function MobileHeader({ pagetitle, hideTitle = false, hideBell = 
         )}
 
         {!hideBell ? (
-          <BellIcon className="w-6 h-6" />
+          <div className="relative">
+            <button 
+              onClick={() => setIsNotificationsOpen(!isNotificationsOpen)} 
+              className="relative p-1 focus:outline-none pointer-events-auto"
+            >
+              <BellIcon className="w-6 h-6" />
+              <span className="absolute top-1 right-1 pointer-events-none w-2 h-2 bg-[#E83831] rounded-full border border-[#09314F]"></span>
+            </button>
+            <NotificationsDropdown isOpen={isNotificationsOpen} onClose={() => setIsNotificationsOpen(false)} />
+          </div>
         ) : (
           <div className="w-6 h-6" /> // Empty placeholder to keep flex spacing
         )}

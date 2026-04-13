@@ -69,6 +69,8 @@ export default function StudentPaymentDisplay() {
 
   // Fetch all payment-related data
   const fetchData = useCallback(async () => {
+    if (!token) return; // Prevent 401 on initial render if token is still loading from context
+
     setLoading(true);
     try {
       // 1. Fetch Payment History
@@ -391,7 +393,14 @@ export default function StudentPaymentDisplay() {
         ) : activeView === "renew" ? (
           <RenewView />
         ) : activeView === "add" ? (
-          <AddTraining onBack={() => setActiveView("main")} />
+          <AddTraining 
+            onBack={() => setActiveView("main")} 
+            onSuccess={(msg) => {
+              setToast({ type: "success", message: msg });
+              fetchData();
+              setActiveView("main");
+            }}
+          />
         ) : (
           <RemoveTraining 
             activeCourses={activeCourses}

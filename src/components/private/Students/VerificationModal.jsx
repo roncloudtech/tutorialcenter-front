@@ -64,6 +64,27 @@ export default function VerificationModal() {
     }
   };
 
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text").replace(/[^0-9]/g, "");
+    if (!pastedData) return;
+
+    const digits = pastedData.slice(0, 6).split("");
+    const newOtp = { ...otp };
+    
+    digits.forEach((digit, index) => {
+      newOtp[`num${index + 1}`] = digit;
+    });
+
+    setOtp(newOtp);
+
+    // Focus last filled/next input
+    const nextIndex = Math.min(digits.length, 6);
+    if (nextIndex > 0) {
+      inputRefs[`num${nextIndex}`].current?.focus();
+    }
+  };
+
   const handleKeyDown = (e, name) => {
     if (e.key === "Backspace" && !otp[name] && name !== "num1") {
       const prevField = `num${parseInt(name.replace("num", "")) - 1}`;
@@ -192,6 +213,7 @@ export default function VerificationModal() {
                       value={otp[name]}
                       onChange={(e) => handleChange(e, name)}
                       onKeyDown={(e) => handleKeyDown(e, name)}
+                      onPaste={handlePaste}
                       className="w-full h-12 md:h-14 text-xl font-black text-center rounded-xl border-2 transition-all outline-none bg-gray-50 dark:bg-[#09314F]/50 border-transparent focus:border-[#BB9E7F] dark:text-white"
                       placeholder="-"
                     />

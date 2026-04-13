@@ -84,29 +84,44 @@ export function OTPModal({ isOpen, onClose, contactType, onVerify, loading, onRe
   }, [isOpen]);
 
   const handleChange = (index, value) => {
-    // Only accept numbers
-    if (value && !/^\d+$/.test(value)) return;
-    
-    const newOtp = [...otp];
-    // Handle paste of multiple digits
-    if (value.length > 1) {
-       const digits = value.slice(0, 6).split('');
-       digits.forEach((d, i) => {
-         if (index + i < 6) newOtp[index + i] = d;
-       });
-       setOtp(newOtp);
-       const nextIndex = Math.min(index + digits.length, 5);
-       inputRefs.current[nextIndex]?.focus();
-       return;
+    // Only accept single number
+    const digit = value.replace(/[^0-9]/g, "");
+    if (!digit || digit.length > 1) {
+      // Allow clearing the input
+      if (value === "") {
+        const newOtp = [...otp];
+        newOtp[index] = "";
+        setOtp(newOtp);
+      }
+      return;
     }
 
-    newOtp[index] = value;
+    const newOtp = [...otp];
+    newOtp[index] = digit;
     setOtp(newOtp);
 
     // Auto-focus next input
-    if (value && index < 5) {
+    if (index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
+  };
+
+  const handlePaste = (e, index) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text").replace(/[^0-9]/g, "");
+    if (!pastedData) return;
+
+    const digits = pastedData.slice(0, 6).split("");
+    const newOtp = [...otp];
+    
+    digits.forEach((digit, i) => {
+      if (index + i < 6) newOtp[index + i] = digit;
+    });
+
+    setOtp(newOtp);
+
+    const nextIndex = Math.min(index + digits.length, 5);
+    inputRefs.current[nextIndex]?.focus();
   };
 
   const handleKeyDown = (index, e) => {
@@ -140,10 +155,11 @@ export function OTPModal({ isOpen, onClose, contactType, onVerify, loading, onRe
             key={index}
             ref={(el) => (inputRefs.current[index] = el)}
             type="text"
-            maxLength="6"
+            maxLength="1"
             value={digit}
             onChange={(e) => handleChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
+            onPaste={(e) => handlePaste(e, index)}
             className="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl sm:text-2xl font-bold bg-[#F4F5F7] dark:bg-gray-700 text-[#09314F] dark:text-white rounded-xl outline-none focus:ring-2 focus:ring-[#09314F] border border-transparent focus:border-[#09314F] transition-all"
           />
         ))}

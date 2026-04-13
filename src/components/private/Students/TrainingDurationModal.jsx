@@ -50,7 +50,7 @@ export default function TrainingDurationModal({
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div className="relative bg-white w-full max-w-xl rounded-[40px] shadow-2xl p-8 md:p-10 border border-white/20 flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-300">
         
-        <div className="flex justify-between items-center mb-8 shrink-0">
+        <div className="flex justify-between items-center shrink-0">
           <div>
             <h2 className="text-2xl font-black text-[#09314F] uppercase tracking-tight">Duration Selection</h2>
             <p className="text-gray-400 text-xs font-bold mt-1 tracking-wide">Select your preferred training duration for your examination</p>
@@ -60,37 +60,43 @@ export default function TrainingDurationModal({
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-          <div className="grid grid-cols-[1fr_120px_100px] bg-[#09314F] text-white px-8 py-4 rounded-t-3xl italic">
-            <span className="text-[10px] font-black uppercase tracking-widest px-2 not-italic">Examination</span>
-            <span className="text-[10px] font-black uppercase tracking-widest px-2 not-italic">Duration</span>
-            <span className="text-[10px] font-black uppercase tracking-widest text-right not-italic">Amount</span>
-          </div>
+        <div className="flex-1 overflow-visible pr-2 custom-scrollbar my-4">
+          <div className="w-full bg-white rounded-[8px] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-gray-100 mb-8 relative z-10 overflow-hidden">
+            <div className="grid grid-cols-3 bg-[#09314F] text-white px-4 md:px-6 py-4 rounded-t-[8px]">
+              <span className="text-[8px] sm:text-[10px] md:text-sm font-black uppercase tracking-wider text-left leading-tight">Examination</span>
+              <span className="text-[8px] sm:text-[10px] md:text-sm font-black uppercase tracking-wider text-center leading-tight">Duration</span>
+              <span className="text-[8px] sm:text-[10px] md:text-sm font-black uppercase tracking-wider text-right leading-tight">Amount</span>
+            </div>
 
-          <div className="bg-white border-x border-b border-gray-100 rounded-b-3xl divide-y divide-gray-50 overflow-hidden shadow-sm mb-6">
-            {selectedCourses.map((course) => {
-              const selected = selectedDurations[course.id];
-              return (
-                <div key={course.id} className="grid grid-cols-[1fr_120px_100px] items-center px-8 py-6">
-                  <span className="text-sm font-black text-[#09314F] uppercase tracking-tight truncate leading-none px-2">{course.title}</span>
-                  <div className="px-2">
-                    <select 
-                      className="w-full bg-gray-50 px-3 py-3 rounded-xl border border-gray-100 text-[11px] font-bold text-[#09314F] focus:ring-2 focus:ring-[#09314F]/10 outline-none transition-all cursor-pointer"
-                      value={selected?.duration || ""}
-                      onChange={(e) => handleDurationChange(course, e.target.value)}
-                    >
-                      <option value="">Select</option>
-                      {DURATION_OPTIONS.map((opt) => (
-                        <option key={opt.key} value={opt.key}>{opt.label}</option>
-                      ))}
-                    </select>
+            <div className="space-y-0 bg-white">
+              {selectedCourses.map((course) => {
+                const selected = selectedDurations[course.id];
+                return (
+                  <div key={course.id} className="grid grid-cols-3 items-center px-4 md:px-6 py-4 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors">
+                    <div className="text-[9px] sm:text-[11px] md:text-sm font-extrabold text-[#09314F] uppercase tracking-wide truncate leading-tight">
+                      {course.title}
+                    </div>
+                    
+                    <div className="flex justify-center">
+                      <select 
+                        className="bg-[#D1D5DB] text-[#4B5563] text-[10px] md:text-xs font-bold rounded-lg px-3 py-2 outline-none cursor-pointer hover:bg-gray-400 transition-colors text-center appearance-none min-w-[100px]"
+                        value={selected?.duration || ""}
+                        onChange={(e) => handleDurationChange(course, e.target.value)}
+                      >
+                        <option value="">Select</option>
+                        {DURATION_OPTIONS.map((opt) => (
+                          <option key={opt.key} value={opt.key}>{opt.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    
+                    <div className="text-right text-[11px] md:text-sm font-black text-[#09314F]">
+                      {selected ? `₦${selected.price.toLocaleString()}` : "NO"}
+                    </div>
                   </div>
-                  <div className="text-right text-[13px] font-black text-[#09314F] px-2">
-                    {selected ? `₦${selected.price.toLocaleString()}` : "₦0"}
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
 
