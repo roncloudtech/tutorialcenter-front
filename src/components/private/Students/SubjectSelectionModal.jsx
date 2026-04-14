@@ -56,8 +56,12 @@ export default function SubjectSelectionModal({
     };
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside, { passive: true });
     }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
   }, [isOpen]);
 
   const getSubjectLimit = (title) => title.toLowerCase().includes("jamb") ? 4 : 9;
@@ -128,11 +132,13 @@ export default function SubjectSelectionModal({
 
                       <div className="min-w-0 lg:relative flex justify-center">
                         <button
+                          type="button"
                           onClick={(e) => {
+                            e.preventDefault();
                             e.stopPropagation();
                             setOpenDropdown(isOpen ? null : course.id);
                           }}
-                          className="w-full max-w-[180px] min-w-0 min-h-[44px] flex items-center justify-center transition-all group pointer-events-auto text-[9px] sm:text-[11px] md:text-sm leading-tight"
+                          className="w-full max-w-[180px] min-w-0 min-h-[44px] flex items-center justify-center transition-all group pointer-events-auto text-[9px] sm:text-[11px] md:text-sm leading-tight touch-manipulation cursor-pointer"
                         >
                           <div className={`${dropdownTheme.subjectPreview} text-center`}>
                             {selectedIds.length > 0 ? (
@@ -150,13 +156,18 @@ export default function SubjectSelectionModal({
                                  const isLimitReached = !isSelected && selectedIds.length >= limit;
                                  return (
                                    <button
+                                     type="button"
                                      key={subject.id}
                                      disabled={isLimitReached}
-                                     onClick={() => toggleSubject(course.id, subject.id)}
-                                     className={dropdownTheme.overlay.item(isSelected, isLimitReached)}
+                                     onClick={(e) => {
+                                       e.preventDefault();
+                                       e.stopPropagation();
+                                       toggleSubject(course.id, subject.id);
+                                     }}
+                                     className={`${dropdownTheme.overlay.item(isSelected, isLimitReached)} cursor-pointer touch-manipulation`}
                                    >
-                                     {subject.name}
-                                     {isSelected && <CheckIcon className="h-4 w-4" />}
+                                     <span className="truncate">{subject.name}</span>
+                                     {isSelected && <CheckIcon className="h-4 w-4 flex-shrink-0 ml-2" />}
                                    </button>
                                  );
                                })}
