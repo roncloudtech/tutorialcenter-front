@@ -2,7 +2,7 @@ import StaffSidebar from "./Sidebar.jsx";
 import { useState } from "react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-export default function StaffMobileHeader() {
+export default function StaffMobileHeader({ pagetitle, hideTitle = false, hideBell = false }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -38,11 +38,23 @@ export default function StaffMobileHeader() {
           )}
         </button>
 
-        <h1 className="text-sm font-semibold tracking-wide">STAFF DASHBOARD</h1>
+        {!hideTitle && (
+          <h1 className="text-sm font-semibold tracking-wide">
+            {pagetitle || "STAFF DASHBOARD"}
+          </h1>
+        )}
 
-        <BellIcon className="w-6 h-6" />
+        {!hideBell ? (
+          <div className="relative">
+            <button className="relative p-1 focus:outline-none pointer-events-auto">
+              <BellIcon className="w-6 h-6" />
+              <span className="absolute top-1 right-1 pointer-events-none w-2 h-2 bg-[#E83831] rounded-full border border-[#09314F]"></span>
+            </button>
+          </div>
+        ) : (
+          <div className="w-6 h-6" />
+        )}
       </header>
     </>
   );
 }
-
