@@ -9,7 +9,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Icon } from "@iconify/react";
 
-export default function TutorMasterClass() {
+export default function CourseAdvisorMasterClass() {
   const [scheduleData, setScheduleData] = useState({
     next_class: null,
     today_classes: [],
@@ -20,24 +20,24 @@ export default function TutorMasterClass() {
   const [searchQuery, setSearchQuery] = useState("");
   const [toast, setToast] = useState(null);
   const [selectedSession, setSelectedSession] = useState(null);
+  const [videoLink, setVideoLink] = useState("");
+  const [saveLoading, setSaveLoading] = useState(false);
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
-  const staffName = localStorage.getItem("staff_name") || "Tutor";
-  const staffRole = localStorage.getItem("staff_role") || "Tutor";
   const token = localStorage.getItem("staff_token");
 
   // --- FETCHING LOGIC ---
   const fetchSessions = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/tutor/classes/schedule`, {
+      const response = await axios.get(`${API_BASE_URL}/api/advisor/classes/schedule`, {
         headers: { 
           "Authorization": `Bearer ${token}`,
           "Accept": "application/json"
         }
       });
       
-      console.log("Full Tiered API Response:", response.data);
+      console.log("Advisor Master Class API Response:", response.data);
       const data = response.data || {};
       
       setScheduleData({
@@ -76,7 +76,7 @@ export default function TutorMasterClass() {
   };
 
   const getInitials = (title) => {
-    if (!title) return "ME";
+    if (!title) return "MC";
     return title.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
   };
 
@@ -102,8 +102,34 @@ export default function TutorMasterClass() {
   }, [scheduleData, searchQuery]);
 
   // --- ACTIONS ---
+  const handleSaveVideoLink = async () => {
+    if (!selectedSession) return;
+    setSaveLoading(true);
+    try {
+      await axios.post(`${API_BASE_URL}/api/classes/session/recording`, {
+        session_id: selectedSession.id, // Or class_id if that's what the endpoint expects
+        recording_link: videoLink
+      }, {
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/json" 
+        }
+      });
+      
+      setToast({ type: "success", message: "Recording frequency updated successfully!" });
+      setSelectedSession(null);
+      fetchSessions();
+    } catch (error) {
+      console.error("Save error:", error);
+      setToast({ type: "error", message: "Failed to update recording link." });
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
   const openModal = (session) => {
     setSelectedSession(session);
+    setVideoLink(session.recording_link || "");
   };
 
   // --- UI COMPONENTS ---
@@ -163,7 +189,7 @@ export default function TutorMasterClass() {
   };
 
   return (
-    <StaffDashboardLayout>
+    <StaffDashboardLayout pagetitle="Master Class">
       {toast && (
         <div className={`fixed top-8 left-1/2 -translate-x-1/2 z-[100] px-6 py-3 rounded-2xl shadow-2xl text-white font-bold text-sm ${toast.type === "success" ? "bg-[#10B981]" : "bg-[#EF4444] animate-bounce"}`}>
           {toast.message}
@@ -196,11 +222,10 @@ export default function TutorMasterClass() {
         {loading ? (
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#0F2843] mx-auto" />
-            <p className="mt-4 text-slate-400 font-bold">Refining your schedule...</p>
+            <p className="mt-4 text-slate-400 font-bold">Refining schedule...</p>
           </div>
         ) : (
           <div className="space-y-4">
-            {/* Next Class - Special Focus */}
             {filteredData.next_class && (
               <div className="mb-12">
                 <h3 className="text-[11px] font-black text-amber-500 mb-5 px-4 uppercase tracking-[0.25em]">Next Up</h3>
@@ -214,7 +239,6 @@ export default function TutorMasterClass() {
             <Section title="This Week" sessions={filteredData.week_schedule} />
             <Section title="Upcoming" sessions={filteredData.upcoming_sessions} />
 
-            {/* Empty State */}
             {!filteredData.next_class && 
              filteredData.today_classes.length === 0 && 
              Object.keys(filteredData.week_schedule).length === 0 && 
@@ -228,7 +252,6 @@ export default function TutorMasterClass() {
         )}
       </div>
 
-      {/* Details Modal */}
       {selectedSession && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setSelectedSession(null)} />
@@ -237,21 +260,21 @@ export default function TutorMasterClass() {
             
             <div className="space-y-6">
               <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
-                <p className="text-[15px] font-bold text-slate-700">
-                  {staffRole} - {staffName}
+                <p className="text-[15px] font-bold text-slate-700 uppercase tracking-tighter">
+                  Manage Class Recording
                 </p>
               </div>
 
               <div className="flex items-center gap-4 text-slate-600">
                 <CalendarIcon className="w-5 h-5 shrink-0" />
                 <span className="text-[14px] font-bold uppercase tracking-tight">
-                  {new Date(selectedSession.session_date).toLocaleDateString("en-US", { weekday: 'short' })}, {formatDate(selectedSession.session_date)} / {formatTime(selectedSession.starts_at).toUpperCase()}
+                  {formatDate(selectedSession.session_date)} / {formatTime(selectedSession.starts_at).toUpperCase()}
                 </span>
               </div>
 
               <div className="flex items-center gap-4 text-slate-600">
                 <div className="w-5 h-5 bg-[#C5A97A] rounded shrink-0" />
-                <span className="text-[14px] font-bold">
+                <span className="text-[14px] font-bold truncate">
                   {selectedSession.class?.title}
                 </span>
               </div>
@@ -268,31 +291,33 @@ export default function TutorMasterClass() {
                 </a>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 relative mt-4">
                 <VideoCameraIcon className="w-5 h-5 text-slate-400 shrink-0" />
                 <div className="flex-1">
-                  {selectedSession.recording_link ? (
-                    <a 
-                      href={selectedSession.recording_link} 
-                      target="_blank" 
-                      rel="noreferrer"
-                      className="text-[14px] font-bold text-green-500 underline underline-offset-4 decoration-dotted truncate"
-                    >
-                      Watch Recording
-                    </a>
-                  ) : (
-                    <span className="text-[14px] font-medium text-slate-300 italic">No recording available</span>
-                  )}
+                  <input
+                    type="url"
+                    placeholder="Add Video Link"
+                    value={videoLink}
+                    onChange={(e) => setVideoLink(e.target.value)}
+                    className="w-full bg-slate-100 border-none rounded-2xl py-4 px-6 text-[14px] font-medium focus:ring-2 focus:ring-[#0F2843] transition-all"
+                  />
                 </div>
               </div>
             </div>
 
-            <div className="mt-10">
+            <div className="flex items-center gap-4 mt-10">
               <button 
                 onClick={() => setSelectedSession(null)}
-                className="w-full py-4 bg-[#0F2843] text-white font-bold rounded-2xl hover:bg-[#1a3d5c] transition-all active:scale-95 shadow-lg shadow-slate-200 uppercase text-[11px] tracking-widest"
+                className="flex-1 py-4 bg-[#EF4444] text-white font-bold rounded-2xl hover:bg-red-600 transition-all active:scale-95 shadow-lg shadow-red-100 uppercase text-[11px] tracking-widest"
               >
-                Close
+                Cancel
+              </button>
+              <button 
+                onClick={handleSaveVideoLink}
+                disabled={saveLoading}
+                className="flex-1 py-4 bg-[#0F2843] text-white font-bold rounded-2xl hover:bg-[#1a3d5c] transition-all active:scale-95 shadow-lg shadow-slate-200 disabled:opacity-50 uppercase text-[11px] tracking-widest"
+              >
+                {saveLoading ? "Saving..." : "Save"}
               </button>
             </div>
           </div>

@@ -50,12 +50,12 @@ export default function SettingsSidebar({ collapsed, setCollapsed }) {
       {!collapsed && (
         <div className="h-full overflow-y-auto px-6 py-8 flex flex-col items-center">
           {/* Profile Picture */}
-          <div className="w-full relative rounded-[20px] overflow-hidden aspect-[4/3] bg-gray-200 shadow-sm mb-4 border-2 border-transparent hover:border-gray-300 transition-all">
+          <div className="w-full flex-shrink-0 relative rounded-[20px] overflow-hidden aspect-[4/5] bg-gray-200 shadow-sm mb-4 border-2 border-transparent hover:border-gray-300 transition-all">
             {student?.profile_picture ? (
               <img
                 src={`${API_BASE_URL}/storage/${student.profile_picture}`}
                 alt="Profile"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-top"
               />
             ) : (
               <div className="w-full h-full flex flex-col justify-center items-center text-gray-400 bg-gray-50">

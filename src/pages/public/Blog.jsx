@@ -121,7 +121,7 @@ const Blog = () => {
 
         {/* ── FEATURED POST + GRID SECTION ── */}
         <section className="w-full bg-white rounded-b-[80px] md:rounded-b-[180px] overflow-hidden pb-24 font-sans">
-          <div className="max-w-7xl mx-auto px-4 md:px-8 py-14">
+          <div className="Container py-14">
 
             {/* Featured Post */}
             <div className="mb-10">

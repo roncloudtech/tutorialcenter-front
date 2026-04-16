@@ -28,19 +28,24 @@ import { StudentTrainingDuration } from "./pages/public/StudentSignUp/StudentTra
 import { StudentTrainingPayment } from "./pages/public/StudentSignUp/StudentTrainingPayment.jsx";
 import StudentLogin from "./pages/public/StudentLogin.jsx";
 import StudentDashboard from "./pages/Students/StudentDashboard.jsx";
+import StudentNotifications from "./pages/Students/StudentNotifications.jsx";
+import StudentPaymentDisplay from "./pages/Students/StudentPaymentDisplay.jsx";
 import StudentClassSchedule from "./pages/Students/StudentClassSchedule.jsx";
 import ComingSoon from "./pages/public/ComingSoon.jsx";
 import Unauthorized from "./pages/public/Unauthorized.jsx";
 import NotFound from "./pages/public/NotFound.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import StaffLogin from "./pages/public/StaffLogin.jsx";
-import StudentCalendar from "./pages/Students/StudentCalendar.jsx";
 import StaffDashboard from "./pages/staffs/admin/StaffDashboard.jsx";
 import StaffRegistration from "./pages/staffs/admin/StaffRegistration.jsx"
 import StaffManagement from "./pages/staffs/admin/StaffManagement.jsx";
 import TutorDashboard from "./pages/staffs/tutor/TutorDashboard.jsx";
-import TutorStudentManagement from "./pages/staffs/tutor/TutorStudentManagement.jsx";
 import TutorMasterClass from "./pages/staffs/tutor/TutorMasterClass.jsx";
+import CourseAdvisorDashboard from "./pages/staffs/courseadvisor/CourseAdvisorDashboard.jsx";
+import CourseAdvisorStudentManagement from "./pages/staffs/courseadvisor/CourseAdvisorStudentManagement.jsx";
+import CourseAdvisorGuardianManagement from "./pages/staffs/courseadvisor/CourseAdvisorGuardianManagement.jsx";
+import CourseAdvisorComingSoon from "./pages/staffs/courseadvisor/CourseAdvisorComingSoon.jsx";
+import CourseAdvisorMasterClass from "./pages/staffs/courseadvisor/CourseAdvisorMasterClass.jsx";
 import StaffMasterClassList from "./pages/staffs/admin/StaffMasterClassList.jsx";
 import CoursesManagement from "./pages/staffs/admin/CoursesManagement.jsx";
 import StudentPaymentHistory from "./pages/Students/StudentPaymentDisplay.jsx";
@@ -96,7 +101,8 @@ function App() {
         <Route element={<ProtectedRoute />}>
           {/* Student Routes */}
           <Route path="/student/dashboard" element={<StudentDashboard />} />
-          <Route path="/student/calendar" element={<StudentCalendar />} />
+          <Route path="/student/notifications" element={<StudentNotifications />} />
+          <Route path="/student/payments" element={<StudentPaymentDisplay />} />
           <Route path="/student/payment-history" element={<StudentPaymentHistory />} />
           <Route path="/student/class-schedule" element={<StudentClassSchedule />} />
           <Route path="/student/meet" element={<StudentMeetWrapper />} />
@@ -107,8 +113,14 @@ function App() {
           {/* Staff Routes */}
           <Route path="/staffs/dashboard" element={<StaffDashboard />} />
           <Route path="/staffs/tutor/dashboard" element={<TutorDashboard />} />
-          <Route path="/staffs/tutor/students" element={<TutorStudentManagement />} />
           <Route path="/staffs/tutor/master-class" element={<TutorMasterClass />} />
+          <Route path="/staffs/course-advisor/dashboard" element={<CourseAdvisorDashboard />} />
+          <Route path="/staffs/course-advisor/students" element={<CourseAdvisorStudentManagement />} />
+          <Route path="/staffs/course-advisor/guardians" element={<CourseAdvisorGuardianManagement />} />
+          <Route path="/staffs/course-advisor/master-class" element={<CourseAdvisorMasterClass />} />
+          <Route path="/staffs/course-advisor/calendar" element={<CourseAdvisorComingSoon title="Calendar" />} />
+          <Route path="/staffs/course-advisor/exams" element={<CourseAdvisorComingSoon title="Exams" />} />
+          <Route path="/staffs/course-advisor/settings" element={<CourseAdvisorComingSoon title="Settings" />} />
           <Route path="/staffs/staff-registration" element={<StaffRegistration />} />
           <Route path="/staffs/manage-staffs" element={<StaffManagement />} />
           <Route path="/staffs/master-class" element={<StaffMasterClassList />} />

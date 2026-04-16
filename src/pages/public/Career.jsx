@@ -33,7 +33,7 @@ const Career = () => {
       {/* --- GLOBAL GRADIENT BACKGROUND WRAPPER --- */}
       <div className="bg-gradient-to-r from-[#09314F] to-[#E83831]">
         <div className="w-full bg-white py-16">
-          <div className="max-w-7xl mx-auto px-6 relative lg:px-8 2xl:px-9">
+          <div className="Container">
             <div className="text-sm">
               <h2 className="text-2xl md:text-4xl font-bold text-primary leading-tight mb-8 max-w-sm uppercase">
                 Meet the team work behind our success
@@ -158,7 +158,7 @@ const Career = () => {
           />
 
           {/* 2. CONTENT AREA */}
-          <div className="max-w-7xl mx-auto px-6 mt-20 flex flex-col md:flex-row items-start gap-16">
+          <div className="Container mt-20 flex flex-col md:flex-row items-start gap-16">
             {/* Left Side: Requirements and Positions */}
             <div className="w-full md:w-1/2">
               <div className="mb-10">
@@ -236,7 +236,7 @@ const Career = () => {
           />
 
           {/* 2. CONTENT AREA */}
-          <div className="max-w-7xl mx-auto px-6 mt-20 flex flex-col md:flex-row items-center gap-16">
+          <div className="Container mt-20 flex flex-col md:flex-row items-center gap-16">
             {/* Featured Image */}
             <div className="w-full md:w-1/2 order-2 md:order-1">
               <div className="w-full max-w-[500px] h-[400px] md:h-[500px] rounded-[50px] overflow-hidden shadow-2xl  border-white ring-1 ring-gray-100">
@@ -300,7 +300,7 @@ const Career = () => {
           />
 
           {/* 2. CONTENT AREA */}
-          <div className="max-w-7xl mx-auto px-6 mt-20 flex flex-col md:flex-row items-center gap-16">
+          <div className="Container mt-20 flex flex-col md:flex-row items-center gap-16">
             {/* Left Side: Text */}
             <div className="w-full md:w-1/2">
               <div className="mb-10">

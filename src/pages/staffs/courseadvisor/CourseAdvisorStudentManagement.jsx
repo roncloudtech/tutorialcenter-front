@@ -5,14 +5,13 @@ import {
   MagnifyingGlassIcon, 
   ChevronLeftIcon, 
   ChevronRightIcon,
-  BellIcon,
   UserGroupIcon as UserGroupOutline,
   ChartBarIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon
 } from "@heroicons/react/24/outline";
 
-export default function TutorStudentManagement() {
+export default function CourseAdvisorStudentManagement() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(5);
 
@@ -40,18 +39,9 @@ export default function TutorStudentManagement() {
   };
 
   return (
-    <StaffDashboardLayout>
+    <StaffDashboardLayout pagetitle="Student Management">
       <div className="p-6 max-w-6xl mx-auto w-full min-h-screen bg-[#F8F9FA]">
         
-        {/* Header Section */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-black text-[#0F2843] tracking-tighter uppercase">Students</h1>
-          <button className="relative p-2 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all">
-            <BellIcon className="w-6 h-6 text-[#0F2843]" />
-            <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-[#E83831] border-2 border-white rounded-full" />
-          </button>
-        </div>
-
         {/* Info Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {stats.map((stat, idx) => (

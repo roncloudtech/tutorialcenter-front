@@ -39,10 +39,19 @@ const tutorMenuItems = [
   { label: "Dashboard", icon: HomeIcon, destination: "/staffs/tutor/dashboard" },
   { label: "Master Class", icon: AcademicCapIcon, destination: "/staffs/tutor/master-class" },
   { label: "Calendar", icon: CalendarDaysIcon },
-  { label: "Courses", icon: BookOpenIcon },
-  { label: "Assessment", icon: ClipboardDocumentListIcon },
-  { label: "Exams", icon: ClipboardDocumentCheckIcon },
-  { label: "Settings", icon: Cog6ToothIcon },
+  { label: "Assessment", icon: ClipboardDocumentListIcon, destination: "/staffs/tutor/assessment" },
+  { label: "Exams", icon: ClipboardDocumentCheckIcon, destination: "/staffs/tutor/exams" },
+  { label: "Settings", icon: Cog6ToothIcon, destination: "/staffs/tutor/settings" },
+];
+
+const courseAdvisorMenuItems = [
+  { label: "Dashboard", icon: HomeIcon, destination: "/staffs/course-advisor/dashboard" },
+  { label: "Manage Students", icon: UserGroupIcon, destination: "/staffs/course-advisor/students" },
+  { label: "Manage Guardian", icon: ShieldCheckIcon, destination: "/staffs/course-advisor/guardians" },
+  { label: "Master Class", icon: AcademicCapIcon, destination: "/staffs/course-advisor/master-class" },
+  { label: "Calendar", icon: CalendarDaysIcon, destination: "/staffs/course-advisor/calendar" },
+  { label: "Exams", icon: ClipboardDocumentCheckIcon, destination: "/staffs/course-advisor/exams" },
+  { label: "Settings", icon: Cog6ToothIcon, destination: "/staffs/course-advisor/settings" },
 ];
 
 export default function StaffSidebar({ collapsed, setCollapsed, isOpen, onClose }) {
@@ -106,7 +115,14 @@ export default function StaffSidebar({ collapsed, setCollapsed, isOpen, onClose 
     window.location.href = "/staff/login";
   };
 
-  const menuItems = staffRole.toLowerCase() === "tutor" ? tutorMenuItems : adminMenuItems;
+  const getMenuItems = () => {
+    const roleLower = staffRole.toLowerCase();
+    if (roleLower === "tutor") return tutorMenuItems;
+    if (roleLower === "course advisor" || roleLower === "advisor") return courseAdvisorMenuItems;
+    return adminMenuItems;
+  };
+
+  const menuItems = getMenuItems();
 
   return (
     <>

@@ -1,11 +1,36 @@
 import Sidebar from "./Sidebar.jsx";
 import { useState } from "react";
+import axios from "axios";
+import { useEffect, useCallback } from "react";
+import { useAuth } from "../../../context/AuthContext";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import NotificationsDropdown from "./NotificationsDropdown";
 
 export default function MobileHeader({ pagetitle, hideTitle = false, hideBell = false }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const { token } = useAuth();
+
+  const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
+
+  const fetchUnreadCount = useCallback(async () => {
+    if (!token) return;
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/notifications/unread-count`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUnreadCount(response.data.unread_count || 0);
+    } catch (error) {
+      console.error("Failed to fetch unread count:", error);
+    }
+  }, [API_BASE_URL, token]);
+
+  useEffect(() => {
+    fetchUnreadCount();
+    window.addEventListener('updateUnreadCount', fetchUnreadCount);
+    return () => window.removeEventListener('updateUnreadCount', fetchUnreadCount);
+  }, [fetchUnreadCount]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(prev => !prev);
@@ -53,9 +78,17 @@ export default function MobileHeader({ pagetitle, hideTitle = false, hideBell = 
               className="relative p-1 focus:outline-none pointer-events-auto"
             >
               <BellIcon className="w-6 h-6" />
-              <span className="absolute top-1 right-1 pointer-events-none w-2 h-2 bg-[#E83831] rounded-full border border-[#09314F]"></span>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-4.5 bg-[#E83831] rounded-full border border-[#09314F] shadow-sm flex items-center justify-center px-1">
+                  <span className="text-[9px] font-black text-white">{unreadCount > 99 ? "99+" : unreadCount}</span>
+                </span>
+              )}
             </button>
-            <NotificationsDropdown isOpen={isNotificationsOpen} onClose={() => setIsNotificationsOpen(false)} />
+            <NotificationsDropdown 
+              isOpen={isNotificationsOpen} 
+              onClose={() => setIsNotificationsOpen(false)} 
+              onUpdate={fetchUnreadCount}
+            />
           </div>
         ) : (
           <div className="w-6 h-6" /> // Empty placeholder to keep flex spacing

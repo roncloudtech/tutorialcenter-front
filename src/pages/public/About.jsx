@@ -39,7 +39,7 @@ const About = () => {
 
         {/* introduction section */}
         <div className="w-full bg-white py-16">
-          <div className="max-w-7xl mx-auto px-6 relative lg:px-8 2xl:px-9 mt-11">
+          <div className="Container mt-11">
             <div className="area-wrapper text-sm">
               <div className="grid sm:grid-cols-12 gap-3">
                 <div className="column col-span-5">
@@ -137,7 +137,7 @@ const About = () => {
         {/* What we Provide */}
         <div className="bg-white">
           <SectionHeading title="We provide" position_right={true} fullWidth={true} />
-          <div className="max-w-7xl mx-auto px-6 lg:px-8 2xl:px-9 py-14 lg:py-16">
+          <div className="Container py-14 lg:py-16">
             <div className="area-wrapper">
               <div className="text-center mb-8">
                 <p>

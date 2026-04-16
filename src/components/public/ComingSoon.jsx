@@ -41,7 +41,7 @@ const ComingSoon = ({ onBack }) => {
         </h1>
         <div className="w-24 h-1 bg-white mt-4 rounded-full mb-4 shadow-lg"></div>
         <p className="text-gray-200 text-lg md:text-xl font-medium max-w-lg drop-shadow-md">
-           We're working hard to bring the Guardian experience to life. Stay tuned!
+           We're working hard to bring this page to existence
         </p>
       </div>
 
