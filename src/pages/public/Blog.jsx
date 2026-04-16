@@ -120,7 +120,7 @@ const Blog = () => {
       <div className="bg-gradient-to-r from-[#09314F] to-[#E83831]">
 
         {/* ── FEATURED POST + GRID SECTION ── */}
-        <section className="w-full bg-white rounded-b-[80px] md:rounded-b-[180px] overflow-hidden pb-24 font-sans">
+        <section className="w-full bg-white rounded-b-[40px] overflow-hidden pb-24 font-sans">
           <div className="Container py-14">
 
             {/* Featured Post */}

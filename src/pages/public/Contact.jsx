@@ -29,7 +29,7 @@ const Contact = () => {
 
       {/* --- GLOBAL GRADIENT BACKGROUND WRAPPER --- */}
       <div className="bg-gradient-to-r from-[#09314F] to-[#E83831]">
-        <div className="bg-white pt-10 pb-16 rounded-b-[80px] md:rounded-b-[180px] overflow-hidden">
+        <div className="bg-white pt-10 pb-16 rounded-b-[40px] overflow-hidden">
 
           <ContactSection showTitle={false} />
 
