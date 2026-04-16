@@ -1,5 +1,6 @@
 import About from "./pages/public/About.jsx";
 import Home from "./pages/public/Home.jsx";
+import Contact from "./pages/public/Contact.jsx";
 import Career from "./pages/public/Career.jsx";
 import Blog from "./pages/public/Blog.jsx";
 import Login from "./pages/public/StudentLogin.jsx";
@@ -66,6 +67,8 @@ function App() {
         <Route path="*" element={<NotFound />} />
         <Route path="/login" element={<Login />} />
         <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/career" element={<Career/>} />
         <Route path="/career" element={<Career />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/register" element={<SignUp />} />
