@@ -1,13 +1,21 @@
 import SectionHeading from "./SectionHeading.jsx";
 import { Link } from "react-router-dom";
 
-const ContactSection = () => {
+const ContactSection = ({ showTitle = true }) => {
 
     return (
         <>
             <div className="relative w-full h-full top-7 z-50 rounded-b-[40px] bg-white">
-                <SectionHeading title={"contact us"} position_right={true} fullWidth={true} />
-                <div className="h-7" />
+                {showTitle && (
+                    <div>
+                        <SectionHeading
+                            title={"contact us"}
+                            position_right={true}
+                            fullWidth={true}
+                        />
+                        <div className="h-7" />
+                    </div>
+                )}
                 <div className="w-full">
                     <div className="Container !overflow-visible">
                         <div className="area-wrapper ">
@@ -57,9 +65,9 @@ const ContactSection = () => {
                                         <input type="text" placeholder="Email" aria-label="input your email" />
                                         <div className="mt-4">
                                             <textarea
-                                            placeholder="Message"
-                                            rows={3}
-                                            className="shadow w-full rounded-lg p-2 border border-[#94A3B8]"
+                                                placeholder="Message"
+                                                rows={3}
+                                                className="shadow w-full rounded-lg p-2 border border-[#94A3B8]"
                                             />
                                         </div>
                                         <div className="flex justify-end mt-5">
