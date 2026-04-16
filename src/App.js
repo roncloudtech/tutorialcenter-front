@@ -32,6 +32,7 @@ import StudentDashboard from "./pages/Students/StudentDashboard.jsx";
 import StudentNotifications from "./pages/Students/StudentNotifications.jsx";
 import StudentPaymentDisplay from "./pages/Students/StudentPaymentDisplay.jsx";
 import StudentClassSchedule from "./pages/Students/StudentClassSchedule.jsx";
+import StudentCalendar from "./pages/Students/StudentCalendar.jsx";
 import ComingSoon from "./pages/public/ComingSoon.jsx";
 import Unauthorized from "./pages/public/Unauthorized.jsx";
 import NotFound from "./pages/public/NotFound.jsx";
@@ -68,6 +69,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/career" element={<Career/>} />
+        <Route path="/career" element={<Career />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/register" element={<SignUp />} />
         <Route path="/comingsoon" element={<ComingSoon />} />
@@ -107,6 +109,7 @@ function App() {
           <Route path="/student/payments" element={<StudentPaymentDisplay />} />
           <Route path="/student/payment-history" element={<StudentPaymentHistory />} />
           <Route path="/student/class-schedule" element={<StudentClassSchedule />} />
+          <Route path="/student/calendar" element={<StudentCalendar />} />
           <Route path="/student/meet" element={<StudentMeetWrapper />} />
           <Route path="/student/settings" element={<StudentSettings />} />
           <Route path="/student/recorded-classes" element={<RecordedClasses />} />
