@@ -136,7 +136,7 @@ const About = () => {
 
         {/* What we Provide */}
         <div className="bg-white">
-          <SectionHeading title="We provide" position_right={true} fullWidth={true} />
+          <SectionHeading title="What We provide" position_right={true} fullWidth={true} />
           <div className="Container py-14 lg:py-16">
             <div className="area-wrapper">
               <div className="text-center mb-8">
