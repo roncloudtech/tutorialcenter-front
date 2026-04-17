@@ -34,7 +34,6 @@ export default function NotificationsDropdown({ isOpen, onClose, onUpdate }) {
         const response = await axios.get(`${API_BASE_URL}/api/notifications`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        console.log("Notifications API Response:", response.data);
         const resData = response.data;
         // Handle Laravel pagination (resData.data) or flat array
         const notificationList = resData?.data && Array.isArray(resData.data) 

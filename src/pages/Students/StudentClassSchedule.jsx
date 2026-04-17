@@ -3,7 +3,6 @@ import axios from "axios";
 import DashboardLayout from "../../components/private/Students/DashboardLayout";
 import { useAuth } from "../../context/AuthContext";
 import { 
-  BellIcon, 
   MagnifyingGlassIcon, 
   CalendarIcon, 
   ClockIcon, 
@@ -392,27 +391,13 @@ export default function StudentClassSchedule() {
 
   return (
     <DashboardLayout 
-      pagetitle="Class Schedule" 
-      hideHeader={true}
+      pagetitle="Master Class" 
+      hideHeader={false}
       hideMobileTitle={false}
       hideMobileBell={false}
     >
       <div className="max-w-[1600px] xl:px-10 mx-auto w-full min-h-screen">
         
-        {/* ========= Header Section ========= 
-           This page has a custom header for desktop. We'll hide it on mobile. */}
-        <div className="hidden md:flex items-center justify-between mb-10">
-          <h1 className="text-[42px] font-black text-[#09314F] dark:text-white tracking-tighter leading-none italic uppercase">
-            MASTER <span className="text-[#BB9E7F] not-italic">CLASS</span>
-          </h1>
-          
-          <div className="flex items-center gap-4">
-            <div className="relative p-3 bg-white rounded-2xl shadow-sm border border-gray-100 cursor-pointer hover:bg-gray-50 transition-all">
-              <BellIcon className="w-7 h-7 text-[#09314F]" />
-              <span className="absolute top-3.5 right-3.5 w-3 h-3 bg-[#E83831] rounded-full border-2 border-white shadow-sm"></span>
-            </div>
-          </div>
-        </div>
 
         {/* ========= Featured Next Class ========= */}
         {scheduleData.next_class && (

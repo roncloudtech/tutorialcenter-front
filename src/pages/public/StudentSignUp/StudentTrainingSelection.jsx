@@ -4,6 +4,8 @@ import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import otp_img_student from "../../../assets/images/otpStudentpic.jpg";
 import axios from "axios";
 
+import TC_logo from "../../../assets/images/tutorial_logo.png";
+
 // Module-level constant — avoids causing useEffect to re-run on every render
 const API_BASE_URL =
   process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
@@ -14,8 +16,6 @@ export default function StudentTrainingSelection() {
   const [courses, setCourses] = useState([]);
   const [examError, setExamError] = useState(false);
   const [selectedTraining, setSelectedTraining] = useState([]);
-
-
 
   /* ================= FETCH COURSES ================= */
   useEffect(() => {
@@ -125,6 +125,20 @@ export default function StudentTrainingSelection() {
       {/* FORM SECTION */}
       <div className="w-full md:w-1/2 h-full flex flex-col px-6 py-10 lg:px-[100px] lg:py-[60px] order-2 md:order-1 overflow-y-auto">
         <div className="w-full max-w-[500px] mx-auto my-auto flex flex-col">
+
+          {/* LOGO */}
+          <div className="flex justify-center mb-8">
+            <img 
+              src={TC_logo} 
+              alt="Logo" 
+              className="h-20 w-auto object-contain cursor-pointer transition-transform hover:scale-105 active:scale-95" 
+              onClick={() => {
+                if (window.confirm("Returning to the home page will clear your progress. Are you sure?")) {
+                  navigate("/");
+                }
+              }}
+            />
+          </div>
 
           {/* HEADER */}
           <div className="relative w-full flex items-center justify-center mb-6 mt-4 pointer-events-none z-50">

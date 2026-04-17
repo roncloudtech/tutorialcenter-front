@@ -26,3 +26,6 @@ yarn-error.log*
 src/pages/public/GuardianSignup/GuardianAddStudentStudyTrack.jsx
 src/pages/staffs/Masterclass Study
 study_file.md
+study_guide.md
+study_folder/
+.vscode/

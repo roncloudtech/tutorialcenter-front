@@ -46,8 +46,15 @@ export default function DashboardLayout({
 
   useEffect(() => {
     fetchUnreadCount();
+    
+    const toggleHandler = () => setIsNotificationsOpen(prev => !prev);
+    window.addEventListener('toggleNotifications', toggleHandler);
     window.addEventListener('updateUnreadCount', fetchUnreadCount);
-    return () => window.removeEventListener('updateUnreadCount', fetchUnreadCount);
+    
+    return () => {
+      window.removeEventListener('toggleNotifications', toggleHandler);
+      window.removeEventListener('updateUnreadCount', fetchUnreadCount);
+    };
   }, [fetchUnreadCount]);
 
   // Default to the standard RightPanel if no custom one is provided

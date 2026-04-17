@@ -184,6 +184,20 @@ export const StudentTrainingPayment = () => {
       {/* LEFT */}
       <div className="w-full md:w-1/2 bg-[#F8F9FA] flex flex-col items-center py-8 px-6 lg:px-8 xl:px-[100px] overflow-y-auto pb-32 order-2 md:order-1">
         
+        {/* LOGO */}
+        <div className="flex justify-center mb-8">
+          <img 
+            src={TC_logo} 
+            alt="Logo" 
+            className="h-20 w-auto object-contain cursor-pointer transition-transform hover:scale-105 active:scale-95" 
+            onClick={() => {
+              if (window.confirm("Returning to the home page will clear your progress. Are you sure?")) {
+                navigate("/");
+              }
+            }}
+          />
+        </div>
+
         {/* NAV & HEADER */}
         <div className="w-full max-w-[500px] mb-10 text-center">
           <div className="flex items-center relative h-12 mb-6 pointer-events-none z-50">
@@ -256,8 +270,17 @@ export const StudentTrainingPayment = () => {
         </div>
 
         {/* Brand */}
-        <div className="mt-auto py-10 opacity-30 grayscale pointer-events-none">
-          <img src={TC_logo} alt="Tutorial Center" className="h-10" />
+        <div className="mt-auto py-10 opacity-60 grayscale hover:grayscale-0 transition-all cursor-pointer">
+          <img 
+            src={TC_logo} 
+            alt="Tutorial Center" 
+            className="h-10 hover:scale-110 active:scale-95 transition-transform" 
+            onClick={() => {
+              if (window.confirm("Returning to the home page will clear your progress. Are you sure?")) {
+                navigate("/");
+              }
+            }}
+          />
         </div>
       </div>
 

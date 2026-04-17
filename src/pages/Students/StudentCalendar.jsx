@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useState, useMemo, useCallback, useRef } fr
 import { useAuth } from "../../context/AuthContext";
 import DashboardLayout from "../../components/private/Students/DashboardLayout.jsx";
 import axios from "axios";
-import { BellIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import {ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
 const DAYS_OF_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const HOUR_START = 0; // 12 AM
@@ -15,7 +15,7 @@ export default function StudentCalendar() {
 
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState("week"); // "week" or "day"
+  const [viewMode] = useState("week"); // "week" or "day"
   const [dateOffset, setDateOffset] = useState(0); // number of days from today
   const [selectedSession, setSelectedSession] = useState(null);
   
@@ -152,41 +152,11 @@ export default function StudentCalendar() {
   return (
     <DashboardLayout 
       pagetitle="Calendar" 
-      hideHeader={true}
+      hideHeader={false}
       hideMobileTitle={false}
       hideMobileBell={false}
     >
-      <div className="max-w-7xl mx-auto w-full min-h-screen">
-
-        {/* ====== Header ====== */}
-        <div className="hidden md:flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 px-4 md:px-0">
-          <h1 className="text-[28px] md:text-[32px] lg:text-[36px] xl:text-[42px] font-black text-[#09314F] dark:text-white tracking-tighter leading-none uppercase truncate mr-2">
-            CALENDAR
-          </h1>
-          
-          <div className="flex items-center gap-2 md:gap-4 shrink-0">
-            {/* View Toggle */}
-            <div className="flex bg-gray-100 dark:bg-[#09314F]/80 p-1 rounded-xl border border-gray-200 dark:border-[#09314F] mr-2">
-              <button
-                onClick={() => setViewMode("week")}
-                className={`px-4 py-2 rounded-lg text-xs font-black uppercase transition-all ${viewMode === "week" ? "bg-white dark:bg-[#1a4a75] text-[#09314F] dark:text-white shadow-sm" : "text-gray-400 dark:text-blue-300 hover:text-gray-600 dark:hover:text-white"}`}
-              >
-                Week
-              </button>
-              <button
-                onClick={() => setViewMode("day")}
-                className={`px-4 py-2 rounded-lg text-xs font-black uppercase transition-all ${viewMode === "day" ? "bg-white dark:bg-[#1a4a75] text-[#09314F] dark:text-white shadow-sm" : "text-gray-400 dark:text-blue-300 hover:text-gray-600 dark:hover:text-white"}`}
-              >
-                Day
-              </button>
-            </div>
-
-            <div className="relative p-3 bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md rounded-2xl shadow-sm border border-gray-100 dark:border-[#09314F] cursor-pointer hover:bg-gray-50 dark:hover:bg-[#1a4a75] transition-all">
-              <BellIcon className="w-7 h-7 text-[#09314F] dark:text-white" />
-              <span className="absolute top-3.5 right-3.5 w-3 h-3 bg-[#E83831] rounded-full border-2 border-white shadow-sm"></span>
-            </div>
-          </div>
-        </div>
+      <div className="max-w-7xl mx-auto w-full min-h-screen px-4 md:px-0">
 
         {/* ====== Calendar Grid ====== */}
         <div ref={calendarRef} className="max-h-[85vh] overflow-y-auto relative bg-white dark:bg-[#09314F]/50 dark:backdrop-blur-md rounded-2xl md:rounded-3xl shadow-sm md:shadow-lg border border-gray-100 dark:border-[#09314F] overflow-hidden">

@@ -28,7 +28,6 @@ export default function StudentNotifications() {
       const response = await axios.get(`${API_BASE_URL}/api/notifications`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log("Notifications API Response:", response.data);
       const resData = response.data;
       // Handle Laravel pagination (resData.data) or flat array
       const notificationList = resData?.data && Array.isArray(resData.data) 
@@ -111,14 +110,9 @@ export default function StudentNotifications() {
       <div className="max-w-4xl mx-auto py-4">
         {/* Header Controls */}
         <div className="flex items-center justify-between mb-8 px-4">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-white dark:bg-[#09314F] rounded-2xl shadow-sm border border-gray-100 dark:border-[#1a4a75]">
-              <BellIcon className="w-6 h-6 text-[#09314F] dark:text-blue-400" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Notification Inbox</p>
-              <h2 className="text-xl font-black text-[#09314F] dark:text-white mt-0.5">Manage Updates</h2>
-            </div>
+          <div>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Inbox</p>
+            <h2 className="text-xl font-black text-[#09314F] dark:text-white mt-0.5">Your Updates</h2>
           </div>
           
           <button 

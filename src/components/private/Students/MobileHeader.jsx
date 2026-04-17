@@ -28,8 +28,15 @@ export default function MobileHeader({ pagetitle, hideTitle = false, hideBell = 
 
   useEffect(() => {
     fetchUnreadCount();
+    
+    const toggleHandler = () => setIsNotificationsOpen(prev => !prev);
+    window.addEventListener('toggleNotifications', toggleHandler);
     window.addEventListener('updateUnreadCount', fetchUnreadCount);
-    return () => window.removeEventListener('updateUnreadCount', fetchUnreadCount);
+    
+    return () => {
+      window.removeEventListener('toggleNotifications', toggleHandler);
+      window.removeEventListener('updateUnreadCount', fetchUnreadCount);
+    };
   }, [fetchUnreadCount]);
 
   const toggleSidebar = () => {

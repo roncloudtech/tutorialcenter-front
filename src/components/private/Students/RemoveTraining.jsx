@@ -66,13 +66,7 @@ export default function RemoveTraining({
 
   return (
     <>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-black text-[#0F2843] tracking-tighter uppercase">Payment</h1>
-        <button className="relative p-2 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all">
-          <BellIcon className="w-6 h-6 text-[#0F2843]" />
-          <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-[#E83831] border-2 border-white rounded-full" />
-        </button>
-      </div>
+      <div className="pt-4" />
 
       <button onClick={() => { setActiveView("main"); setSelectedToRemove(null); }} className="flex items-center gap-2 mb-8 group">
         <ChevronLeftIcon className="w-4 h-4 text-gray-500 group-hover:text-[#0F2843] transition-colors" />

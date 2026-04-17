@@ -95,7 +95,7 @@ export default function Sidebar({ collapsed, setCollapsed, isOpen, onClose }) {
           transition-all duration-300
           ${collapsed ? "w-20" : "w-64"}
           ${isOpen ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0 lg:translate-x-0 lg:opacity-100"}
-          lg:rounded-xl lg:shadow-2xl flex flex-col
+          lg:rounded-xl lg:shadow-2xl flex flex-col overflow-hidden
         `}
       >
         {/* Logo */}
@@ -134,8 +134,10 @@ export default function Sidebar({ collapsed, setCollapsed, isOpen, onClose }) {
           </button>
         </div>
 
-        {/* Avatar, Name, Menu & Footer */}
-        <div className={`flex flex-col flex-1 min-h-0 px-2 md:px-3 lg:px-4 overflow-y-auto custom-scrollbar ${collapsed ? "items-center" : ""}`}>
+        {/* Scrollable Content Area */}
+        <div className={`flex-1 overflow-y-auto overflow-x-hidden sidebar-scroll flex flex-col ${collapsed ? "items-center" : "px-3 md:px-4"}`}>
+          {/* Avatar & Name */}
+          <div className="flex flex-col min-h-0">
           <div className={`flex py-1 md:py-2 items-center ${collapsed ? "justify-center" : "gap-2 md:gap-3"}`}>
             {studentLoaded ? (
               <img
@@ -208,44 +210,46 @@ export default function Sidebar({ collapsed, setCollapsed, isOpen, onClose }) {
             })}
           </nav>
 
-          {/* Combined Footer - now part of the scroll flow */}
-          <div className="p-1 md:p-2 lg:p-3 pt-6 md:pt-8 lg:pt-10 mb-6 space-y-4 md:space-y-5 mt-auto">
-            {/* Theme Toggle */}
-            <div className={`flex items-center gap-2 ${collapsed ? "justify-center" : "justify-between px-2"}`}>
-              {!collapsed && (
-                <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
-                  {theme === "light" ? "Light Mode" : "Light"}
-                </span>
-              )}
-
-              <button
-                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-                className={`relative w-12 h-6 rounded-full transition-all duration-300 ${theme === "dark" ? "bg-blue-600" : "bg-gray-300"}`}
-              >
-                <span className={`absolute top-1 w-4 h-4 rounded-full shadow transition-all duration-300 flex items-center justify-center ${theme === "dark" ? "right-1 bg-white" : "left-1 bg-white"}`}>
-                  {theme === "light" ? (
-                    <SunIcon className="w-3 h-3 text-yellow-500" />
-                  ) : (
-                    <MoonIcon className="w-3 h-3 text-blue-300" />
-                  )}
-                </span>
+            {/* Mobile Footer */}
+            <div className="p-1 md:p-2 lg:p-3 pt-1 md:pt-2 lg:pt-3 space-y-3 md:space-y-3 lg:space-y-5 mt-auto lg:hidden border-t border-gray-100 dark:border-gray-800">
+              {/* Theme Toggle (Mobile) */}
+              <div className={`flex items-center gap-1 ${collapsed ? "justify-center" : "justify-between px-2"}`}>
+                {!collapsed && <span className="text-xs text-gray-500">Light</span>}
+                <button
+                  onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                  className={`relative w-12 h-6 rounded-full transition-all duration-300 ${theme === "dark" ? "bg-blue-900" : "bg-gray-300"}`}
+                >
+                  <span className={`absolute top-1 w-4 h-4 rounded-full shadow transition-all duration-300 flex items-center justify-center ${theme === "dark" ? "right-1 bg-gray-800" : "left-1 bg-white"}`}>
+                    {theme === "light" ? <SunIcon className="w-3 h-3 text-yellow-500" /> : <MoonIcon className="w-3 h-3 text-blue-300" />}
+                  </span>
+                </button>
+                {!collapsed && <span className="text-xs text-gray-500">Dark</span>}
+              </div>
+              <button onClick={logout} className="flex items-center justify-center gap-2 text-red-500 hover:text-red-600">
+                <ArrowRightOnRectangleIcon className="w-5 h-5" />
+                {!collapsed && <span className="text-sm font-medium">Logout</span>}
               </button>
-
-              {!collapsed && (
-                <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
-                  {theme === "dark" ? "Dark Mode" : "Dark"}
-                </span>
-              )}
             </div>
 
-            {/* Logout */}
-            <button
-              onClick={logout}
-              className={`flex items-center gap-3 text-red-500 hover:text-red-600 font-bold transition-colors ${collapsed ? "justify-center" : "px-2"}`}
-            >
-              <ArrowRightOnRectangleIcon className="w-5 h-5" />
-              {!collapsed && <span className="text-sm uppercase tracking-wider">Logout</span>}
-            </button>
+            {/* Desktop Footer (Now inside scroll area to prevent overlap) */}
+            <div className="hidden lg:block p-3 pt-3 space-y-3 mt-auto">
+              <div className={`flex items-center gap-1 ${collapsed ? "justify-center" : "justify-between px-2"}`}>
+                {!collapsed && <span className="text-xs text-gray-500">Light</span>}
+                <button
+                  onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                  className={`relative w-12 h-6 rounded-full transition-all duration-300 ${theme === "dark" ? "bg-blue-900" : "bg-gray-300"}`}
+                >
+                  <span className={`absolute top-1 w-4 h-4 rounded-full shadow transition-all duration-300 flex items-center justify-center ${theme === "dark" ? "right-1 bg-gray-800" : "left-1 bg-white"}`}>
+                    {theme === "light" ? <SunIcon className="w-3 h-3 text-yellow-500" /> : <MoonIcon className="w-3 h-3 text-blue-300" />}
+                  </span>
+                </button>
+                {!collapsed && <span className="text-xs text-gray-500">Dark</span>}
+              </div>
+              <button onClick={logout} className="flex items-center justify-center gap-2 text-red-500 hover:text-red-600">
+                <ArrowRightOnRectangleIcon className="w-5 h-5" />
+                {!collapsed && <span className="text-sm font-medium">Logout</span>}
+              </button>
+            </div>
           </div>
         </div>
       </aside>
