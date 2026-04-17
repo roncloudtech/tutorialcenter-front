@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { BellIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 export default function RemoveTraining({ 
   activeCourses = [], 
