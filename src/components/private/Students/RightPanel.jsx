@@ -112,7 +112,7 @@ export default function RightPanel({ collapsed, setCollapsed }) {
     <>
     <aside
       className={`
-        fixed top-2 right-2 h-screen z-[40]
+        fixed top-2 right-2 h-screen z-[100]
         rounded-xl
         w-80 transition-all duration-300 ease-in-out
         ${collapsed ? "translate-x-[328px]" : "translate-x-0"}
