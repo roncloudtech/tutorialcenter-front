@@ -224,7 +224,7 @@ export default function MasterClassList() {
 
   // --- RENDER ---
   return (
-    <StaffDashboardLayout>
+    <StaffDashboardLayout pagetitle="MASTER CLASS">
       {/* Toast */}
       {toast && (
         <div 
@@ -254,16 +254,6 @@ export default function MasterClassList() {
       )}
 
       <div className="p-6 max-w-[1600px] xl:px-10 mx-auto w-full">
-        {/* ========= Header Section ========= */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-black text-[#0F2843] tracking-tighter">MASTER CLASS</h1>
-          <div className="relative group cursor-pointer">
-            <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center transition-all hover:shadow-md">
-              <Icon icon="mdi:bell" className="text-[#0F2843] w-6 h-6" />
-              <span className="absolute top-3.5 right-3.5 w-2.5 h-2.5 bg-[#E83831] border-2 border-white rounded-full" />
-            </div>
-          </div>
-        </div>
 
         {/* ========= Controls Bar ========= */}
         <div className="flex flex-wrap items-center gap-4 mb-10">

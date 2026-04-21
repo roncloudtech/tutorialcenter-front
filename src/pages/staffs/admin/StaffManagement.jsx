@@ -11,7 +11,7 @@ import {
   AdjustmentsHorizontalIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  BellIcon,
+  // BellIcon,
   ChevronDownIcon,
   UserGroupIcon,
   HandThumbUpIcon,
@@ -165,25 +165,16 @@ export default function StaffManagement() {
   const currentStaffs = tableData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <StaffDashboardLayout>
+    <StaffDashboardLayout pagetitle="MANAGE STAFFS">
       <div className="flex flex-col gap-8">
-        
-        {/* Header Section */}
-        <div className="flex items-center justify-between">
-          <h1 className="text-[28px] font-black text-[#1F2937] tracking-tight">MANAGE STAFFS</h1>
-          <div className="flex items-center gap-4">
-             {/* Notification Icon */}
-             <div className="relative p-2.5 bg-white rounded-xl shadow-sm border border-gray-100 cursor-pointer hover:bg-gray-50 transition-all">
-                <BellIcon className="w-6 h-6 text-[#1F2937]" />
-                <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-[#E83831] rounded-full border-2 border-white"></span>
-             </div>
-             {/* Add Staff Button */}
-             <button
-             onClick={() => navigate("/staffs/staff-registration")}
-             className="flex items-center gap-2 px-8 py-3.5 bg-[#0F2843] text-white font-bold rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition-all text-sm">
-                <span className="text-2xl leading-none">+</span> Add Staff
-             </button>
-          </div>
+        {/* Add Staff Button Row */}
+        <div className="flex justify-end">
+          <button
+            onClick={() => navigate("/staffs/staff-registration")}
+            className="flex items-center gap-2 px-8 py-3.5 bg-[#0F2843] text-white font-bold rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition-all text-sm"
+          >
+            <span className="text-2xl leading-none">+</span> Add Staff
+          </button>
         </div>
 
         {/* Stats Grid */}

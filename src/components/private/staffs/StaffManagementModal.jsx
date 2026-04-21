@@ -1,20 +1,73 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import { Icon } from "@iconify/react";
 import { 
-  XMarkIcon,
-  // UserIcon,
-  EnvelopeIcon,
-  PhoneIcon,
-  CameraIcon,
-  // CalendarIcon,
-  // MapPinIcon,
-  // UserGroupIcon,
-  PencilSquareIcon,
-  NoSymbolIcon,
-  ArrowPathIcon,
-  CheckCircleIcon,
-  // TrashIcon
+  // XMarkIcon,
+  // CheckCircleIcon,
+  // ArrowPathIcon
 } from "@heroicons/react/24/outline";
+
+/**
+ * Reusable input for the staff profile matching the reference image style
+ */
+const ModalInput = ({ 
+  label, 
+  icon, 
+  value, 
+  name, 
+  onChange, 
+  disabled, 
+  type = "text", 
+  placeholder = "", 
+  isSelect = false, 
+  options = [],
+  className = "" 
+}) => {
+  return (
+    <div className={`flex flex-col gap-1.5 w-full ${className}`}>
+      <label className="text-[11px] font-bold text-gray-400 ml-1">{label}</label>
+      <div className="relative group/input">
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-900 z-10">
+          <Icon icon={icon} className="w-5 h-5" />
+        </div>
+        
+        {isSelect ? (
+          <select
+            name={name}
+            value={value || ""}
+            onChange={onChange}
+            disabled={disabled}
+            className="w-full bg-[#fcfcfc] border border-gray-200 rounded-xl pl-12 pr-10 py-3.5 text-sm font-semibold text-gray-700 focus:ring-2 focus:ring-[#0F2843]/10 focus:border-[#0F2843] transition-all appearance-none disabled:bg-gray-50/50"
+          >
+            <option value="" disabled>{placeholder || `Select ${label}`}</option>
+            {options.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        ) : (
+          <input
+            type={type}
+            name={name}
+            value={value || ""}
+            onChange={onChange}
+            disabled={disabled}
+            placeholder={placeholder}
+            className="w-full bg-[#fcfcfc] border border-gray-200 rounded-xl pl-12 pr-10 py-3.5 text-sm font-semibold text-gray-700 focus:ring-2 focus:ring-[#0F2843]/10 focus:border-[#0F2843] transition-all disabled:bg-gray-50/50"
+          />
+        )}
+
+        {/* Right side icons */}
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+          {isSelect ? (
+            <Icon icon="heroicons:chevron-down" className="w-4 h-4 text-gray-400" />
+          ) : (
+            <Icon icon="lucide:square-pen" className="w-4 h-4 text-gray-300 group-hover/input:text-gray-400 transition-colors" />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function StaffManagementModal({ staffId, onClose, onSuccess }) {
   const [staff, setStaff] = useState(null);
@@ -174,39 +227,44 @@ export default function StaffManagementModal({ staffId, onClose, onSuccess }) {
           toast.type === "success" ? "bg-[#76D287]" : "bg-[#E83831]"
         }`}>
           <div className="p-1 bg-white/20 rounded-full">
-            {toast.type === "success" ? <CheckCircleIcon className="w-5 h-5"/> : <XMarkIcon className="w-5 h-5"/>}
+            {toast.type === "success" ? (
+              <Icon icon="heroicons:check-circle" className="w-5 h-5"/>
+            ) : (
+              <Icon icon="heroicons:x-mark" className="w-5 h-5"/>
+            )}
           </div>
           <p className="font-bold text-sm">{toast.message}</p>
         </div>
       )}
 
-      <div className="bg-white w-full max-w-4xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] relative group">
+      <div className="bg-white w-full max-w-[650px] rounded-[24px] shadow-2xl overflow-hidden flex flex-col max-h-[95vh] relative text-[#0F2843] font-sans">
         
-        {/* Header with Close */}
-        <div className="absolute top-8 right-8 z-10">
-          <button 
-            onClick={onClose}
-            className="p-3 bg-gray-100/50 hover:bg-gray-100 rounded-full transition-all group/btn"
-          >
-            <XMarkIcon className="w-6 h-6 text-gray-400 group-hover/btn:text-gray-900" />
-          </button>
-        </div>
-
-        {/* Content Area */}
-        <div className={`flex-1 overflow-y-auto p-10 lg:p-14 ${isSuspended ? "opacity-50 grayscale-[0.3] pointer-events-none select-none" : ""}`}>
+        {/* Main Content Scrollable Area */}
+        <div className={`flex-1 overflow-y-auto p-8 md:p-10 ${isSuspended ? "opacity-60 grayscale-[0.2]" : ""}`}>
           
-          {/* Profile Header */}
-          <div className="flex flex-col lg:flex-row items-center gap-10 mb-12">
-            <div className="relative group/avatar cursor-pointer" onClick={() => document.getElementById('modalStaffImage').click()}>
-              <div className="w-32 h-32 lg:w-40 lg:h-40 rounded-[2.5rem] overflow-hidden border-4 border-gray-100 shadow-xl relative">
-                 <img 
-                   src={imagePreview || `https://ui-avatars.com/api/?name=${staff.firstname}`}
-                   className="w-full h-full object-cover transition-transform duration-500 group-hover/avatar:scale-110"
-                   alt="Profile" 
-                 />
-                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
-                    <CameraIcon className="w-8 h-8 text-white" />
-                 </div>
+          {/* Header */}
+          <h1 className="text-xl md:text-2xl font-black mb-8 uppercase tracking-tight">
+            STAFF PROFILE [{staff.firstname} {staff.middlename} {staff.surname}]
+          </h1>
+
+          {/* Top Section: Avatar + Primary Fields */}
+          <div className="flex flex-col md:flex-row gap-6 mb-8 items-start">
+            {/* Avatar Selection */}
+            <div 
+              className="w-44 h-44 shrink-0 relative cursor-pointer group"
+              onClick={() => isEditing && document.getElementById('modalStaffImage').click()}
+            >
+              <div className="w-full h-full rounded-[20px] overflow-hidden border border-gray-200">
+                <img 
+                  src={imagePreview || `https://ui-avatars.com/api/?name=${staff.firstname}`}
+                  className="w-full h-full object-cover"
+                  alt="Profile" 
+                />
+                {isEditing && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Icon icon="heroicons:camera" className="w-8 h-8 text-white" />
+                  </div>
+                )}
               </div>
               <input 
                 type="file" 
@@ -216,281 +274,197 @@ export default function StaffManagementModal({ staffId, onClose, onSuccess }) {
                 onChange={handleImageChange} 
               />
               {isSuspended && (
-                <div className="absolute -top-3 -right-3 bg-[#E83831] text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg z-10">
+                <div className="absolute -top-2 -right-2 bg-red-500 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-lg">
                   Suspended
                 </div>
               )}
             </div>
 
-            <div className="text-center lg:text-left flex-1">
-              <h2 className="text-4xl lg:text-5xl font-black text-[#0F2843] mb-2 uppercase tracking-tighter">
-                {staff.firstname} {staff.surname}
-              </h2>
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
-                <span className="px-5 py-2 bg-blue-50 text-[#0F2843] rounded-2xl text-xs font-black uppercase tracking-widest border border-blue-100">
-                  {staff.role}
-                </span>
-                <span className="text-gray-400 font-bold text-sm flex items-center gap-2">
-                  <EnvelopeIcon className="w-4 h-4" /> {staff.email}
-                </span>
-                <span className="text-gray-400 font-bold text-sm flex items-center gap-2">
-                  <PhoneIcon className="w-4 h-4" /> {staff.tel}
-                </span>
-              </div>
+            {/* Name/Email Inputs (2 columns inside) */}
+            <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-4">
+              <ModalInput 
+                label="First Name" 
+                icon="heroicons:user-solid" 
+                name="firstname" 
+                value={staff.firstname} 
+                onChange={handleChange} 
+                disabled={!isEditing}
+                placeholder="First Name"
+              />
+              <ModalInput 
+                label="Last Name" 
+                icon="heroicons:user-solid" 
+                name="surname" 
+                value={staff.surname} 
+                onChange={handleChange} 
+                disabled={!isEditing}
+                placeholder="Surname"
+              />
+              <ModalInput 
+                label="Middle Name" 
+                icon="heroicons:user-solid" 
+                name="middlename" 
+                value={staff.middlename} 
+                onChange={handleChange} 
+                disabled={!isEditing}
+                placeholder="Middle Name"
+              />
+              <ModalInput 
+                label="Email" 
+                icon="heroicons:envelope-solid" 
+                name="email" 
+                value={staff.email} 
+                onChange={handleChange} 
+                disabled={!isEditing}
+                placeholder="Email Address"
+              />
             </div>
           </div>
 
-          {/* Form Content */}
-          <form id="staffUpdateForm" onSubmit={handleUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            
-            {/* Column 1: Personal */}
+          {/* Grid Section for secondary details */}
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-x-4">
+              <ModalInput 
+                label="Gender" 
+                icon="ph:gender-male-bold" 
+                name="gender" 
+                value={staff.gender} 
+                onChange={handleChange} 
+                disabled={!isEditing}
+                isSelect={true}
+                options={[
+                  { label: "Male", value: "male" },
+                  { label: "Female", value: "female" },
+                  { label: "Others", value: "others" }
+                ]}
+              />
+              <ModalInput 
+                label="Date of Birth" 
+                icon="heroicons:calendar-days-solid" 
+                name="date_of_birth" 
+                value={staff.date_of_birth?.split('T')[0]} 
+                onChange={handleChange} 
+                disabled={!isEditing}
+                type="date"
+              />
+            </div>
+
+            {/* Role - Full Width */}
+            <ModalInput 
+              label="Role" 
+              icon="heroicons:user-group-solid" 
+              name="role" 
+              value={staff.role} 
+              onChange={handleChange} 
+              disabled={!isEditing}
+              isSelect={true}
+              options={[
+                { label: "Admin", value: "admin" },
+                { label: "Tutor", value: "tutor" },
+                { label: "Moderator", value: "moderator" }
+              ]}
+            />
+
+            {/* Teaching Info (Classes) */}
+            <div className="grid grid-cols-1 gap-4">
+              <ModalInput 
+                label="Assigned Classes" 
+                icon="heroicons:user-group-solid" 
+                name="classes" 
+                value={staffClasses.map(c => c.title).join(", ") || "No classes assigned"} 
+                disabled={true} // Display only as per feedback
+                placeholder="Classes taken"
+              />
+            </div>
+
+            {/* Status & Location */}
             <div className="space-y-6">
-              <h3 className="text-xs font-black text-[#BB9E7F] uppercase tracking-[0.2em] mb-4 border-b border-gray-100 pb-2">Personal Information</h3>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">First Name</label>
-                  <input
-                    type="text"
-                    name="firstname"
-                    value={staff.firstname || ""}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
-                    placeholder="First Name"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Surname</label>
-                  <input
-                    type="text"
-                    name="surname"
-                    value={staff.surname || ""}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
-                    placeholder="Surname"
-                  />
-                </div>
-              </div>
+              <ModalInput 
+                label="Status" 
+                icon="heroicons:user-group-solid" 
+                name="status" 
+                value={isSuspended ? "suspended" : "active"} 
+                disabled={true}
+                isSelect={true}
+                options={[
+                  { label: "Active", value: "active" },
+                  { label: "Suspended", value: "suspended" }
+                ]}
+                className={isSuspended ? "text-red-500" : "text-green-500"}
+              />
 
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Middle name</label>
-                <input
-                  type="text"
-                  name="middlename"
-                  value={staff.middlename || ""}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
-                  placeholder="Middle Name "
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Gender</label>
-                  <select
-                    name="gender"
-                    value={staff.gender || ""}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
-                  >
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="others">Others</option>
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Date of Birth</label>
-                  <input
-                    type="date"
-                    name="date_of_birth"
-                    value={staff.date_of_birth?.split('T')[0] || ""}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
-                  />
-                </div>
-              </div>
+              <ModalInput 
+                label="Location" 
+                icon="heroicons:map-pin-solid" 
+                name="location" 
+                value={staff.location} 
+                onChange={handleChange} 
+                disabled={!isEditing}
+                isSelect={true}
+                placeholder="select location"
+                options={[
+                    { label: "Lagos", value: "Lagos" },
+                    { label: "Abuja", value: "Abuja" },
+                    { label: "Port Harcourt", value: "Port Harcourt" }
+                ]}
+              />
             </div>
 
-            {/* Column 2: Job & Contact */}
-            <div className="space-y-6">
-              <h3 className="text-xs font-black text-[#BB9E7F] uppercase tracking-[0.2em] mb-4 border-b border-gray-100 pb-2">Contact & Role</h3>
-              
-              <div className="grid grid-cols-2 gap-4 text-center">
-                 <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100/50">
-                    <p className="text-[9px] font-black text-gray-400 uppercase mb-1">Staff ID</p>
-                    <p className="text-sm font-black text-[#0F2843]">{staff.staff_id || "N/A"}</p>
-                 </div>
-                 <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100/50">
-                    <p className="text-[9px] font-black text-gray-400 uppercase mb-1">Attendance</p>
-                    <p className="text-sm font-black text-[#22C55E]">98%</p>
-                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Email address</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={staff.email || ""}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
-                  placeholder="Email"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Telephone</label>
-                  <input
-                    type="tel"
-                    name="tel"
-                    value={staff.tel || ""}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
-                    placeholder="Telephone"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Role</label>
-                  <select
-                    name="role"
-                    value={staff.role || ""}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60"
-                  >
-                    <option value="">Select Role</option>
-                    <option value="admin">Admin</option>
-                    <option value="tutor">Tutor</option>
-                    <option value="moderator">Moderator</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Address</label>
-                <textarea
-                  name="address"
-                  value={staff.address || ""}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  rows="2"
-                  className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-[#1F2937] focus:ring-2 focus:ring-[#BB9E7F] transition-all disabled:opacity-60 resize-none"
-                  placeholder="Full Address"
-                />
-              </div>
+            {/* Home Address (Label above as in image) */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[11px] font-bold text-gray-400 ml-1">Home Address</label>
+              <textarea 
+                name="address"
+                value={staff.address || ""}
+                onChange={handleChange}
+                disabled={!isEditing}
+                rows={1}
+                placeholder="Full Home Address"
+                className="w-full bg-[#fcfcfc] border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-semibold text-gray-700 focus:ring-2 focus:ring-[#0F2843]/10 focus:border-[#0F2843] transition-all disabled:bg-gray-50/50 resize-none"
+              />
             </div>
-          </form>
-
-          {/* Assigned Classes */}
-          {staffClasses && staffClasses.length > 0 && (
-            <div className="mt-8 animate-in fade-in duration-500 pb-4">
-              <h3 className="text-xs font-black text-[#BB9E7F] uppercase tracking-[0.2em] mb-3 border-b border-gray-100 pb-2">Assigned Classes</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-                {staffClasses.map((cls, index) => (
-                  <div key={cls.id || index} className="flex flex-col justify-center min-h-[54px] px-4 py-2.5 bg-gray-50 rounded-xl border border-gray-100/80 hover:shadow-sm hover:border-gray-200 hover:bg-white transition-all relative overflow-hidden group">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-[#BB9E7F] group-hover:w-1.5 transition-all"></div>
-                    <div className="flex items-center justify-between gap-2 pl-2">
-                       <p className="text-[13px] font-bold text-[#0F2843] line-clamp-1 leading-tight flex-1" title={cls.title || "Class"}>
-                         {cls.title || "Class"}
-                       </p>
-                       {cls.status === 'active' && (
-                         <span className="px-1.5 py-0.5 bg-[#76D287]/20 text-[#239561] rounded-md text-[9px] font-black uppercase tracking-wider shrink-0">
-                           Active
-                         </span>
-                       )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          </div>
         </div>
 
-        {/* Footer Actions */}
-        <div className="p-8 lg:p-10 bg-gray-50 border-t border-gray-100 flex flex-col lg:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            {isSuspended ? (
-              <button 
-                onClick={handleRestore}
-                disabled={submitting}
-                className="flex items-center gap-2 px-8 py-4 bg-[#239561] text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all"
-              >
-                <ArrowPathIcon className="w-4 h-4" /> {submitting ? "Restoring..." : "Restore Access"}
-              </button>
+        {/* Footer Area with Action Buttons */}
+        <div className="px-8 pb-8 flex items-center gap-4">
+          {/* Left Action: Back/Suspend */}
+          <button 
+            onClick={onClose}
+            className="flex-1 py-4 bg-[#E83831] text-white font-black text-sm uppercase tracking-widest rounded-xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+          >
+            {isEditing ? "Cancel" : "Back"}
+          </button>
+
+          {/* Right Action: Save/Edit */}
+          <button 
+            type={isEditing ? "submit" : "button"}
+            form={isEditing ? "staffUpdateForm" : undefined}
+            onClick={() => !isEditing && setIsEditing(true)}
+            onSubmit={isEditing ? handleUpdate : undefined}
+            disabled={submitting}
+            className="flex-1 py-4 bg-[#0F2843] text-white font-black text-sm uppercase tracking-widest rounded-xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+          >
+            {submitting ? (
+              <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
             ) : (
-              <button 
-                onClick={handleSuspend}
-                disabled={submitting}
-                className="flex items-center gap-2 px-8 py-4 bg-[#E83831] text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition-all"
-              >
-                <NoSymbolIcon className="w-4 h-4" /> {submitting ? "Processing..." : "Suspend Staff"}
-              </button>
+                isEditing ? "Save Changes" : "Edit Profile"
             )}
-            
-            <button 
-              onClick={onClose}
-              className="px-8 py-4 bg-white border border-gray-200 text-gray-500 font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-gray-100 transition-all active:scale-95"
-            >
-              {isSuspended ? "Go Back" : "Cancel"}
-            </button>
-          </div>
-
-          {!isSuspended && (
-            <div className="flex items-center gap-3">
-               {!isEditing ? (
-                 <button
-                   type="button"
-                   onClick={() => setIsEditing(true)}
-                   className="flex items-center gap-3 px-8 py-4 bg-[#0F2843] text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl hover:-translate-y-1 transition-all active:scale-95"
-                 >
-                   <PencilSquareIcon className="w-5 h-5" />
-                   Edit Staff
-                 </button>
-               ) : (
-                 <button
-                   type="button"
-                   onClick={() => setIsEditing(false)}
-                   className="flex items-center gap-3 px-8 py-4 bg-gray-200 text-gray-600 font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-gray-300 transition-all active:scale-95"
-                 >
-                   Cancel Edit
-                 </button>
-               )}
-               
-               <button
-                 type="submit"
-                 form="staffUpdateForm"
-                 disabled={submitting || !isEditing}
-                 className="flex items-center gap-3 px-10 py-4 bg-[#BB9E7F] text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-[#BB9E7F]/20 hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none"
-               >
-                 {submitting ? (
-                   <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                 ) : (
-                   <>
-                      <ArrowPathIcon className="w-5 h-5" />
-                      Save Changes
-                   </>
-                 )}
-               </button>
-            </div>
-          )}
+          </button>
         </div>
 
-        {/* Suspended Dimmer Overlay (Absolute for when inactive) */}
-        {isSuspended && (
-          <div className="absolute inset-0 z-[5] bg-white/10 pointer-events-none" />
-        )}
+        {/* Hidden Form Submit Trigger */}
+        <form id="staffUpdateForm" onSubmit={handleUpdate} className="hidden" />
 
+        {/* Suspend/Restore Logic (Floating or separate button if needed) */}
+        {!isEditing && (
+            <button 
+                onClick={isSuspended ? handleRestore : handleSuspend}
+                className={`absolute top-10 right-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 transition-colors ${isSuspended ? "hover:text-green-500" : "hover:text-red-500"}`}
+            >
+                {isSuspended ? "Restore" : "Suspend Staff"}
+            </button>
+        )}
       </div>
     </div>
   );

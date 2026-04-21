@@ -133,6 +133,8 @@ export default function DashboardLayout({
                   isOpen={isNotificationsOpen} 
                   onClose={() => setIsNotificationsOpen(false)} 
                   onUpdate={fetchUnreadCount}
+                  token={token}
+                  viewAllLink="/student/notifications"
                 />
               </div>
             </div>

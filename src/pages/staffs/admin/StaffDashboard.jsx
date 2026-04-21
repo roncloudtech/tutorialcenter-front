@@ -17,17 +17,12 @@ import {
 
 export default function StaffDashboard() {
   return (
-    <StaffDashboardLayout>
+    <StaffDashboardLayout 
+      pagetitle="Add Staff" 
+      backPath="/staffs/manage-staffs"
+      backLabel="Add Staff"
+    >
       <div className="max-w-4xl mx-auto p-4 lg:p-6">
-        {/* Header */}
-        <div className="mb-6 flex items-center text-sm">
-          <button className="text-gray-500 hover:text-gray-700 transition-colors">
-            &lt; Back /
-          </button>
-          <h2 className="ml-1 font-bold text-gray-900 dark:text-white">
-            Add Staff
-          </h2>
-        </div>
 
         <section className="bg-gray-50 dark:bg-gray-800 rounded-xl">
           <form className="space-y-4">

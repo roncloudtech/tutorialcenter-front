@@ -2,7 +2,13 @@ import StaffSidebar from "./Sidebar.jsx";
 import { useState } from "react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-export default function StaffMobileHeader({ pagetitle, hideTitle = false, hideBell = false }) {
+export default function StaffMobileHeader({ 
+  pagetitle, 
+  hideTitle = false, 
+  hideBell = false,
+  unreadCount = 0,
+  onBellClick
+}) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -46,9 +52,18 @@ export default function StaffMobileHeader({ pagetitle, hideTitle = false, hideBe
 
         {!hideBell ? (
           <div className="relative">
-            <button className="relative p-1 focus:outline-none pointer-events-auto">
+            <button 
+              onClick={onBellClick}
+              className="relative p-1 focus:outline-none pointer-events-auto group active:scale-95 transition-all"
+            >
               <BellIcon className="w-6 h-6" />
-              <span className="absolute top-1 right-1 pointer-events-none w-2 h-2 bg-[#E83831] rounded-full border border-[#09314F]"></span>
+              {unreadCount > 0 && (
+                <span className="absolute top-0.5 right-0.5 min-w-[16px] h-4 bg-[#E83831] rounded-full border border-[#09314F] flex items-center justify-center px-0.5">
+                  <span className="text-[8px] font-black text-white">
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </span>
+                </span>
+              )}
             </button>
           </div>
         ) : (

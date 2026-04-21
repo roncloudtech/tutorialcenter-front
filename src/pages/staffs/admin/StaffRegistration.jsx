@@ -168,34 +168,12 @@ export default function StaffRegistration() {
   };
 
   return (
-    <StaffDashboardLayout>
+    <StaffDashboardLayout 
+      pagetitle="Staff Registration"
+      backPath="/staffs/manage-staffs"
+      backLabel="Staff Information"
+    >
       <div className="max-w-4xl mx-auto p-4 lg:p-2 relative">
-        
-        {/* Toast Notification */}
-        {toast && (
-          <div className={`fixed top-20 right-5 z-[100] px-6 py-4 rounded-2xl shadow-2xl text-white transition-all duration-500 ${
-            toast.type === "success" ? "bg-[#76D287]" : "bg-[#E83831]"
-          } animate-in fade-in slide-in-from-top-4`}>
-            <div className="flex items-center gap-3">
-              <div className="p-1 bg-white/20 rounded-full">
-                {toast.type === "success" ? "✓" : "✕"}
-              </div>
-              <p className="font-bold text-sm">{toast.message}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Header */}
-        <div className="mb-6 flex items-center text-sm">
-          <button
-             onClick={() => navigate("/staffs/manage-staffs")}
-          className="text-gray-500 hover: transition-colors">
-            &lt; Back /
-          </button>
-          <h2 className="ml-1 font-bold text-gray-900 dark:text-white">
-            Staff Information
-          </h2>
-        </div>
 
         <section className="bg-gray-50 dark:bg-gray-800 p-4 sm:p-5 rounded-xl shadow-sm border border-gray-100">
           <form className="space-y-4" onSubmit={handleSubmit}>

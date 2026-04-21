@@ -1,14 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { CheckCircleIcon, InformationCircleIcon, XMarkIcon, BellIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import { useAuth } from "../../../context/AuthContext";
 import { Link } from "react-router-dom";
 
-export default function NotificationsDropdown({ isOpen, onClose, onUpdate }) {
+export default function NotificationsDropdown({ isOpen, onClose, onUpdate, token, viewAllLink = "/student/notifications" }) {
   const dropdownRef = useRef(null);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { token } = useAuth();
 
   // Close when clicking outside
   useEffect(() => {
@@ -79,7 +77,7 @@ export default function NotificationsDropdown({ isOpen, onClose, onUpdate }) {
         ) : notifications.length > 0 ? (
           notifications.slice(0, 5).map((notif) => (
             <Link 
-              to="/student/notifications"
+              to={viewAllLink}
               key={notif.id} 
               onClick={onClose}
               className={`p-4 mx-2 my-2 rounded-2xl flex gap-4 transition-colors cursor-pointer block ${
@@ -125,7 +123,7 @@ export default function NotificationsDropdown({ isOpen, onClose, onUpdate }) {
       {/* Footer */}
       <div className="p-4 border-t border-gray-100 dark:border-[#1a4a75] bg-gray-50/50 dark:bg-[#06243A]/50 text-center">
         <Link 
-          to="/student/notifications" 
+          to={viewAllLink} 
           onClick={onClose}
           className="text-sm font-bold text-[#09314F] dark:text-blue-400 hover:underline"
         >

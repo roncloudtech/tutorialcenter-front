@@ -17,6 +17,10 @@ export default function CourseEdit({ mode = "courses" }) {
   const [editingItem, setEditingItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newName, setNewName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [banner, setBanner] = useState(null);
+  const [bannerPreview, setBannerPreview] = useState(null);
   const [showConfirmSave, setShowConfirmSave] = useState(false);
   const [toast, setToast] = useState(null);
 
@@ -25,25 +29,31 @@ export default function CourseEdit({ mode = "courses" }) {
   const config = { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } };
 
   const fetchData = useCallback(async () => {
+    console.group("Course Edit: Fetch Data");
     setLoading(true);
     try {
       const courseRes = await axios.get(`${API_BASE_URL}/api/courses`);
+      console.log("Courses Response:", courseRes.data);
       const allCourses = courseRes.data?.data || courseRes.data?.courses || [];
       setCourses(allCourses);
 
       if (mode === "subjects") {
         try {
           const subRes = await axios.get(`${API_BASE_URL}/api/subjects`);
+          console.log("Subjects Response:", subRes.data);
           const allSubjects = subRes.data?.subjects || subRes.data?.data || [];
           setSubjects(allSubjects);
         } catch (err) {
           console.error("Error fetching subjects:", err);
+          console.log("Subject Fetch Error Details:", err.response?.data);
         }
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+      console.log("Fetch Error Details:", error.response?.data);
     } finally {
       setLoading(false);
+      console.groupEnd();
     }
   }, [API_BASE_URL, mode]);
 
@@ -54,41 +64,106 @@ export default function CourseEdit({ mode = "courses" }) {
   const handleEditClick = (type, item) => {
     setEditingItem({ type, data: item });
     setNewName(type === "course" ? item.title : item.name);
+    
+    // Populate metadata for both courses and subjects
+    setDescription(item.description || "");
+    setBannerPreview(item.banner ? (item.banner.startsWith('http') ? item.banner : `${API_BASE_URL}${item.banner}`) : null);
+    setBanner(null);
+
+    if (type === "course") {
+      setPrice(item.price || "");
+    } else {
+      setPrice(""); // Reset price for subjects
+    }
+    
     setShowConfirmSave(false);
     setIsModalOpen(true);
   };
 
+  const handleBannerChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setBanner(file);
+      setBannerPreview(URL.createObjectURL(file));
+      setShowConfirmSave(true);
+    }
+  };
+
   const handleSave = async () => {
     if (!editingItem) return;
-    try {
-      if (editingItem.type === "course") {
-        await axios.put(`${API_BASE_URL}/api/admin/courses/update/${editingItem.data.id}`, { title: newName }, config);
-      } else {
-        await axios.put(`${API_BASE_URL}/api/admin/subjects/update/${editingItem.data.id}`, { name: newName }, config);
+    console.group(`Course Edit: Save ${editingItem.type}`);
+    
+    let payload;
+    let headers = { Authorization: `Bearer ${token}` };
+
+    if (editingItem.type === "course") {
+      // Use FormData for courses to support banner upload
+      payload = new FormData();
+      payload.append("title", newName);
+      payload.append("description", description);
+      payload.append("price", price);
+      if (banner) {
+        payload.append("banner", banner);
       }
+      headers["Content-Type"] = "multipart/form-data";
+    } else {
+      // Use FormData for subjects too to support banner upload
+      payload = new FormData();
+      payload.append("name", newName);
+      payload.append("description", description);
+      if (banner) {
+        payload.append("banner", banner);
+      }
+      headers["Content-Type"] = "multipart/form-data";
+    }
+
+    const url = editingItem.type === "course" 
+      ? `${API_BASE_URL}/api/admin/courses/update/${editingItem.data.id}` 
+      : `${API_BASE_URL}/api/admin/subjects/update/${editingItem.data.id}`;
+    
+    console.log("Request URL:", url);
+
+    try {
+      // Note: We use POST for FormData even if it's an update if the backend prefers it for files, 
+      // but sticking to PUT as previously used unless it fails. 
+      // Actually, many PHP backends require POST + _method=PUT to handle multipart files in an update.
+      // I'll stick to PUT for now as it was there.
+      const res = await axios.post(url, payload, { headers });
+      console.log("Update Response Data:", res.data);
+      
       setToast({ type: "success", message: `${editingItem.type === "course" ? "Course" : "Subject"} updated!` });
       setIsModalOpen(false);
       setShowConfirmSave(false);
       fetchData();
     } catch (error) {
-      console.error("Error updating:", error);
+      console.error("Update Error:", error);
+      console.log("Error Response:", error.response?.data);
       setToast({ type: "error", message: "Failed to update." });
+    } finally {
+      console.groupEnd();
     }
   };
 
   const handleDelete = async (type, id) => {
     if (!window.confirm(`Delete this ${type}?`)) return;
+    console.group(`Course Edit: Delete ${type}`);
+    const url = type === "course" 
+      ? `${API_BASE_URL}/api/admin/courses/destroy/${id}`
+      : `${API_BASE_URL}/api/admin/subjects/destroy/${id}`;
+    
+    console.log("Delete URL:", url);
+
     try {
-      if (type === "course") {
-        await axios.delete(`${API_BASE_URL}/api/admin/courses/destroy/${id}`, config);
-      } else {
-        await axios.delete(`${API_BASE_URL}/api/admin/subjects/destroy/${id}`, config);
-      }
+      const res = await axios.delete(url, config);
+      console.log("Delete Response Data:", res.data);
       setToast({ type: "success", message: `${type === "course" ? "Course" : "Subject"} deleted.` });
       fetchData();
     } catch (error) {
-      console.error("Error deleting:", error);
+      console.error("Delete Error:", error);
+      console.log("Error Response Details:", error.response?.data);
       setToast({ type: "error", message: "Failed to delete." });
+    } finally {
+      console.groupEnd();
     }
   };
 
@@ -216,25 +291,126 @@ export default function CourseEdit({ mode = "courses" }) {
                 <span className="text-[10px] font-black text-[#BB9E7F] uppercase tracking-[0.2em]">Refine Metadata</span>
                 <h2 className="text-2xl font-black text-[#0F2843] mt-2">Edit {editingItem.type === "course" ? "Course" : "Subject"}</h2>
               </div>
-              <button onClick={() => setIsModalOpen(false)} className="p-3 bg-gray-100 rounded-2xl hover:bg-gray-200 transition-all">
-                <XMarkIcon className="w-6 h-6 text-gray-400" />
+              <button onClick={() => setIsModalOpen(false)} className="p-3 bg-gray-100 rounded-2xl hover:bg-[#E83831] hover:text-white transition-all group shadow-sm hover:shadow-red-900/20">
+                <XMarkIcon className="w-6 h-6 text-gray-400 group-hover:text-white" />
               </button>
             </div>
 
-            <div className="px-10 pb-6">
-              <div className="space-y-2">
-                <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">New Name</label>
-                <input 
-                  type="text" 
-                  value={newName}
-                  onChange={(e) => {
-                    setNewName(e.target.value);
-                    const original = editingItem.type === "course" ? editingItem.data.title : editingItem.data.name;
-                    setShowConfirmSave(e.target.value !== original);
-                  }}
-                  className="w-full px-8 py-6 bg-gray-50 rounded-[24px] font-black text-xl text-[#0F2843] focus:ring-4 focus:ring-[#BB9E7F]/10 outline-none transition-all"
-                />
-              </div>
+            <div className="px-10 pb-6 overflow-y-auto max-h-[60vh] space-y-8 custom-scrollbar">
+              {editingItem.type === "course" && (
+                <div className="space-y-6">
+                  {/* Banner Edit */}
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Course Banner</label>
+                    <div className="relative group aspect-video rounded-3xl overflow-hidden bg-gray-50 dark:bg-gray-800 border-2 border-dashed border-gray-200 dark:border-gray-700">
+                      {bannerPreview ? (
+                        <img src={bannerPreview} alt="Preview" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <BookOpenIcon className="w-12 h-12 text-gray-200" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
+                        <CheckIcon className="w-8 h-8 text-white" />
+                        <span className="text-white font-black text-xs uppercase tracking-widest ml-2">Change Image</span>
+                      </div>
+                      <input type="file" onChange={handleBannerChange} className="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" />
+                    </div>
+                  </div>
+
+                  {/* Title & Price Row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Title</label>
+                      <input 
+                        type="text" 
+                        value={newName}
+                        onChange={(e) => {
+                          setNewName(e.target.value);
+                          setShowConfirmSave(true);
+                        }}
+                        className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-800 rounded-2xl font-bold text-[#0F2843] dark:text-white outline-none"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Price (₦)</label>
+                      <input 
+                        type="number" 
+                        value={price}
+                        onChange={(e) => {
+                          setPrice(e.target.value);
+                          setShowConfirmSave(true);
+                        }}
+                        className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-800 rounded-2xl font-bold text-[#0F2843] dark:text-white outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Description</label>
+                    <textarea 
+                      value={description}
+                      onChange={(e) => {
+                        setDescription(e.target.value);
+                        setShowConfirmSave(true);
+                      }}
+                      rows="4"
+                      className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-800 rounded-2xl font-bold text-[#0F2843] dark:text-white outline-none resize-none"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {editingItem.type === "subject" && (
+                <div className="space-y-6">
+                  {/* Banner Edit */}
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Subject Banner</label>
+                    <div className="relative group aspect-video rounded-3xl overflow-hidden bg-gray-50 dark:bg-gray-800 border-2 border-dashed border-gray-200 dark:border-gray-700">
+                      {bannerPreview ? (
+                        <img src={bannerPreview} alt="Preview" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <AcademicCapIcon className="w-12 h-12 text-gray-200" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
+                        <CheckIcon className="w-8 h-8 text-white" />
+                        <span className="text-white font-black text-xs uppercase tracking-widest ml-2">Change Image</span>
+                      </div>
+                      <input type="file" onChange={handleBannerChange} className="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Subject Name</label>
+                    <input 
+                      type="text" 
+                      value={newName}
+                      onChange={(e) => {
+                        setNewName(e.target.value);
+                        setShowConfirmSave(true);
+                      }}
+                      className="w-full px-8 py-6 bg-gray-50 dark:bg-gray-800 rounded-[24px] font-black text-xl text-[#0F2843] dark:text-white outline-none transition-all shadow-sm"
+                    />
+                  </div>
+
+                  {/* Description */}
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Syllabus Description</label>
+                    <textarea 
+                      value={description}
+                      onChange={(e) => {
+                        setDescription(e.target.value);
+                        setShowConfirmSave(true);
+                      }}
+                      rows="4"
+                      className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-800 rounded-2xl font-bold text-[#0F2843] dark:text-white outline-none resize-none"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="p-10 pt-4 flex flex-col gap-4">
