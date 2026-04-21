@@ -291,7 +291,7 @@ const Career = () => {
         {/* --- ADMINISTRATION SECTION (Final Section) --- */}
         {/* OUTER WRAPPER: This is an external background in this section alone*/}
         {/* --- ADMINISTRATION SECTION --- */}
-        <section className="w-full bg-white rounded-b-[40px] overflow-hidden pb-24 font-sans">
+        <section className="w-full bg-white rounded-b-[80px] md:rounded-b-[100px] overflow-hidden pb-24 font-sans">
           {/* 1. FULL-WIDTH BANNER */}
           <SectionHeading
             title="Administration"

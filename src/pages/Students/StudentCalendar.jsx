@@ -15,7 +15,7 @@ export default function StudentCalendar() {
 
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode] = useState("week"); // "week" or "day"
+  const [viewMode, setViewMode] = useState("week"); // "week" or "day"
   const [dateOffset, setDateOffset] = useState(0); // number of days from today
   const [selectedSession, setSelectedSession] = useState(null);
   
@@ -182,6 +182,22 @@ export default function StudentCalendar() {
                   className="p-1.5 hover:bg-white/20 rounded-lg transition-all active:scale-90"
                 >
                   <ChevronRightIcon className="w-4 h-4" />
+                </button>
+              </div>
+              
+              {/* View Toggle */}
+              <div className="flex flex-col md:flex-row bg-white/10 p-0.5 rounded-lg mt-2 w-full md:w-auto">
+                <button 
+                  onClick={() => setViewMode("week")}
+                  className={`px-2 py-1 text-[8px] font-black uppercase rounded-md transition-all w-full md:w-auto ${viewMode === 'week' ? 'bg-white text-[#09314F]' : 'hover:bg-white/10 text-white'}`}
+                >
+                  Week
+                </button>
+                <button 
+                  onClick={() => setViewMode("day")}
+                  className={`px-2 py-1 text-[8px] font-black uppercase rounded-md transition-all w-full md:w-auto ${viewMode === 'day' ? 'bg-white text-[#09314F]' : 'hover:bg-white/10 text-white'}`}
+                >
+                  Day
                 </button>
               </div>
               <span className="text-[9px] font-bold uppercase tracking-wider opacity-70 mt-1">{gmtOffset}</span>

@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 import login_img from "../../assets/images/login_img.jpg";
 import TC_logo from "../../assets/images/tutorial_logo.png";
 import { EyeIcon, EyeSlashIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
+import { useStaffAuth } from "../../context/StaffAuthContext";
 
 export default function StaffLogin() {
   const navigate = useNavigate();
+  const { login } = useStaffAuth();
   const [toast, setToast] = useState(null);
   const [countdown, setCountdown] = useState(null);
   const [rateLimitCountdown, setRateLimitCountdown] = useState(null); 
@@ -98,9 +100,7 @@ export default function StaffLogin() {
       );
 
       if (response.status === 200) {
-        localStorage.setItem("staff_info", JSON.stringify(response.data.staff));
-        localStorage.setItem("staff_token", response.data.token);
-        localStorage.setItem("staff_role", response.data.role);
+        login(response.data.token, response.data.staff, response.data.role);
         
         setToast({ 
           type: "success", 

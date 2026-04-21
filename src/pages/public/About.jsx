@@ -157,7 +157,7 @@ const About = () => {
         </div>
 
         {/* Our Team Section */}
-        <section className="w-full bg-white rounded-b-[40px] overflow-hidden pb-24 font-sans">
+        <section className="w-full bg-white rounded-b-[80px] md:rounded-b-[100px] overflow-hidden pb-24 font-sans">
           <OurTeam />
         </section>
 

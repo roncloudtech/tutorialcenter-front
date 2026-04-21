@@ -7,6 +7,7 @@ import MobileBottomNav from "./MobileBottomNav.jsx";
 import { BellIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "../../../context/AuthContext";
 import NotificationsDropdown from "../Students/NotificationsDropdown";
+import StaffInactivityModal from "./StaffInactivityModal.jsx";
 
 export default function StaffDashboardLayout({
   children,
@@ -55,6 +56,7 @@ export default function StaffDashboardLayout({
 
   return (
     <div className="min-h-screen bg-[#E6E9EC] dark:bg-gray-900">
+      <StaffInactivityModal />
       {/* ===== MOBILE LAYOUT ===== */}
       <div className="lg:hidden">
         <MobileHeader

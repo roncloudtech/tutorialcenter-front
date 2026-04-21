@@ -5,11 +5,18 @@ import {
   ChevronDownIcon,
 } from "@heroicons/react/24/outline";
 import { Icon } from "@iconify/react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import axios from "axios";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function RightPanel({ collapsed, setCollapsed }) {
   const [monthOffset, setMonthOffset] = useState(0);
   const [notifOpen, setNotifOpen] = useState(true);
+  const { token } = useAuth();
+
+  // Notifications state
+  const [notifications, setNotifications] = useState([]);
+  const [notifLoading, setNotifLoading] = useState(false);
 
   // Memoized today (fixes eslint warning)
   const today = useMemo(() => new Date(), []);
@@ -75,11 +82,37 @@ export default function RightPanel({ collapsed, setCollapsed }) {
     calendarData.month === today.getMonth() &&
     calendarData.year === today.getFullYear();
 
+  // Fetch notifications
+  useEffect(() => {
+    if (!token) return;
+    const fetchNotifications = async () => {
+      try {
+        setNotifLoading(true);
+        const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
+        const response = await axios.get(`${API_BASE_URL}/api/notifications`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const resData = response.data;
+        const notificationList = resData?.data && Array.isArray(resData.data)
+          ? resData.data
+          : (Array.isArray(resData) ? resData : []);
+        setNotifications(notificationList);
+      } catch (error) {
+        console.error("Failed to fetch notifications for right panel:", error);
+      } finally {
+        setNotifLoading(false);
+      }
+    };
+    fetchNotifications();
+  }, [token]);
+
+  const unreadCount = notifications.filter(n => !n.read_at).length;
+
   return (
     <>
     <aside
       className={`
-        fixed top-2 right-2 h-screen z-[40]
+        fixed top-2 right-2 h-screen z-[100]
         rounded-xl
         w-80 transition-all duration-300 ease-in-out
         ${collapsed ? "translate-x-[328px]" : "translate-x-0"}
@@ -172,8 +205,8 @@ export default function RightPanel({ collapsed, setCollapsed }) {
           >
             <h3 className="font-black text-[#09314F] dark:text-white uppercase text-[15px] tracking-tighter">Notification</h3>
             <div className="flex items-center gap-3">
-              <span className="text-[13px] font-black text-gray-500">
-                100
+              <span className={`text-[13px] font-black ${unreadCount > 0 ? 'text-[#E83831]' : 'text-gray-500'}`}>
+                {unreadCount}
               </span>
               {notifOpen ? (
                 <ChevronUpIcon className="w-4 h-4 text-[#09314F] dark:text-white" />
@@ -184,27 +217,37 @@ export default function RightPanel({ collapsed, setCollapsed }) {
           </div>
 
           {notifOpen && (
-            <div className="flex gap-2 mt-4">
-              <div className="flex-1 bg-[#E6E9EC]/40 dark:bg-gray-700/50 rounded-2xl p-2 max-h-64 overflow-y-auto space-y-2 scrollbar-hide">
-                {Array.from({ length: 6 }).map((_, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-white dark:bg-gray-800 rounded-xl p-3 border border-gray-50 dark:border-gray-700 shadow-[0_2px_8px_rgba(0,0,0,0.02)]"
-                  >
-                    <div className="text-[11px] font-black text-[#09314F] dark:text-gray-200 leading-snug">
-                      {idx % 2 === 0 
-                        ? "A student made a general English challenge, be the first to respond" 
-                        : "Teacher daily challenge is available for your review"}
-                    </div>
-                    <div className="text-[9px] text-right text-gray-400 dark:text-gray-500 mt-2 font-black">
-                      7:12pm
-                    </div>
+            <div className="mt-4">
+              <div className="bg-[#E6E9EC]/40 dark:bg-gray-700/50 rounded-2xl p-2 max-h-64 overflow-y-auto space-y-2">
+                {notifLoading ? (
+                  <div className="flex justify-center py-8">
+                    <div className="w-6 h-6 border-3 border-[#09314F]/20 border-t-[#09314F] rounded-full animate-spin" />
                   </div>
-                ))}
-              </div>
-              {/* Visual Scrollbar Indicator */}
-              <div className="w-1.5 bg-gray-100 dark:bg-gray-700 rounded-full flex flex-col items-center py-1">
-                <div className="w-full h-1/3 bg-[#09314F] dark:bg-blue-500 rounded-full" />
+                ) : notifications.length > 0 ? (
+                  notifications.slice(0, 8).map((notif, idx) => (
+                    <div
+                      key={notif.id || idx}
+                      className={`bg-white dark:bg-gray-800 rounded-xl p-3 border shadow-[0_2px_8px_rgba(0,0,0,0.02)] ${
+                        notif.read_at
+                          ? 'border-gray-50 dark:border-gray-700'
+                          : 'border-[#09314F]/20 dark:border-blue-700'
+                      }`}
+                    >
+                      <div className="text-[11px] font-black text-[#09314F] dark:text-gray-200 leading-snug">
+                        {notif.data?.message || notif.message || "New notification"}
+                      </div>
+                      <div className="text-[9px] text-right text-gray-400 dark:text-gray-500 mt-2 font-black">
+                        {notif.created_at
+                          ? new Date(notif.created_at).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+                          : ''}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-6">
+                    <p className="text-xs text-gray-400 font-bold">No notifications yet</p>
+                  </div>
+                )}
               </div>
             </div>
           )}

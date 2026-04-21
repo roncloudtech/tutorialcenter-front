@@ -98,7 +98,7 @@ const OurTeam = () => {
 
     return (
         <>
-            <SectionHeading title="Meet the team" position_right={false} />
+            <SectionHeading title="Meet the team" position_right={false} fullWidth={true} />
             <div className="Container py-14 lg:py-16">
                 <div className="area-wrapper">
                     

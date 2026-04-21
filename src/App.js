@@ -57,7 +57,9 @@ import StudentSettings from "./pages/Students/StudentSettings.jsx";
 import RecordedClasses from "./pages/Students/RecordedClasses.jsx";
 import StudentGames from "./pages/Students/StudentGames.jsx";
 import StaffEmailVerification from "./pages/public/StaffSignUp/StaffEmailVerification.jsx";
-
+import AdminStudentManagement from "./pages/staffs/admin/AdminStudentManagement.jsx";
+import Training from "./pages/public/Training.jsx";
+// import { StaffAuthProvider } from "./context/StaffAuthContext.jsx";
 
 function App() {
   return (
@@ -71,6 +73,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/career" element={<Career/>} />
         <Route path="/career" element={<Career />} />
+        <Route path="/training" element={<Training />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/register" element={<SignUp />} />
         <Route path="/comingsoon" element={<ComingSoon />} />
@@ -130,6 +133,7 @@ function App() {
           <Route path="/staffs/course-advisor/settings" element={<CourseAdvisorComingSoon title="Settings" />} />
           <Route path="/staffs/staff-registration" element={<StaffRegistration />} />
           <Route path="/staffs/manage-staffs" element={<StaffManagement />} />
+          <Route path="/staffs/manage-students" element={<AdminStudentManagement />} />
           <Route path="/staffs/master-class" element={<StaffMasterClassList />} />
           <Route path="/staffs/manage-courses" element={<CoursesManagement />} />
         </Route>

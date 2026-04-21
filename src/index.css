@@ -271,9 +271,33 @@ abbr:where([title]) {
 .ellipsis {
   display: -webkit-box;
   -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   text-decoration: none;
   white-space: nowrap;
 }
+
+/* Custom Scrollbar for Sidebar */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #09314f33;
+  border-radius: 10px;
+}
+
+.dark .sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #ffffff1a;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: #09314f66;
+}
+

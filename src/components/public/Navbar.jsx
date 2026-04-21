@@ -5,7 +5,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 
 const navigation = [
   { path: "/", name: "Home" },
-  { path: "/", name: "Training / Tuition", scrollTo: "programs" },
+  { path: "/training", name: "Training / Tuition" },
   { path: "/career", name: "Career"},
   { path: "/blog", name: "Blog" },
   { path: "/contact", name: "Contact Us" },
@@ -108,7 +108,7 @@ const MobileNavigation = ({ setVisible, visible }) => {
     },
     {
       name: "Training",
-      scrollTo: "programs",
+      path: "/training",
       icon: "heroicons:academic-cap",
     },
     {
@@ -175,7 +175,7 @@ const MobileNavigation = ({ setVisible, visible }) => {
           />
         </button>
 
-        <div className="flex flex-col gap-1 mt-12 overflow-y-auto">
+        <div className="flex flex-col gap-1 mt-12 overflow-y-auto" style={{ scrollbarWidth: 'thin', scrollbarColor: '#09314F20 transparent' }}>
           {navLinks.map((items, i) =>
             items.scrollTo ? (
               <button

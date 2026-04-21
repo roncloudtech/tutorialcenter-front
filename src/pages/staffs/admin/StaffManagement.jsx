@@ -158,10 +158,11 @@ export default function StaffManagement() {
       : null,
   })).filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
-  // Pagination state (Mocked for now as per design)
-  const [currentPage] = useState(1);
-  const [totalPages] = useState(1);
-  const [viewedPages] = useState([1]);
+  // Pagination state
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(tableData.length / itemsPerPage) || 1;
+  const currentStaffs = tableData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <StaffDashboardLayout>
@@ -226,10 +227,18 @@ export default function StaffManagement() {
 
            {/* Simple pagination arrows */}
            <div className="flex items-center gap-3">
-              <button className="w-10 h-10 flex items-center justify-center bg-white rounded-xl shadow-sm border border-gray-50 disabled:opacity-30" disabled>
+              <button 
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="w-10 h-10 flex items-center justify-center bg-white rounded-xl shadow-sm border border-gray-50 disabled:opacity-30 transition-all hover:bg-gray-50"
+              >
                  <ChevronLeftIcon className="w-5 h-5 text-gray-400" />
               </button>
-              <button className="w-10 h-10 flex items-center justify-center bg-white rounded-xl shadow-sm border border-gray-50 hover:bg-gray-50 transition-all">
+              <button 
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="w-10 h-10 flex items-center justify-center bg-white rounded-xl shadow-sm border border-gray-50 hover:bg-gray-50 disabled:opacity-30 transition-all"
+              >
                  <ChevronRightIcon className="w-5 h-5 text-[#0F2843]" />
               </button>
            </div>
@@ -253,8 +262,8 @@ export default function StaffManagement() {
                 <div className="flex-1 flex items-center justify-center">
                   <div className="w-10 h-10 border-4 border-[#0F2843]/20 border-t-[#0F2843] rounded-full animate-spin"></div>
                 </div>
-              ) : tableData.length > 0 ? (
-                tableData.map((staff, idx) => (
+              ) : currentStaffs.length > 0 ? (
+                currentStaffs.map((staff, idx) => (
                   <div 
                     key={staff.id || idx} 
                     className="grid grid-cols-6 items-center bg-white px-8 py-5 rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] border border-gray-50 hover:shadow-xl transition-all cursor-pointer group animate-in fade-in slide-in-from-bottom-2"
@@ -311,36 +320,50 @@ export default function StaffManagement() {
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-6 py-6 border-t border-gray-100">
            {/* Page Numbers */}
            <div className="flex items-center gap-2">
-              <button className="w-12 h-12 flex items-center justify-center rounded-xl bg-white shadow-sm hover:translate-y-[-2px] transition-all border border-gray-50">
+              <button 
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="w-12 h-12 flex items-center justify-center rounded-xl bg-white shadow-sm hover:translate-y-[-2px] disabled:opacity-30 transition-all border border-gray-50"
+              >
                  <ChevronLeftIcon className="w-5 h-5 text-gray-400" />
               </button>
               
-              {/* Dynamic Page Buttons based on visually defined states */}
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              {/* Dynamic Page Buttons */}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
+                 if (totalPages > 5) {
+                   if (page !== 1 && page !== totalPages && Math.abs(page - currentPage) > 1) {
+                     if (page === 2 || page === totalPages - 1) return <span key={page} className="px-2 text-gray-400 font-bold">...</span>;
+                     return null;
+                   }
+                 }
+                 return (
                 <button 
                   key={page}
+                  onClick={() => setCurrentPage(page)}
                   className={`w-12 h-12 rounded-xl font-black text-sm transition-all hover:translate-y-[-2px] ${
                     page === currentPage 
                       ? "bg-[#BB9E7F] text-white shadow-lg scale-105" 
-                      : viewedPages.includes(page)
-                        ? "bg-gray-100/80 text-gray-400 border border-gray-100"
-                        : "bg-white text-gray-600 shadow-sm border border-gray-50 hover:border-[#BB9E7F]/30"
+                      : "bg-white text-gray-600 shadow-sm border border-gray-50 hover:border-[#BB9E7F]/30"
                   }`}
                 >
                   {page}
                 </button>
-              ))}
+              )})}
 
-              <button className="w-12 h-12 flex items-center justify-center rounded-xl bg-white shadow-sm hover:translate-y-[-2px] transition-all border border-gray-50">
+              <button 
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="w-12 h-12 flex items-center justify-center rounded-xl bg-white shadow-sm hover:translate-y-[-2px] disabled:opacity-30 transition-all border border-gray-50"
+              >
                  <ChevronRightIcon className="w-5 h-5 text-[#0F2843]" />
               </button>
            </div>
 
            {/* Rows per page selector */}
-           <div className="flex items-center gap-4">
-              <div className="bg-white px-5 py-3.5 rounded-2xl shadow-sm border border-gray-50 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-all group">
-                 <span className="font-black text-[#0F2843] text-sm">5</span>
-                 <ChevronDownIcon className="w-5 h-5 text-gray-300 group-hover:text-[#BB9E7F] transition-all" />
+           <div className="flex items-center gap-4 opacity-70">
+              <div className="bg-white px-5 py-3.5 rounded-2xl shadow-sm border border-gray-50 flex items-center gap-3 transition-all group">
+                 <span className="font-black text-[#0F2843] text-sm">10</span>
+                 <ChevronDownIcon className="w-5 h-5 text-gray-300" />
               </div>
               <span className="text-sm font-black text-gray-400 uppercase tracking-widest">/ page</span>
            </div>

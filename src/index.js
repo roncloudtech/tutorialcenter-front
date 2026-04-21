@@ -6,6 +6,7 @@ import reportWebVitals from "./reportWebVitals.js";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
+import { StaffAuthProvider } from "./context/StaffAuthContext.jsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -13,7 +14,9 @@ root.render(
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <App />
+          <StaffAuthProvider>
+            <App />
+          </StaffAuthProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

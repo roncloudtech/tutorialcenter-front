@@ -295,8 +295,17 @@ export const StudentSubjectSelection = () => {
         </div>
 
         {/* Brand */}
-        <div className="mt-auto py-10 opacity-30 grayscale pointer-events-none">
-          <img src={TC_logo} alt="Tutorial Center" className="h-10" />
+        <div className="mt-auto py-10 opacity-60 grayscale hover:grayscale-0 transition-all cursor-pointer">
+          <img 
+            src={TC_logo} 
+            alt="Tutorial Center" 
+            className="h-10 hover:scale-110 active:scale-95 transition-transform" 
+            onClick={() => {
+              if (window.confirm("Returning to the home page will clear your progress. Are you sure?")) {
+                navigate("/");
+              }
+            }}
+          />
         </div>
       </div>
 
