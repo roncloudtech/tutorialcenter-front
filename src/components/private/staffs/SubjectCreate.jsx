@@ -4,6 +4,7 @@ import {
   XMarkIcon, 
   CameraIcon, 
   DocumentTextIcon, 
+  BanknotesIcon,
   CheckIcon,
   PlusIcon,
   AcademicCapIcon,
@@ -16,6 +17,7 @@ export default function SubjectCreate({ isOpen, onClose, onSuccess, courses }) {
 
   const [subjectName, setSubjectName] = useState("");
   const [description, setDescription] = useState("");
+  const [departments, setDepartments] = useState("");
   const [selectedCourseId, setSelectedCourseId] = useState("");
   const [banner, setBanner] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
@@ -43,9 +45,18 @@ export default function SubjectCreate({ isOpen, onClose, onSuccess, courses }) {
     const formData = new FormData();
     formData.append("name", subjectName);
     formData.append("description", description);
+    // Backend requires 'courses' as an array for validation, 
+    // but may rely on 'course_id' for the database column mapping.
+    formData.append("departments[]", departments);
+    formData.append("courses[]", selectedCourseId); 
     formData.append("course_id", selectedCourseId);
+    formData.append("status", "active");
     if (banner) {
       formData.append("banner", banner);
+    } else {
+      setToast({ type: "error", message: "Please upload a subject banner." });
+      setLoading(false);
+      return;
     }
     
     try {
@@ -66,6 +77,7 @@ export default function SubjectCreate({ isOpen, onClose, onSuccess, courses }) {
         // Reset state
         setSubjectName("");
         setDescription("");
+        setDepartments("");
         setSelectedCourseId("");
         setBanner(null);
         setBannerPreview(null);
@@ -186,6 +198,27 @@ export default function SubjectCreate({ isOpen, onClose, onSuccess, courses }) {
                     required
                     className="w-full pl-20 pr-8 py-5 bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-[#BB9E7F]/30 focus:bg-white dark:focus:bg-gray-700 rounded-2xl font-black text-[#0F2843] dark:text-white outline-none transition-all shadow-sm"
                   />
+                </div>
+              </div>
+
+              {/* Department Input */}
+              <div className="space-y-3">
+                <label className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2">Academic Department</label>
+                <div className="relative group">
+                  <div className="absolute left-6 top-1/2 -translate-y-1/2 p-2 bg-gray-100 dark:bg-gray-800 rounded-xl group-focus-within:bg-[#0F2843] transition-colors">
+                    <BanknotesIcon className="w-5 h-5 text-[#BB9E7F]" />
+                  </div>
+                  <select 
+                    value={departments}
+                    onChange={(e) => setDepartments(e.target.value)}
+                    required
+                    className="w-full pl-20 pr-8 py-5 bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-[#BB9E7F]/30 focus:bg-white dark:focus:bg-gray-700 rounded-2xl font-black text-[#0F2843] dark:text-white outline-none transition-all shadow-sm appearance-none cursor-pointer"
+                  >
+                    <option value="">Select Department</option>
+                    <option value="science">Science</option>
+                    <option value="art">Arts</option>
+                    <option value="commercial">Commercial</option>
+                  </select>
                 </div>
               </div>
             </div>

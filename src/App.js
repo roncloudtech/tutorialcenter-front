@@ -30,7 +30,7 @@ import { StudentTrainingPayment } from "./pages/public/StudentSignUp/StudentTrai
 import StudentLogin from "./pages/public/StudentLogin.jsx";
 import StudentDashboard from "./pages/Students/StudentDashboard.jsx";
 import StudentNotifications from "./pages/Students/StudentNotifications.jsx";
-import StaffNotifications from "./pages/staffs/StaffNotifications.jsx";
+import StaffNotification from "./components/private/staffs/StaffNotification.jsx";
 import StudentPaymentDisplay from "./pages/Students/StudentPaymentDisplay.jsx";
 import StudentClassSchedule from "./pages/Students/StudentClassSchedule.jsx";
 import StudentCalendar from "./pages/Students/StudentCalendar.jsx";
@@ -121,7 +121,7 @@ function App() {
 
           {/* Staff Routes */}
           <Route path="/staffs/dashboard" element={<StaffDashboard />} />
-          <Route path="/staffs/notifications" element={<StaffNotifications />} />
+          <Route path="/staffs/notifications" element={<StaffNotification />} />
           <Route path="/staffs/tutor/dashboard" element={<TutorDashboard />} />
           <Route path="/staffs/tutor/master-class" element={<TutorMasterClass />} />
           <Route path="/staffs/course-advisor/dashboard" element={<CourseAdvisorDashboard />} />

@@ -163,7 +163,7 @@ export default function TutorMasterClass() {
   };
 
   return (
-    <StaffDashboardLayout>
+    <StaffDashboardLayout pagetitle="Master Class">
       {toast && (
         <div className={`fixed top-8 left-1/2 -translate-x-1/2 z-[100] px-6 py-3 rounded-2xl shadow-2xl text-white font-bold text-sm ${toast.type === "success" ? "bg-[#10B981]" : "bg-[#EF4444] animate-bounce"}`}>
           {toast.message}
@@ -172,13 +172,6 @@ export default function TutorMasterClass() {
       )}
 
       <div className="p-6 max-w-[1600px] xl:px-10 mx-auto w-full min-h-screen">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-[32px] font-black text-[#0F2843] tracking-tighter uppercase">Master Class</h1>
-          <button className="relative p-2.5 bg-white rounded-[20px] shadow-sm border border-gray-100 hover:shadow-md transition-all">
-            <Icon icon="mdi:bell" className="text-[#0F2843] w-6 h-6" />
-            <span className="absolute top-3.5 right-3.5 w-2.5 h-2.5 bg-[#E83831] border-2 border-white rounded-full" />
-          </button>
-        </div>
 
         <div className="mb-10 max-w-sm">
           <div className="relative group">

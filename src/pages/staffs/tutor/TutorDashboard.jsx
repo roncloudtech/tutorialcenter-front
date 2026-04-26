@@ -6,7 +6,7 @@ import {
   UserGroupIcon, 
   HandThumbUpIcon, 
   UserMinusIcon,
-  BellIcon,
+  // BellIcon,
   ClockIcon,
   VideoCameraIcon
 } from "@heroicons/react/24/outline";
@@ -102,17 +102,8 @@ export default function TutorDashboard() {
   ];
 
   return (
-    <StaffDashboardLayout>
+    <StaffDashboardLayout pagetitle="Dashboard">
       <div className="p-6 max-w-6xl mx-auto w-full min-h-screen pb-20">
-        
-        {/* Header Section */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-black text-[#0F2843] tracking-tighter uppercase">Dashboard</h1>
-          <button className="relative p-2.5 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all">
-            <BellIcon className="w-6 h-6 text-[#0F2843]" />
-            <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-[#E83831] border-2 border-white rounded-full shadow-sm" />
-          </button>
-        </div>
 
         {/* Announcement Bar */}
         <div className="bg-white border border-gray-100 rounded-[24px] p-2 mb-10 shadow-sm">

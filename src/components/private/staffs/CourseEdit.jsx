@@ -18,6 +18,7 @@ export default function CourseEdit({ mode = "courses" }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [description, setDescription] = useState("");
+  const [departments, setDepartments] = useState(""); // We keep the plural name to match backend expectation
   const [price, setPrice] = useState("");
   const [banner, setBanner] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
@@ -67,6 +68,9 @@ export default function CourseEdit({ mode = "courses" }) {
     
     // Populate metadata for both courses and subjects
     setDescription(item.description || "");
+    // Extract first department if it comes as an array, or handle string
+    const existingDept = Array.isArray(item.departments) ? item.departments[0] : (item.departments || item.department || "");
+    setDepartments(existingDept);
     setBannerPreview(item.banner ? (item.banner.startsWith('http') ? item.banner : `${API_BASE_URL}${item.banner}`) : null);
     setBanner(null);
 
@@ -111,6 +115,8 @@ export default function CourseEdit({ mode = "courses" }) {
       payload = new FormData();
       payload.append("name", newName);
       payload.append("description", description);
+      // Backend requires departments as an array
+      payload.append("departments[]", departments);
       if (banner) {
         payload.append("banner", banner);
       }
@@ -124,11 +130,8 @@ export default function CourseEdit({ mode = "courses" }) {
     console.log("Request URL:", url);
 
     try {
-      // Note: We use POST for FormData even if it's an update if the backend prefers it for files, 
-      // but sticking to PUT as previously used unless it fails. 
-      // Actually, many PHP backends require POST + _method=PUT to handle multipart files in an update.
-      // I'll stick to PUT for now as it was there.
-      const res = await axios.post(url, payload, { headers });
+      // Note: We are using PUT as requested. 
+      const res = await axios.put(url, payload, { headers });
       console.log("Update Response Data:", res.data);
       
       setToast({ type: "success", message: `${editingItem.type === "course" ? "Course" : "Subject"} updated!` });
@@ -383,17 +386,35 @@ export default function CourseEdit({ mode = "courses" }) {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Subject Name</label>
-                    <input 
-                      type="text" 
-                      value={newName}
-                      onChange={(e) => {
-                        setNewName(e.target.value);
-                        setShowConfirmSave(true);
-                      }}
-                      className="w-full px-8 py-6 bg-gray-50 dark:bg-gray-800 rounded-[24px] font-black text-xl text-[#0F2843] dark:text-white outline-none transition-all shadow-sm"
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Subject Name</label>
+                      <input 
+                        type="text" 
+                        value={newName}
+                        onChange={(e) => {
+                          setNewName(e.target.value);
+                          setShowConfirmSave(true);
+                        }}
+                        className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-800 rounded-2xl font-bold text-[#0F2843] dark:text-white outline-none"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Academic Department</label>
+                      <select 
+                        value={departments}
+                        onChange={(e) => {
+                          setDepartments(e.target.value);
+                          setShowConfirmSave(true);
+                        }}
+                        className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-800 rounded-2xl font-bold text-[#0F2843] dark:text-white outline-none appearance-none cursor-pointer"
+                      >
+                        <option value="">Select Department</option>
+                        <option value="science">Science</option>
+                        <option value="art">Arts</option>
+                        <option value="commercial">Commercial</option>
+                      </select>
+                    </div>
                   </div>
 
                   {/* Description */}

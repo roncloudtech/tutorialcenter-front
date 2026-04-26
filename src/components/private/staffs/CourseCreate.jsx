@@ -7,7 +7,7 @@ import {
   DocumentTextIcon, 
   CheckIcon,
   PlusIcon,
-  TrashIcon,
+  // TrashIcon,
   BookOpenIcon
 } from "@heroicons/react/24/outline";
 
@@ -20,7 +20,6 @@ export default function CourseCreate({ isOpen, onClose, onSuccess }) {
   const [price, setPrice] = useState("");
   const [banner, setBanner] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
-  const [subjects, setSubjects] = useState([""]);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
 
@@ -32,13 +31,6 @@ export default function CourseCreate({ isOpen, onClose, onSuccess }) {
     }
   };
 
-  const addSubjectField = () => setSubjects([...subjects, ""]);
-  const removeSubjectField = (index) => setSubjects(subjects.filter((_, i) => i !== index));
-  const handleSubjectChange = (index, value) => {
-    const newSubjects = [...subjects];
-    newSubjects[index] = value;
-    setSubjects(newSubjects);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,8 +42,13 @@ export default function CourseCreate({ isOpen, onClose, onSuccess }) {
     formData.append("title", courseName);
     formData.append("description", description);
     formData.append("price", price);
+    formData.append("status", "active");
     if (banner) {
       formData.append("banner", banner);
+    } else {
+      setToast({ type: "error", message: "Please upload a course banner." });
+      setLoading(false);
+      return;
     }
     
     console.log("Course Creation FormData entries:");
@@ -70,25 +67,6 @@ export default function CourseCreate({ isOpen, onClose, onSuccess }) {
       // Create Course
       const courseRes = await axios.post(`${API_BASE_URL}/api/admin/courses`, formData, config);
       console.log("Course Creation Response:", courseRes?.data);
-      
-      const courseId = courseRes.data?.course?.id || courseRes.data?.data?.id;
-
-      // Create Subjects
-      if (courseId) {
-        const subjectsList = subjects.filter(s => s.trim());
-        if (subjectsList.length > 0) {
-          console.log("Creating Subjects for Course ID:", courseId, "Subjects:", subjectsList);
-          await Promise.all(subjectsList.map(async (subjectName) => {
-            const subPayload = {
-              name: subjectName,
-              course_id: courseId
-            };
-            await axios.post(`${API_BASE_URL}/api/admin/subjects`, subPayload, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
-          }));
-        }
-      }
 
       setToast({ type: "success", message: "Course created successfully!" });
       setTimeout(() => {
@@ -100,7 +78,6 @@ export default function CourseCreate({ isOpen, onClose, onSuccess }) {
         setPrice("");
         setBanner(null);
         setBannerPreview(null);
-        setSubjects([""]);
       }, 1500);
     } catch (error) {
       console.error("Course/Subjects Creation Error:", error);
@@ -251,49 +228,6 @@ export default function CourseCreate({ isOpen, onClose, onSuccess }) {
               </div>
             </div>
 
-            {/* Subjects Builder Section */}
-            <div className="space-y-6 pt-6 border-t border-gray-100 dark:border-gray-800">
-               <div className="flex items-center justify-between px-2">
-                 <div>
-                   <h4 className="text-sm font-black text-[#0F2843] dark:text-white uppercase tracking-tight">Associate Subjects</h4>
-                   <p className="text-[10px] text-gray-400 font-bold mt-0.5">Define core subjects for this course</p>
-                 </div>
-                 <button 
-                   type="button"
-                   onClick={addSubjectField}
-                   className="px-6 py-2.5 bg-[#BB9E7F]/10 text-[#BB9E7F] hover:bg-[#BB9E7F] hover:text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all active:scale-95 flex items-center gap-2"
-                 >
-                   <PlusIcon className="w-4 h-4" />
-                   Add Subject
-                 </button>
-               </div>
-
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 {subjects.map((subject, index) => (
-                   <div key={index} className="flex items-center gap-3 animate-in fade-in slide-in-from-left-2">
-                     <div className="flex-1 relative group">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 w-2 h-2 bg-[#BB9E7F] rounded-full group-focus-within:scale-150 transition-transform"></div>
-                        <input 
-                          type="text" 
-                          value={subject}
-                          onChange={(e) => handleSubjectChange(index, e.target.value)}
-                          placeholder="Subject Name"
-                          className="w-full pl-10 pr-6 py-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border-2 border-transparent focus:border-[#BB9E7F]/20 focus:bg-white font-bold text-sm text-[#0F2843] dark:text-white outline-none transition-all shadow-sm"
-                        />
-                     </div>
-                     {subjects.length > 1 && (
-                       <button 
-                         type="button"
-                         onClick={() => removeSubjectField(index)}
-                         className="p-4 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all group"
-                       >
-                         <TrashIcon className="w-5 h-5" />
-                       </button>
-                     )}
-                   </div>
-                 ))}
-               </div>
-            </div>
 
             {/* Footer Actions */}
             <div className="flex items-center gap-6 pt-10 border-t border-gray-100 dark:border-gray-800">

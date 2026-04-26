@@ -86,6 +86,19 @@ export default function SubjectDetailModal({ isOpen, subject, course, onClose, o
                         <p className="text-sm font-bold text-[#0F2843] dark:text-white mt-0.5">Contact administrator for detailed subject requirements and prerequisites.</p>
                       </div>
                     </div>
+                    {subject.departments && (
+                      <div className="flex items-center gap-4 p-6 bg-gray-50 dark:bg-gray-800 rounded-[32px] border border-gray-100 dark:border-gray-700">
+                        <div className="w-12 h-12 bg-white dark:bg-gray-700 rounded-2xl flex items-center justify-center shadow-sm">
+                          <CheckBadgeIcon className="w-6 h-6 text-[#76D287]" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Academic Departments</p>
+                          <p className="text-sm font-bold text-[#0F2843] dark:text-white mt-0.5 capitalize">
+                            {Array.isArray(subject.departments) ? subject.departments.join(", ") : (subject.departments || "Multiple Sections")}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                  </div>
               </div>
             </div>

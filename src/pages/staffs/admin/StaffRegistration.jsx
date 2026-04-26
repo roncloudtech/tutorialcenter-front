@@ -9,7 +9,7 @@ import {
   MapPinIcon,
   PencilIcon,
   UserGroupIcon,
-  DocumentTextIcon,
+  // DocumentTextIcon,
   CameraIcon,
   ChevronDownIcon
 } from "@heroicons/react/24/outline";
@@ -449,7 +449,7 @@ export default function StaffRegistration() {
               </div>
 
               {/* Description */}
-              <div className="sm:col-span-2">
+              {/* <div className="sm:col-span-2">
                 <label className="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wide">
                   Description <span className="font-normal text-gray-400">(optional)</span>
                 </label>
@@ -464,7 +464,7 @@ export default function StaffRegistration() {
                     className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 py-2.5 pl-9 pr-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none transition-all"
                   ></textarea>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* Submit Button */}

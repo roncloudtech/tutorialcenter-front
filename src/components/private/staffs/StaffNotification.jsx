@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import DashboardLayout from "../../components/private/staffs/DashboardLayout.jsx";
-import { useAuth } from "../../context/AuthContext";
+import StaffDashboardLayout from "../../private/staffs/DashboardLayout.jsx";
 import { 
   BellIcon, 
   TrashIcon, 
@@ -10,14 +9,28 @@ import {
   EyeIcon,
   CheckBadgeIcon
 } from "@heroicons/react/24/outline";
-import NotificationDetailModal from "../../components/private/Students/NotificationDetailModal.jsx";
+import StaffNotificationDetailModal from "./StaffNotificationDetailModal.jsx";
 
-export default function StaffNotifications() {
+export default function StaffNotification() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedNotif, setSelectedNotif] = useState(null);
   const [toast, setToast] = useState(null);
-  const { token } = useAuth();
+  
+  const token = localStorage.getItem("staff_token");
+  const staffRole = localStorage.getItem("staff_role");
+  
+  // Safely parse role or use directly if it's not JSON
+  let parsedRole = "";
+  if (staffRole) {
+    try {
+      parsedRole = JSON.parse(staffRole);
+    } catch {
+      parsedRole = staffRole;
+    }
+  }
+  const isAdmin = parsedRole === "admin";
+  const apiPrefix = isAdmin ? "admin" : "staffs";
   
   const API_BASE_URL = process.env.REACT_APP_API_URL || "http://tutorialcenter-back.test";
 
@@ -25,21 +38,22 @@ export default function StaffNotifications() {
     if (!token) return;
     try {
       setLoading(true);
-      const response = await axios.get(`${API_BASE_URL}/api/notifications`, {
+      const response = await axios.get(`${API_BASE_URL}/api/${apiPrefix}/notifications`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const resData = response.data;
-      // Handle Laravel pagination (resData.data) or flat array
       const notificationList = resData?.data && Array.isArray(resData.data) 
         ? resData.data 
         : (Array.isArray(resData) ? resData : []);
+      console.log(`StaffNotification API (${apiPrefix}) response:`, resData);
+      console.log(`StaffNotification List parsed:`, notificationList);
       setNotifications(notificationList);
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
     } finally {
       setLoading(false);
     }
-  }, [API_BASE_URL, token]);
+  }, [API_BASE_URL, token, apiPrefix]);
 
   useEffect(() => {
     fetchNotifications();
@@ -47,12 +61,10 @@ export default function StaffNotifications() {
 
   const handleMarkAsRead = async (id) => {
     try {
-      await axios.post(`${API_BASE_URL}/api/notifications/${id}/read`, {}, {
+      await axios.post(`${API_BASE_URL}/api/${apiPrefix}/notifications/${id}/read`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      // Update locally
       setNotifications(prev => prev.map(n => n.id === id ? { ...n, read_at: new Date().toISOString() } : n));
-      // Sync Header
       window.dispatchEvent(new CustomEvent('updateUnreadCount'));
     } catch (error) {
       console.error("Failed to mark as read:", error);
@@ -61,12 +73,11 @@ export default function StaffNotifications() {
 
   const handleMarkAllAsRead = async () => {
     try {
-      await axios.post(`${API_BASE_URL}/api/notifications/mark-all-read`, {}, {
+      await axios.post(`${API_BASE_URL}/api/${apiPrefix}/notifications/mark-all-read`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setNotifications(prev => prev.map(n => ({ ...n, read_at: new Date().toISOString() })));
       setToast({ type: "success", message: "All notifications marked as read" });
-      // Sync Header
       window.dispatchEvent(new CustomEvent('updateUnreadCount'));
       setTimeout(() => setToast(null), 3000);
     } catch (error) {
@@ -76,13 +87,12 @@ export default function StaffNotifications() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/api/notifications/${id}`, {
+      await axios.delete(`${API_BASE_URL}/api/${apiPrefix}/notifications/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setNotifications(prev => prev.filter(n => n.id !== id));
       if (selectedNotif?.id === id) setSelectedNotif(null);
       setToast({ type: "success", message: "Notification deleted" });
-      // Sync Header
       window.dispatchEvent(new CustomEvent('updateUnreadCount'));
       setTimeout(() => setToast(null), 3000);
     } catch (error) {
@@ -98,7 +108,7 @@ export default function StaffNotifications() {
   };
 
   return (
-    <DashboardLayout pagetitle="Notifications">
+    <StaffDashboardLayout pagetitle="Notifications">
       {/* Toast Notification */}
       {toast && (
         <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[2000] px-8 py-4 bg-[#09314F] text-white rounded-2xl shadow-2xl animate-in slide-in-from-bottom-5 duration-300 flex items-center gap-3">
@@ -193,11 +203,11 @@ export default function StaffNotifications() {
       </div>
 
       {/* Detail Modal */}
-      <NotificationDetailModal 
+      <StaffNotificationDetailModal 
         notification={selectedNotif} 
         onClose={() => setSelectedNotif(null)} 
         onDelete={handleDelete}
       />
-    </DashboardLayout>
+    </StaffDashboardLayout>
   );
 }

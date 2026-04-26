@@ -7,7 +7,7 @@ import MobileBottomNav from "./MobileBottomNav.jsx";
 import { BellIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useStaffAuth } from "../../../context/StaffAuthContext";
-import NotificationsDropdown from "../Students/NotificationsDropdown";
+import StaffNotificationDropdown from "./StaffNotificationDropdown.jsx";
 import StaffInactivityModal from "./StaffInactivityModal.jsx";
 
 export default function StaffDashboardLayout({
@@ -132,12 +132,12 @@ export default function StaffDashboardLayout({
                       )}
                     </button>
                   </div>
-                  <NotificationsDropdown
+                  <StaffNotificationDropdown
                     isOpen={isNotificationsOpen}
                     onClose={() => setIsNotificationsOpen(false)}
                     onUpdate={fetchUnreadCount}
                     token={token}
-                    viewAllLink="/staff/notifications"
+                    viewAllLink="/staffs/notifications"
                   />
                 </div>
               </div>
