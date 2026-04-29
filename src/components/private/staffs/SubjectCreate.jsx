@@ -8,7 +8,7 @@ import {
   CheckIcon,
   PlusIcon,
   AcademicCapIcon,
-  BookOpenIcon
+  // BookOpenIcon
 } from "@heroicons/react/24/outline";
 
 export default function SubjectCreate({ isOpen, onClose, onSuccess, courses }) {
@@ -18,7 +18,7 @@ export default function SubjectCreate({ isOpen, onClose, onSuccess, courses }) {
   const [subjectName, setSubjectName] = useState("");
   const [description, setDescription] = useState("");
   const [departments, setDepartments] = useState("");
-  const [selectedCourseId, setSelectedCourseId] = useState("");
+  const [selectedCourses, setSelectedCourses] = useState([]);
   const [banner, setBanner] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -34,10 +34,8 @@ export default function SubjectCreate({ isOpen, onClose, onSuccess, courses }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedCourseId) {
-      setToast({ type: "error", message: "Please select a course first." });
-      return;
-    }
+    // Courses are no longer strictly compulsory based on user request, 
+    // but we must send something to avoid NOT NULL constraint.
 
     setLoading(true);
     console.group("Subject Creation: Submit Form");
@@ -45,11 +43,22 @@ export default function SubjectCreate({ isOpen, onClose, onSuccess, courses }) {
     const formData = new FormData();
     formData.append("name", subjectName);
     formData.append("description", description);
-    // Backend requires 'courses' as an array for validation, 
-    // but may rely on 'course_id' for the database column mapping.
     formData.append("departments[]", departments);
-    formData.append("courses[]", selectedCourseId); 
-    formData.append("course_id", selectedCourseId);
+    
+    // The backend expects a real array structure in the multipart form data.
+    // We use the 'courses[]' notation for each selected course.
+    if (selectedCourses.length > 0) {
+      selectedCourses.forEach(id => {
+        formData.append("courses[]", id);
+      });
+      // Legacy support for single course_id
+      formData.append("course_id", selectedCourses[0]);
+    } else {
+      // If no courses are selected, we still need to send the key to avoid NOT NULL errors.
+      // We append an empty string to the array so Laravel sees it as an array [''].
+      formData.append("courses[]", "");
+    }
+    
     formData.append("status", "active");
     if (banner) {
       formData.append("banner", banner);
@@ -78,7 +87,7 @@ export default function SubjectCreate({ isOpen, onClose, onSuccess, courses }) {
         setSubjectName("");
         setDescription("");
         setDepartments("");
-        setSelectedCourseId("");
+        setSelectedCourses([]);
         setBanner(null);
         setBannerPreview(null);
       }, 1500);
@@ -162,24 +171,44 @@ export default function SubjectCreate({ isOpen, onClose, onSuccess, courses }) {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Course Selection */}
+              {/* Course Selection (Multiple) */}
               <div className="space-y-3">
-                <label className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2">Parent Curriculum</label>
-                <div className="relative group">
-                  <div className="absolute left-6 top-1/2 -translate-y-1/2 p-2 bg-gray-100 dark:bg-gray-800 rounded-xl group-focus-within:bg-[#0F2843] transition-colors">
-                    <BookOpenIcon className="w-5 h-5 text-[#BB9E7F]" />
-                  </div>
-                  <select 
-                    value={selectedCourseId}
-                    onChange={(e) => setSelectedCourseId(e.target.value)}
-                    required
-                    className="w-full pl-20 pr-8 py-5 bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-[#BB9E7F]/30 focus:bg-white dark:focus:bg-gray-700 rounded-2xl font-black text-[#0F2843] dark:text-white outline-none transition-all shadow-sm appearance-none cursor-pointer"
-                  >
-                    <option value="">Select a Parent Course</option>
-                    {courses.map((c) => (
-                      <option key={c.id} value={c.id}>{c.title}</option>
-                    ))}
-                  </select>
+                <label className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2">Parent Curriculum (Select Multiple)</label>
+                <div className="relative group p-5 bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus-within:border-[#BB9E7F]/30 rounded-2xl shadow-sm max-h-[160px] overflow-y-auto custom-scrollbar">
+                  {courses.length === 0 ? (
+                    <p className="text-sm font-bold text-gray-400">No courses available.</p>
+                  ) : (
+                    <div className="flex flex-col gap-3">
+                      {courses.map((c) => (
+                        <label key={c.id} className="flex items-center gap-3 cursor-pointer group/item">
+                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                            selectedCourses.includes(c.id.toString()) 
+                              ? "bg-[#0F2843] border-[#0F2843]" 
+                              : "border-gray-300 dark:border-gray-600 group-hover/item:border-[#0F2843]"
+                          }`}>
+                            {selectedCourses.includes(c.id.toString()) && <CheckIcon className="w-3.5 h-3.5 text-white" />}
+                          </div>
+                          <span className={`text-sm font-bold transition-all ${
+                            selectedCourses.includes(c.id.toString()) ? "text-[#0F2843] dark:text-white" : "text-gray-500 dark:text-gray-400 group-hover/item:text-[#0F2843] dark:group-hover/item:text-white"
+                          }`}>
+                            {c.title}
+                          </span>
+                          <input 
+                            type="checkbox"
+                            value={c.id}
+                            checked={selectedCourses.includes(c.id.toString())}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setSelectedCourses(prev => 
+                                prev.includes(val) ? prev.filter(id => id !== val) : [...prev, val]
+                              );
+                            }}
+                            className="hidden"
+                          />
+                        </label>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 

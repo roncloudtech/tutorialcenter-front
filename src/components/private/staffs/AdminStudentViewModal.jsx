@@ -84,15 +84,8 @@ export default function AdminStudentViewModal({ studentId, onClose, onUpdate }) 
     }
   };
 
-  const getCourseName = (id) => {
-    switch(String(id)) {
-      case "1": return "JAMB";
-      case "2": return "NECO";
-      case "3": return "WAEC";
-      case "4": return "GCE";
-      default: return `Course #${id}`;
-    }
-  };
+  // No longer needed as we use course_information.title from the backend
+  // const getCourseName = (id) => { ... }
 
   if (loading) return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
@@ -114,7 +107,7 @@ export default function AdminStudentViewModal({ studentId, onClose, onUpdate }) 
   const guardians = info?.guardians || student?.guardians || [];
   const attendances = info?.attendances || student?.attendance || [];
   const advisors = info?.advisors || student?.advisors || [];
-  const courseEnrolments = info?.course_enrollments || [];
+  const courseEnrolments = student?.courses || info?.courses || student?.course_information || [];
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 py-8 animate-in fade-in duration-300">
@@ -307,8 +300,9 @@ export default function AdminStudentViewModal({ studentId, onClose, onUpdate }) 
                        <div className="space-y-2">
                          {courseEnrolments.map((enrolment, index) => (
                            <div key={index} className="flex justify-between items-center bg-white p-3 rounded-xl border border-gray-100">
-                             <p className="text-sm font-bold text-[#0F2843]">{getCourseName(enrolment.course_id)}</p>
-                             <span className="text-[10px] uppercase font-black text-gray-400">ID: {enrolment.course_id}</span>
+                             <p className="text-sm font-bold text-[#0F2843]">
+                               {enrolment.course_information?.title || "Unknown Course"}
+                             </p>
                            </div>
                          ))}
                        </div>
