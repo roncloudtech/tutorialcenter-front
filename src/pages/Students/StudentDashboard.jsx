@@ -44,10 +44,10 @@ export default function StudentDashboard() {
   return (
     <DashboardLayout>
       <div className="flex flex-col xl:flex-row gap-6 w-full max-w-[1600px] mx-auto text-gray-800 dark:text-gray-100">
-        
+
         {/* --- LEFT MAIN COLUMN --- */}
         <div className="flex-1 flex flex-col space-y-6">
-          
+
           {/* Header Row */}
           {/* <div className="flex justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
             <h1 className="text-2xl font-bold uppercase tracking-wide text-gray-800 dark:text-white">
@@ -83,15 +83,15 @@ export default function StudentDashboard() {
                 Courses {courses.length || 4}
               </span>
             </div>
-            
+
             <div className="flex justify-between text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
               <span>Start</span>
               <span>Finish</span>
             </div>
             <div className="w-full bg-gray-200 dark:bg-gray-700/50 rounded-full h-2.5 mb-6 shadow-inner">
-              <div 
-                className="bg-[#1e3a8a] dark:bg-blue-400 h-2.5 rounded-full" 
-                style={{ width: '15%' }} 
+              <div
+                className="bg-[#1e3a8a] dark:bg-blue-400 h-2.5 rounded-full"
+                style={{ width: '15%' }}
               ></div>
             </div>
           </div>
@@ -115,9 +115,9 @@ export default function StudentDashboard() {
           )}
         </div>
 
-      
 
-        
+
+
       </div>
     </DashboardLayout>
   );

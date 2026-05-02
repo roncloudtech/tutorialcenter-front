@@ -14,7 +14,6 @@ const Home = () => {
     return (
         <>
             <Navbar />
-            <StickyButtons />
             <Hero />
             <BenefitSection />
             <CommunityGrowth />
